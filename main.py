@@ -7,13 +7,17 @@ import matplotlib.pyplot as plt
 
 from matplotlib.axes import Axes
 from matplotlib.text import Annotation
-from matplotlib.collections import Collection
+from matplotlib.collections import Collection, PathCollection
 from matplotlib.backend_bases import MouseEvent, CloseEvent
 from matplotlib.figure import Figure
 
+from numpy.typing import ArrayLike
 import scipy.io.wavfile as wav
 import scipy.fftpack as fft
 from typing import Tuple, List
+
+import tkinter as tk
+from tkinter import messagebox, filedialog
 
 def compute_fft(wav_filepath: str) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, int]:
     """Reads a WAV file and computes its FFT."""
@@ -47,7 +51,7 @@ def plot_frequency_domain(ax: Axes, freq: np.ndarray, freq_data: np.ndarray, N: 
     ax.grid()
     return ax.scatter([], [], color='red'), []  # Interactive points & annotations list
 
-def add_point(event: MouseEvent, scatter: Collection, ax: Axes, annotations: List[Annotation]) -> None:
+def add_point(event: MouseEvent, scatter: PathCollection, ax: Axes, annotations: List[Annotation]) -> None:
     """Adds a point to the plot on left-click."""
     scatter.set_offsets(np.append(scatter.get_offsets(), [[event.xdata, event.ydata]], axis=0))
     annotation: Annotation = ax.annotate(f'({event.xdata:.4f}, {event.ydata:.4f})',
@@ -56,7 +60,7 @@ def add_point(event: MouseEvent, scatter: Collection, ax: Axes, annotations: Lis
     annotations.append(annotation)
     event.canvas.draw()
 
-def remove_point(event: MouseEvent, scatter: Collection, annotations: List[Annotation]) -> None:
+def remove_point(event: MouseEvent, scatter: PathCollection, annotations: List[Annotation]) -> None:
     """Removes the nearest point on right-click."""
     if len(scatter.get_offsets()) > 0:
         distances: np.ndarray = np.linalg.norm(scatter.get_offsets() - np.array([event.xdata, event.ydata]), axis=1)
@@ -66,7 +70,7 @@ def remove_point(event: MouseEvent, scatter: Collection, annotations: List[Annot
         annotations.pop(index)
     event.canvas.draw()
 
-def on_click(event: MouseEvent, scatter: Collection, ax: Axes, annotations: List[Annotation]) -> None:
+def on_click(event: MouseEvent, scatter: PathCollection, ax: Axes, annotations: List[Annotation]) -> None:
     """Handles mouse click events for adding/removing points interactively."""
     if event.button == 1 and event.inaxes:
         add_point(event, scatter, ax, annotations)
@@ -91,29 +95,48 @@ def save_frequency_domain_data(basename: str, freq: np.ndarray, freq_data: np.nd
         writer.writerow(["Frequency (Hz)", "Magnitude"])
         writer.writerows(zip(freq[:len(freq)//2], np.abs(freq_data[:len(freq)//2]) / len(data)))
 
-def on_close(event: CloseEvent, fig: Figure, time: np.ndarray, data: np.ndarray, freq: np.ndarray, freq_data: np.ndarray, wav_filepath: str) -> None:
+def save_time_scatter_points(base_name: str, time_scatter_data: PathCollection):
+    
+    filename: str = f"{base_name}_time_scatter_points.csv"
+
+    points = time_scatter_data.get_offsets().tolist()
+
+    with open(filename, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(["Time (s)","Amplitude"])
+        writer.writerows(points)
+
+def save_frequency_scatter_points(base_name: str, frequency_scatter_data: PathCollection):
+
+    filename: str = f"{base_name}_frequency_scatter_points.csv"
+
+    points = frequency_scatter_data.get_offsets().tolist()
+
+    with open(filename, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(["Frequency (Hz)","Magnitude"])
+        writer.writerows(points)
+
+
+def on_close(event: CloseEvent, fig: Figure, time: np.ndarray,
+             data: np.ndarray, freq: np.ndarray, freq_data: np.ndarray,
+             time_scatter_data: PathCollection, frequency_scatter_data: PathCollection, 
+             wav_filepath: str) -> None:
     """Handles the close event, prompting to save data."""
     
-    save_prompt = input("Do you want to save the data? (y/n): ")
-    if save_prompt.lower() == 'y':
+    root = tk.Tk()
+    root.withdraw()
+    save_prompt = messagebox.askyesno("Save Data", "Do you want to save the data?")
+    
+    if save_prompt:
         base_name = os.path.splitext(wav_filepath)[0]
         
         save_time_domain_data(base_name, time, data)
+        save_time_scatter_points(base_name, time_scatter_data)
 
-        # Save time-domain data
-        #with open(f"{base_name}_time_domain.csv", 'w', newline='') as f:
-            #writer = csv.writer(f)
-            #writer.writerow(["Time (s)", "Amplitude"])
-            #writer.writerows(zip(time, data))
-        
         save_frequency_domain_data(base_name, freq, freq_data, data) 
+        save_frequency_scatter_points(base_name, frequency_scatter_data)
 
-        # Save frequency-domain data
-        #with open(f"{base_name}_frequency_domain.csv", 'w', newline='') as f:
-         #   writer = csv.writer(f)
-          #  writer.writerow(["Frequency (Hz)", "Magnitude"])
-           # writer.writerows(zip(freq[:len(freq)//2], np.abs(freq_data[:len(freq)//2]) / len(data)))
-        
         # Save figure
         fig.savefig(f"{base_name}_plot.png")
         print("Data and plot saved.")
@@ -136,7 +159,7 @@ def plot_frequency_spectrum(wav_filepath: str) -> None:
                            else on_click(event, freq_scatter, axs[1], freq_annotations))
     
     plt.tight_layout()
-    fig.canvas.mpl_connect('close_event', lambda event: on_close(event, fig, time, data, freq, freq_data, wav_filepath))
+    fig.canvas.mpl_connect('close_event', lambda event: on_close(event, fig, time, data, freq, freq_data, time_scatter, freq_scatter, wav_filepath))
     plt.show()
 
 # Example usage:
