@@ -1,9 +1,23 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from pandas.core.api import DataFrame
 from scipy.optimize import curve_fit
 import pandas as pd
+import scipy.io.wavfile as wav
+import scipy.fftpack as fft
 
+def compute_fft(wav_filepath: str) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, int]:
+    """Reads a WAV file and computes its FFT."""
+    sample_rate, amplitude_data = wav.read(wav_filepath)
+    if len(amplitude_data.shape) > 1:
+        amplitude_data = amplitude_data[:, 0]  # Convert stereo to mono
+    
+    N: int = len(amplitude_data)
+    T: float = 1.0 / sample_rate
+    magnitude_data: np.ndarray = fft.fft(amplitude_data)
+    freq_data: np.ndarray = np.fft.fftfreq(N, T)
+    time_data: np.ndarray = np.linspace(0., N / sample_rate, N)
+    
+    return time_data, amplitude_data, freq_data, magnitude_data, N
 
 #Curve to fit
 def custom_curve(t_i: float, t_offset: float, a_offset: float, zeta_2pi_fn: float, a_0: float)->float:
@@ -136,27 +150,3 @@ def get_damping_ratio_zeta(damped_natural_frequency_fd: float, natural_frequency
     term1: float = (damped_natural_frequency_fd/natural_frequency_fn)**2
     return np.sqrt(1-term1)
 
-# Read the file
-filepath: str = "hit2-1_time_scatter_points.csv"
-t_i_data, a_i_data = read_data_file(filepath)
-
-# Set the initial parameters guesses to help the solver
-initial_parameter_guesses: list[float] = guess_initial_parameters(t_i_data, a_i_data)
-
-# Set lower and upper bounds to help the solver
-parameter_bounds: tuple[np.ndarray, np.ndarray] = get_parameter_bounds(a_i_data)
-
-# fit the custom function to the data
-solved_parameters, _ = curve_fit(custom_curve, t_i_data, a_i_data, p0=initial_parameter_guesses, bounds=parameter_bounds)
-
-# Calculate the Coefficientof Determination
-r_squared = get_coefficient_of_determination(t_i_data, a_i_data, solved_parameters)
-
-# Get natural frequencies and damping ratio
-fd: float = get_damped_natural_frequency_fd(t_i_data)
-fn: float = get_natural_frequency_fn(fd, solved_parameters)
-zeta: float = get_damping_ratio_zeta(fd, fn)
-
-print_solved_parameters(solved_parameters)
-print(f"Coefficient of Determination: R²={r_squared}")
-print(f"Damped natural frequency, fd={fd} | natural frequency, fn={fn} | damping ratio, zeta={zeta}")

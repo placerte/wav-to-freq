@@ -19,3 +19,5 @@ An app that takes in a formatted wav file of an impact and returns its natural f
 - [ ] Integrate live curve fitting and solving.
 - [ ] Export solved parameters and file info.
 - [ ] Make the code a protable executable
+- [ ] Clean LSP warnings
+- [ ] Remove the abundance of np.pi. It may affect numerical precision.
