@@ -1,5 +1,5 @@
-from file_handler import save_all_data
-from computing import compute_fft, curve_fit
+from file_handler import WavSampleFile, save_all_data
+from computing import DampingEnvelopeCurveFitter, compute_fft_from_wav_file
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,7 +20,7 @@ from tkinter import messagebox
 
 class Plotter():
 
-    wav_filepath: str
+    wav_file: WavSampleFile
     file_base_name: str
 
     time_data: np.ndarray
@@ -34,14 +34,13 @@ class Plotter():
 
     figure: Figure
 
-    def __init__(self, wav_filepath: str, file_base_name: str) -> None:
-        self.wav_filepath = wav_filepath
-        self.file_base_name = file_base_name
+    def __init__(self, wav_sample_file: WavSampleFile) -> None:
+        self.wav_file = wav_sample_file
 
     def plot_time_domain(self, ax: Axes) -> tuple[Collection, list[Annotation]]:
         """Plots the time_data-domain representation."""
         ax.plot(self.time_data, self.amplitude_data)
-        ax.set_title(f"Time Domain Representation - {self.wav_filepath}")
+        ax.set_title(f"Time Domain Representation - {self.wav_file.friendly_identifier}")
         ax.set_xlabel("Time (seconds)")
         ax.set_ylabel("Amplitude")
         ax.grid()
@@ -50,7 +49,7 @@ class Plotter():
     def plot_frequency_domain(self, ax: Axes, N: int) -> tuple[Collection, list[Annotation]]:
         """Plots the frequency-domain representation."""
         ax.plot(self.freq_data[:N // 2], np.abs(self.magnitude_data[:N // 2]) / N)
-        ax.set_title(f"Frequency Domain Representation - {self.wav_filepath}")
+        ax.set_title(f"Frequency Domain Representation - {self.wav_file.friendly_identifier}")
         ax.set_xlabel("Frequency (Hz)")
         ax.set_ylabel("Magnitude")
         ax.grid()
@@ -99,35 +98,33 @@ class Plotter():
                           frequency_scatter_data = self.frequency_scatter_data)
 
             # Save figure
-            self.figure.savefig(f"{self.file_base_name}_plot.png")
+            self.figure.savefig(f"{self.wav_file.friendly_identifier}_plot.png")
             print("Data and plot saved.")
 
     def get_table_data(self) -> list[list[str]]:
         """Generates metadata for the plots"""
         return [
-            ["File", self.file_base_name],
-            ["Other", "blabla"],
-            ["Other", "blabla"],
-            ["Other", "blabla"],
-            ["Other", "blabla"],
-            ["Other", "blabla"],
-            ["Other", "blabla"],
-            ["Other", "blabla"]
+            ["File", self.wav_file.filename_with_extension],
+            ["Sample Rate", f"{self.wav_file.sample_rate}Hz"],
+            ["Duration", f"{self.wav_file.duration:.3f}s"],
+            ["Channel(s)", str(self.wav_file.channel_count)],
+            ["Creation Datetime", str(self.wav_file.creation_datetime.replace(microsecond=0))],
+            ["Modification Datetime", str(self.wav_file.modification_datetime.replace(microsecond=0))]
         ]
 
-    def generate_curve_fit(self):
-        if len(self.time_scatter_data.get_offsets()) > 4:
-            curve_fit #  RENDU ICI
+    #def generate_curve_fit(self):
+    #    if len(self.time_scatter_data.get_offsets()) > 4:
+    #        curve_fit #  RENDU ICI
         
     def generate_plots(self) -> None:
+        
+
         """Plots both time_data and frequency domain representations with interactive points."""
-        self.time_data, self.amplitude_data, self.freq_data, self.magnitude_data, N = compute_fft(self.wav_filepath)
+        self.time_data, self.amplitude_data, self.freq_data, self.magnitude_data, N = compute_fft_from_wav_file(self.wav_file.filepath)
 
         self.figure = plt.figure(figsize=(12,6))
         spec: gridspec.GridSpec = gridspec.GridSpec(nrows=2, ncols=2, width_ratios=[4,1])
 
-        #fig, axs = plt.subplots(2, 1, figsize=(10, 8))
-        
         # Time-domain plot
         ax_time: Axes = self.figure.add_subplot(spec[0,0])
         self.time_scatter_data, self.time_scatter_annotations = self.plot_time_domain(ax_time)
@@ -140,7 +137,10 @@ class Plotter():
         ax_table: Axes = self.figure.add_subplot(spec[:, 1])
         ax_table.axis("off")
         table_data: list[list[str]] = self.get_table_data()
-        table: Table = ax_table.table(cellText=table_data, colLabels=["Property", "Value"], loc="center", cellLoc="center")
+        table: Table = ax_table.table(cellText=table_data,colLabels=None, loc="center", cellLoc="center")
+        #RENDU ICI"
+        ax_table.text(0.5, 0.02, "File Properties", fontsize=14, fontweight="bold", ha="center", transform=self.figure.transFigure)
+
         table.auto_set_font_size(False)
         table.set_fontsize(10)
         #table.scale(1.2, 2.0)

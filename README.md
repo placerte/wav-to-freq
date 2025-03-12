@@ -21,3 +21,4 @@ An app that takes in a formatted wav file of an impact and returns its natural f
 - [ ] Make the code a protable executable
 - [ ] Clean LSP warnings
 - [ ] Remove the abundance of np.pi. It may affect numerical precision.
+- [ ] Unit test all computations

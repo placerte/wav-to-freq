@@ -1,12 +1,15 @@
 from plot_handler import Plotter
-from file_handler import get_first_wav_filepath
+from file_handler import WavSampleFile
 
 def main():
     # Example usage:
 
-    file_base_name, wav_filepath = get_first_wav_filepath()
+    wav_file: WavSampleFile = WavSampleFile()
 
-    pltr = Plotter(file_base_name=file_base_name, wav_filepath=wav_filepath)
+    wav_file.get_first_wav_filepath()
+    print(wav_file)
+
+    pltr = Plotter(wav_file)
 
     pltr.generate_plots()
     

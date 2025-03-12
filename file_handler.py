@@ -1,20 +1,75 @@
 import csv
+from datetime import date, datetime
+from nt import stat_result
 import os
 from matplotlib.collections import PathCollection
 import numpy as np
+import wave
 
-def get_first_wav_filepath(in_directory:str = "./")->tuple[str, str]:
-    file: str
+
+class WavSampleFile():
+    filepath: str
+    sample_rate: int
+    duration: float
+    channel_count: int
+    creation_datetime: datetime
+    modification_datetime: datetime
     
-    for file in os.listdir(in_directory):
-        if file.lower().endswith(".wav"):
-            
-            wav_filepath = os.path.join(in_directory, file)
-            file_base_name = os.path.splitext(wav_filepath)[0]
-            
-            return file_base_name, wav_filepath
-    
-    return "", ""
+    @property
+    def filename_without_extension(self)->str:
+        return os.path.splitext(os.path.basename(self.filepath))[0]
+
+    @property
+    def filename_with_extension(self)->str:
+        return os.path.basename(self.filepath)
+
+    @property
+    def creation_date(self)-> date:
+        return self.creation_datetime.date()
+
+    @property
+    def modification_date(self)->date:
+        return self.modification_datetime.date()
+
+    @property
+    def friendly_identifier(self)->str:
+        return f"{self.creation_date} - {self.filename_without_extension}"
+
+    def get_first_wav_filepath(self, in_directory:str = "./"):
+        
+        file: str
+        
+        for file in os.listdir(in_directory):
+            if file.lower().endswith(".wav"):
+                self.filepath = os.path.join(in_directory, file)
+                self.get_wav_file_metadata()
+        
+    def get_wav_file_metadata(self):
+        wav_file: wave.Wave_read =  wave.open(self.filepath, "rb")
+        other_file_stats: stat_result = os.stat(self.filepath)
+
+        self.sample_rate =  wav_file.getframerate()
+        self.duration = float(wav_file.getnframes()/wav_file.getframerate())
+        self.channel_count = wav_file.getnchannels()
+
+        self.creation_datetime = datetime.fromtimestamp(other_file_stats.st_birthtime)
+        self.modification_datetime = datetime.fromtimestamp(other_file_stats.st_mtime)
+
+    def __str__(self) -> str:
+        return f"Filepath: {self.filepath}, sample_rate= {self.sample_rate}Hz, duration= {self.duration}, channel count= {self.channel_count}, creation datetime: {self.creation_datetime}, modification date: {self.modification_datetime}"
+
+    def __init__(self, filepath=""):
+        self.filepath = filepath
+        self.sample_rate = 0
+        self.duration = 0.0
+        self.channel_count = 0
+        self.creation_datetime = datetime(1900,1,1)
+        self.modification_datetime = datetime(1900,1,1)
+
+        if self.filepath != "":
+            self.get_wav_file_metadata()
+
+        
 
 
 def save_time_domain_data(file_base_name: str, time_data: np.ndarray, amplitude_data: np.ndarray):
