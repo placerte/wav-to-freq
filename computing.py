@@ -10,7 +10,7 @@ import scipy.fftpack as fft
 
 
 #Curve to fit
-def damping_envelope_function(self, t_i: float, t_offset: float, a_offset: float, zeta_omega_n: float, a_0: float)->float:
+def damping_envelope_function(t_i: float, t_offset: float, a_offset: float, zeta_omega_n: float, a_0: float)->float:
     a_i: float =  a_0 * np.exp(-zeta_omega_n*(t_i-t_offset))+a_offset
     return a_i
 
@@ -63,6 +63,7 @@ class DampingEnvelopeCurveFitter():
     solved_parameters: DampingEnvelopeCurveParameters
     lower_bounds: DampingEnvelopeCurveParameters
     upper_bounds: DampingEnvelopeCurveParameters
+
     
     @property
     def time_scatter_values(self)-> np.ndarray:
@@ -77,6 +78,11 @@ class DampingEnvelopeCurveFitter():
         offsets_arr_like: ArrayLike = self.time_domain_scatter_data.get_offsets()
         offsets: np.ndarray = np.asarray(offsets_arr_like)
         return offsets[:,1]
+
+    @property
+    def approximated_amplitude_scatter_values(self)-> np.ndarray:
+        approx_amps = damping_envelope_function(self.time_scatter_values, *self.solved_parameters.to_list())
+        return np.array(approx_amps)
 
     def guess_initial_t_offset(self)-> float:
         # t_offset guess is based on the minimal t value from the data set.
@@ -204,4 +210,16 @@ class DampingEnvelopeCurveFitter():
 
         term1: float = (omega_d/omega_n)**2
         return np.sqrt(1-term1)
+
+    def solve(self):
+
+        self.guess_initial_parameters()
+        list_of_solved_parameters , _= curve_fit(f=damping_envelope_function, 
+                  xdata=self.time_scatter_values,
+                  ydata=self.amplitude_scatter_values, 
+                  p0=self.initial_parameters_guesses.to_list(), 
+                  bounds=self.get_parameter_bounds())
+
+        self.solved_parameters = DampingEnvelopeCurveParameters(*list_of_solved_parameters)
+
 

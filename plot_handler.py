@@ -21,7 +21,8 @@ from tkinter import messagebox
 class Plotter():
 
     wav_file: WavSampleFile
-    file_base_name: str
+    #file_base_name: str
+    curve_fitter: DampingEnvelopeCurveFitter
 
     time_data: np.ndarray
     amplitude_data: np.ndarray
@@ -32,10 +33,13 @@ class Plotter():
     frequency_scatter_data: PathCollection
     frequency_scatter_annotations: list[Annotation]
 
+    ax_time: Axes
+
     figure: Figure
 
     def __init__(self, wav_sample_file: WavSampleFile) -> None:
         self.wav_file = wav_sample_file
+        self.curve_fitter = DampingEnvelopeCurveFitter()
 
     def plot_time_domain(self, ax: Axes) -> tuple[Collection, list[Annotation]]:
         """Plots the time_data-domain representation."""
@@ -55,6 +59,10 @@ class Plotter():
         ax.grid()
         return ax.scatter([], [], color='red'), []  # Interactive points & annotations list
 
+    def plot_fitted_curve(self):
+        self.ax_time.plot(self.curve_fitter.time_scatter_values, self.curve_fitter.approximated_amplitude_scatter_values)
+
+
     def add_point(self, event: MouseEvent, scatter: PathCollection, ax: Axes, annotations: List[Annotation]) -> None:
         """Adds a point to the plot on left-click."""
         scatter.set_offsets(np.append(scatter.get_offsets(), [[event.xdata, event.ydata]], axis=0))
@@ -62,7 +70,7 @@ class Plotter():
                                                  (event.xdata, event.ydata),
                                                  textcoords="offset points", xytext=(5,5), ha='left', color='red')
         annotations.append(annotation)
-        event.canvas.draw()
+        #event.canvas.draw()
 
     def remove_point(self, event: MouseEvent, scatter: PathCollection, annotations: List[Annotation]) -> None:
         """Removes the nearest point on right-click."""
@@ -72,14 +80,18 @@ class Plotter():
             scatter.set_offsets(np.delete(scatter.get_offsets(), index, axis=0))
             annotations[index].remove()
             annotations.pop(index)
-        event.canvas.draw()
+        #event.canvas.draw()
 
     def on_click(self, event: MouseEvent, scatter: PathCollection, ax: Axes, annotations: List[Annotation]) -> None:
         """Handles mouse click events for adding/removing points interactively."""
         if event.button == 1 and event.inaxes:
             self.add_point(event, scatter, ax, annotations)
+            self.generate_curve_fit()
         elif event.button == 3 and event.inaxes:
             self.remove_point(event, scatter, annotations)
+            self.generate_curve_fit()
+
+        event.canvas.draw()
 
     def on_close(self, event: CloseEvent) -> None:
         """Handles the close event, prompting to save amplitude_data."""
@@ -89,7 +101,7 @@ class Plotter():
         save_prompt = messagebox.askyesno("Save Data", "Do you want to save the data?")
         
         if save_prompt:
-            save_all_data(file_base_name =self.file_base_name,
+            save_all_data(file_base_name =self.wav_file.filename_without_extension,
                           time_data = self.time_data,
                           amplitude_data = self.amplitude_data,
                           freq_data = self.freq_data,
@@ -101,9 +113,10 @@ class Plotter():
             self.figure.savefig(f"{self.wav_file.friendly_identifier}_plot.png")
             print("Data and plot saved.")
 
-    def get_table_data(self) -> list[list[str]]:
+    def get_file_info_tabulated_data(self) -> list[list[str]]:
         """Generates metadata for the plots"""
         return [
+            ["File Properties", ""],
             ["File", self.wav_file.filename_with_extension],
             ["Sample Rate", f"{self.wav_file.sample_rate}Hz"],
             ["Duration", f"{self.wav_file.duration:.3f}s"],
@@ -112,12 +125,28 @@ class Plotter():
             ["Modification Datetime", str(self.wav_file.modification_datetime.replace(microsecond=0))]
         ]
 
-    #def generate_curve_fit(self):
-    #    if len(self.time_scatter_data.get_offsets()) > 4:
-    #        curve_fit #  RENDU ICI
+    def generate_curve_fit(self):
+        if len(self.time_scatter_data.get_offsets()) > 4:
+            self.curve_fitter.time_domain_scatter_data = self.time_scatter_data
+            self.curve_fitter.solve()
+            self.plot_fitted_curve()
+
+            print(self.curve_fitter.solved_parameters)
         
+    def generate_file_info_table(self, spec: gridspec.GridSpec):
+        
+        file_info_table: Axes = self.figure.add_subplot(spec[0,1])
+        file_info_table.axis("off")
+        table_data: list[list[str]] = self.get_file_info_tabulated_data()
+        table: Table = file_info_table.table(cellText=table_data,colLabels=None, loc="center", cellLoc="center")
+        table[0,0].set_linewidth(0)
+        table[0,1].set_linewidth(0)
+        table[0,0].get_text().set_fontweight("bold")
+        table[0,0].get_text().set_horizontalalignment("left")
+        table.auto_set_font_size(False)
+        table.set_fontsize(10)
+
     def generate_plots(self) -> None:
-        
 
         """Plots both time_data and frequency domain representations with interactive points."""
         self.time_data, self.amplitude_data, self.freq_data, self.magnitude_data, N = compute_fft_from_wav_file(self.wav_file.filepath)
@@ -126,29 +155,22 @@ class Plotter():
         spec: gridspec.GridSpec = gridspec.GridSpec(nrows=2, ncols=2, width_ratios=[4,1])
 
         # Time-domain plot
-        ax_time: Axes = self.figure.add_subplot(spec[0,0])
-        self.time_scatter_data, self.time_scatter_annotations = self.plot_time_domain(ax_time)
+        self.ax_time = self.figure.add_subplot(spec[0,0])
+        self.time_scatter_data, self.time_scatter_annotations = self.plot_time_domain(self.ax_time)
         
         # Frequency-domain plot
         ax_freq: Axes = self.figure.add_subplot(spec[1,0])
         self.frequency_scatter_data, self.frequency_scatter_annotations = self.plot_frequency_domain(ax_freq, N)
         
         # Generate table info
-        ax_table: Axes = self.figure.add_subplot(spec[:, 1])
-        ax_table.axis("off")
-        table_data: list[list[str]] = self.get_table_data()
-        table: Table = ax_table.table(cellText=table_data,colLabels=None, loc="center", cellLoc="center")
-        #RENDU ICI"
-        ax_table.text(0.5, 0.02, "File Properties", fontsize=14, fontweight="bold", ha="center", transform=self.figure.transFigure)
+        self.generate_file_info_table(spec)
 
-        table.auto_set_font_size(False)
-        table.set_fontsize(10)
-        #table.scale(1.2, 2.0)
+
 
         # Interactive click event handling
         self.figure.canvas.mpl_connect('button_press_event', 
-                               lambda event: self.on_click(event, self.time_scatter_data, ax_time, self.time_scatter_annotations)
-                               if event.inaxes == ax_time 
+                               lambda event: self.on_click(event, self.time_scatter_data, self.ax_time, self.time_scatter_annotations)
+                               if event.inaxes == self.ax_time 
                                else self.on_click(event, self.frequency_scatter_data, ax_freq, self.frequency_scatter_annotations))
         
         

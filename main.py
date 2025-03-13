@@ -7,10 +7,8 @@ def main():
     wav_file: WavSampleFile = WavSampleFile()
 
     wav_file.get_first_wav_filepath()
-    print(wav_file)
 
     pltr = Plotter(wav_file)
-
     pltr.generate_plots()
     
 
