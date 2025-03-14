@@ -9,7 +9,7 @@ def main():
     wav_file.get_first_wav_filepath()
 
     pltr = Plotter(wav_file)
-    pltr.generate_plots()
+    pltr.show()
     
 
 if __name__ == "__main__":

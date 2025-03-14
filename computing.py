@@ -1,3 +1,4 @@
+from typing import Optional
 from matplotlib.collections import PathCollection
 import numpy as np
 from numpy.typing import ArrayLike
@@ -58,31 +59,69 @@ class DampingEnvelopeCurveParameters():
 
 class DampingEnvelopeCurveFitter():
 
-    time_domain_scatter_data: PathCollection
-    initial_parameters_guesses: DampingEnvelopeCurveParameters
-    solved_parameters: DampingEnvelopeCurveParameters
-    lower_bounds: DampingEnvelopeCurveParameters
-    upper_bounds: DampingEnvelopeCurveParameters
+    time_domain_scatter_data: Optional[PathCollection]
+    initial_parameters_guesses: Optional[DampingEnvelopeCurveParameters]
+    solved_parameters: Optional[DampingEnvelopeCurveParameters]
+    lower_bounds: Optional[DampingEnvelopeCurveParameters]
+    upper_bounds: Optional[DampingEnvelopeCurveParameters]
+
+    def __init__(self):
+        self.time_domain_scatter_data = None  # Initialize as None
+        self.initial_parameters_guesses = None
+        self.solved_parameters = None
+        self.lower_bounds = None
+        self.upper_bounds = None
+
+    @property
+    def time_scatter_values(self) -> np.ndarray:
+        """Ensures that the scatter points are sorted in ascending order."""
+        if self.time_domain_scatter_data is None:
+            return np.array([])
+
+        offsets = np.asarray(self.time_domain_scatter_data.get_offsets())
+        if offsets.size == 0:
+            return np.array([])
+
+        sorted_indices = np.argsort(offsets[:, 0])  # Sort by time values
+        return offsets[sorted_indices, 0]  # Return sorted time values
+
 
     
     @property
-    def time_scatter_values(self)-> np.ndarray:
+    def amplitude_scatter_values(self) -> np.ndarray:
+        """Returns amplitude values sorted in the same order as time_scatter_values."""
+        if self.time_domain_scatter_data is None:
+            return np.array([])  # Return empty array if no data
 
-        offsets_arr_like: ArrayLike = self.time_domain_scatter_data.get_offsets()
-        offsets: np.ndarray = np.asarray(offsets_arr_like)
-        return offsets[:,0]
-    
-    @property
-    def amplitude_scatter_values(self)-> np.ndarray:
+        offsets = np.asarray(self.time_domain_scatter_data.get_offsets())
+        if offsets.size == 0:
+            return np.array([])
 
-        offsets_arr_like: ArrayLike = self.time_domain_scatter_data.get_offsets()
-        offsets: np.ndarray = np.asarray(offsets_arr_like)
-        return offsets[:,1]
+        sorted_indices = np.argsort(offsets[:, 0])  # Sort by time values
+        return offsets[sorted_indices, 1]  # Return amplitudes sorted in time order
+
+
 
     @property
     def approximated_amplitude_scatter_values(self)-> np.ndarray:
         approx_amps = damping_envelope_function(self.time_scatter_values, *self.solved_parameters.to_list())
         return np.array(approx_amps)
+
+    @property
+    def natural_frequency_omega_n(self)->float:
+        return self.get_natural_frequency_omega_n()
+
+    @property
+    def natural_freqency_f_n(self)->float:
+        return self.natural_frequency_omega_n/(2*np.pi)
+
+    @property
+    def damped_natural_frequency_omega_d(self)->float:
+        return self.get_damped_natural_frequency_omega_d()
+
+    @property
+    def damped_natural_frequency_f_d(self)->float:
+        return self.damped_natural_frequency_omega_d/(2*np.pi)
 
     def guess_initial_t_offset(self)-> float:
         # t_offset guess is based on the minimal t value from the data set.
@@ -195,31 +234,70 @@ class DampingEnvelopeCurveFitter():
 
     def get_natural_frequency_omega_n(self)->float:
         
-        omega_d: float = self.get_damped_natural_frequency_omega_d()
-        zeta_omega_n: float = self.solved_parameters.zeta_omega_n
+        if self.solved_parameters is not None:
 
-        #TODO: test for solved parameters first
-        term1: float = (omega_d)**2
-        term2: float = zeta_omega_n**2
-        return np.sqrt(term1+term2)
+            omega_d: float = self.get_damped_natural_frequency_omega_d()
+            zeta_omega_n: float = self.solved_parameters.zeta_omega_n
+
+            #TODO: test for solved parameters first
+            term1: float = (omega_d)**2
+            term2: float = zeta_omega_n**2
+            return np.sqrt(term1+term2)
+        
+        else:
+            return 0.0
 
     def get_damping_ratio_zeta(self)->float:
-        
-        omega_d: float = self.get_damped_natural_frequency_omega_d()
-        omega_n: float = self.get_natural_frequency_omega_n()
+        if self.solved_parameters is not None:       
+            omega_d: float = self.get_damped_natural_frequency_omega_d()
+            omega_n: float = self.get_natural_frequency_omega_n()
 
-        term1: float = (omega_d/omega_n)**2
-        return np.sqrt(1-term1)
+            term1: float = (omega_d/omega_n)**2
+            return np.sqrt(1-term1)
+        else:
+            return 0.0
 
     def solve(self):
+        """Attempts to solve for damping parameters, handling failures gracefully."""
+        if len(self.time_scatter_values) < 5:
+            print("Not enough data points to solve for curve fit.")
+            return
 
         self.guess_initial_parameters()
-        list_of_solved_parameters , _= curve_fit(f=damping_envelope_function, 
-                  xdata=self.time_scatter_values,
-                  ydata=self.amplitude_scatter_values, 
-                  p0=self.initial_parameters_guesses.to_list(), 
-                  bounds=self.get_parameter_bounds())
 
-        self.solved_parameters = DampingEnvelopeCurveParameters(*list_of_solved_parameters)
+        print("\n=== Initial Guesses ===")
+        print(f"  a_0 = {self.initial_parameters_guesses.a_0}")
+        print(f"  zeta_omega_n = {self.initial_parameters_guesses.zeta_omega_n}")
+        print(f"  t_offset = {self.initial_parameters_guesses.t_offset}")
+        print(f"  a_offset = {self.initial_parameters_guesses.a_offset}")
+        print("=========================")
+
+        try:
+            # Verify correct order of parameters
+            list_of_solved_parameters, _ = curve_fit(
+                f=lambda t, t_offset, a_offset, zeta_omega_n, a_0: damping_envelope_function(t, t_offset, a_offset, zeta_omega_n, a_0),
+                xdata=self.time_scatter_values,
+                ydata=self.amplitude_scatter_values, 
+                p0=self.initial_parameters_guesses.to_list(), 
+                bounds=self.get_parameter_bounds(),
+                maxfev=5000
+            )
+
+            self.solved_parameters = DampingEnvelopeCurveParameters(*list_of_solved_parameters)
+
+            print("\n=== Fitted Parameters ===")
+            print(f"  a_0 = {self.solved_parameters.a_0}")
+            print(f"  zeta_omega_n = {self.solved_parameters.zeta_omega_n}")
+            print(f"  t_offset = {self.solved_parameters.t_offset}")
+            print(f"  a_offset = {self.solved_parameters.a_offset}")
+            print("=========================")
+
+            # Check for extreme damping values
+            if self.solved_parameters.zeta_omega_n < 0 or self.solved_parameters.zeta_omega_n > 10:
+                print("Warning: Unusually high or negative damping detected.")
+
+        except RuntimeError as e:
+            print("Curve fitting failed:", e)
+            self.solved_parameters = None
 
 
