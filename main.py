@@ -1,6 +1,7 @@
 from plot_handler import Plotter
 from file_handler import WavSampleFile
 
+
 def main():
     # Example usage:
 
@@ -10,7 +11,7 @@ def main():
 
     pltr = Plotter(wav_file)
     pltr.show()
-    
+
 
 if __name__ == "__main__":
     main()
