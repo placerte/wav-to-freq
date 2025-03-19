@@ -3,9 +3,12 @@ from datetime import date, datetime
 from nt import stat_result
 import os
 from matplotlib.collections import PathCollection
+from matplotlib.figure import Figure
 import numpy as np
 import wave
-
+import shutil
+import tkinter
+from tkinter import messagebox
 
 class WavSampleFile:
     filepath: str
@@ -71,27 +74,26 @@ class WavSampleFile:
 
 
 def save_time_domain_data(
-    file_base_name: str, time_data: np.ndarray, amplitude_data: np.ndarray
-):
+    file_base_path: str, time_data: np.ndarray, amplitude_data: np.ndarray):
 
-    filename: str = f"{file_base_name}_time_domain.csv"
+    file_path: str = f"{file_base_path}_time_domain.csv"
 
-    with open(filename, "w", newline="") as f:
+    with open(file_path, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["Time (s)", "Amplitude"])
         writer.writerows(zip(time_data, amplitude_data))
 
 
 def save_frequency_domain_data(
-    file_base_name: str,
+    file_base_path: str,
     freq_data: np.ndarray,
     magnitude_data: np.ndarray,
-    amplitude_data: np.ndarray,
+    amplitude_data: np.ndarray
 ):
 
-    filename: str = f"{file_base_name}_frequency_domain.csv"
+    file_path: str = f"{file_base_path}_frequency_domain.csv"
 
-    with open(filename, "w", newline="") as f:
+    with open(file_path, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["Frequency (Hz)", "Magnitude"])
         writer.writerows(
@@ -102,30 +104,51 @@ def save_frequency_domain_data(
         )
 
 
-def save_time_scatter_points(file_base_name: str, time_scatter_data: PathCollection):
+def save_time_scatter_points(file_base_path: str, time_scatter_data: PathCollection):
 
-    filename: str = f"{file_base_name}_time_scatter_points.csv"
+    file_path: str = f"{file_base_path}_time_scatter_points.csv"
 
     points = time_scatter_data.get_offsets().tolist()
 
-    with open(filename, "w", newline="") as f:
+    with open(file_path, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["Time (s)", "Amplitude"])
         writer.writerows(points)
 
-
 def save_frequency_scatter_points(
-    file_base_name: str, frequency_scatter_data: PathCollection
-):
+        file_base_path: str, frequency_scatter_data: PathCollection):
 
-    filename: str = f"{file_base_name}_frequency_scatter_points.csv"
+    file_path: str = f"{file_base_path}_frequency_scatter_points.csv"
 
     points = frequency_scatter_data.get_offsets().tolist()
 
-    with open(filename, "w", newline="") as f:
+    with open(file_path, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["Frequency (Hz)", "Magnitude"])
         writer.writerows(points)
+
+
+def create_directory(directory_path: str, force_overwrite: bool=False, show_overwrite_prompt: bool=True)->bool:
+
+    # Logical tests
+    directory_exists: bool = os.path.exists(directory_path)
+    accept_overwrite: bool = False
+
+    if directory_exists and show_overwrite_prompt:
+        accept_overwrite = messagebox.askyesno("Overwrite existing directory?", f"The directory {directory_path} already exists. Do you want to overwrite it and clear all its current content?")
+    
+    # Appropriate actions
+    if directory_exists == False:
+        os.mkdir(directory_path)
+        return True
+    elif force_overwrite or accept_overwrite:
+        shutil.rmtree(directory_path)
+        os.mkdir(directory_path)
+        return True
+    else:
+        return False
+def move_wav_file(wav_file: WavSampleFile, destination_directory: str):
+    shutil.move(src=wav_file.filepath, dst=destination_directory+wav_file.filename_with_extension) 
 
 
 def save_all_data(
@@ -134,12 +157,29 @@ def save_all_data(
     amplitude_data: np.ndarray,
     freq_data: np.ndarray,
     magnitude_data: np.ndarray,
-    time_scatter_data: PathCollection,
-    frequency_scatter_data: PathCollection,
+    time_scatter_data: PathCollection | None,
+    frequency_scatter_data: PathCollection | None,
+    figure: Figure,
+    wav_file: WavSampleFile,
+    put_in_sub_directory: bool = True
 ):
-    save_time_domain_data(file_base_name, time_data, amplitude_data)
+
+    file_base_dir: str
+
+    if put_in_sub_directory:
+        file_base_dir = "./" + file_base_name + "/"
+        move_wav_file(wav_file, file_base_dir)
+    else:
+        file_base_dir = "./" + file_base_name
+
+    file_base_path = file_base_dir + file_base_name
+
+    save_time_domain_data(file_base_path, time_data, amplitude_data)
     save_frequency_domain_data(
-        file_base_name, freq_data, magnitude_data, amplitude_data
-    )
-    save_time_scatter_points(file_base_name, time_scatter_data)
-    save_frequency_scatter_points(file_base_name, frequency_scatter_data)
+        file_base_path, freq_data, magnitude_data, amplitude_data)
+    if time_scatter_data is not None:
+        save_time_scatter_points(file_base_path, time_scatter_data)
+    if frequency_scatter_data is not None:
+        save_frequency_scatter_points(file_base_path, frequency_scatter_data)
+
+    figure.savefig(file_base_path + "_plot.png")

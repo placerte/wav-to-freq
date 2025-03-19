@@ -1,3 +1,4 @@
+from matplotlib.collections import PathCollection
 from matplotlib.lines import Line2D
 from file_handler import WavSampleFile, save_all_data
 from computing import DampingEnvelopeCurveFitter, compute_fft_from_wav_file
@@ -9,11 +10,9 @@ import matplotlib.gridspec as gridspec
 from matplotlib.table import Table
 from matplotlib.axes import Axes
 from matplotlib.text import Annotation
-from matplotlib.collections import Collection, PathCollection
 from matplotlib.backend_bases import MouseButton, MouseEvent, CloseEvent
 from matplotlib.figure import Figure
 
-from numpy.typing import ArrayLike
 from typing import List, Optional
 
 import tkinter as tk
@@ -33,7 +32,7 @@ class Plotter:
 
     time_scatter_data: PathCollection
     time_scatter_annotations: list[Annotation]
-    frequency_scatter_data: PathCollection
+    frequency_scatter_data: PathCollection | None
     frequency_scatter_annotations: list[Annotation]
 
     time_domain_plot: Axes
@@ -51,6 +50,7 @@ class Plotter:
         self.wav_file = wav_sample_file
         self.curve_fitter = DampingEnvelopeCurveFitter()
         self.fitted_curve_line = None
+        self.frequency_scatter_data = None
         self.extract_data_from_wav_file()
         self.build_figure_layout()
         self.generate_initial_plots()
@@ -98,13 +98,14 @@ class Plotter:
 
     def plot_time_domain(self):
         """Plots the time_data-domain representation."""
-        self.time_domain_plot.plot(self.time_data, self.amplitude_data)
+        self.time_domain_plot.plot(self.time_data, self.amplitude_data, label="Waveform response")
         self.time_domain_plot.set_title(
             f"Time Domain Representation - {self.wav_file.friendly_identifier}"
         )
         self.time_domain_plot.set_xlabel("Time (seconds)")
         self.time_domain_plot.set_ylabel("Amplitude")
         self.time_domain_plot.grid()
+        self.time_domain_plot.legend()
         # Initialize scatter plot with no points
         self.time_scatter_data = self.time_domain_plot.scatter([], [], color="red")
         self.time_scatter_annotations = []
@@ -121,8 +122,7 @@ class Plotter:
         self.frequency_domain_plot.set_xlabel("Frequency (Hz)")
         self.frequency_domain_plot.set_ylabel("Magnitude")
         self.frequency_domain_plot.grid()
-        # return self.frequency_domain_plot.scatter([], [], color='red'), []  # Interactive points & annotations list
-
+    # TODO: move to filehandler
     def get_file_info(self) -> list[list[str]]:
 
         return [
@@ -330,17 +330,19 @@ class Plotter:
 
         if save_prompt:
             save_all_data(
-                file_base_name=self.wav_file.filename_without_extension,
+                file_base_name=self.wav_file.friendly_identifier,
                 time_data=self.time_data,
                 amplitude_data=self.amplitude_data,
                 freq_data=self.freq_data,
                 magnitude_data=self.magnitude_data,
                 time_scatter_data=self.time_scatter_data,
                 frequency_scatter_data=self.frequency_scatter_data,
+                figure=self.figure,
+                wav_file=self.wav_file
             )
 
             # Save figure
-            self.figure.savefig(f"{self.wav_file.friendly_identifier}_plot.png")
+            # self.figure.savefig(f"{self.wav_file.friendly_identifier}_plot.png")
             print("Data and plot saved.")
 
     def generate_curve_fit(self):
@@ -376,8 +378,9 @@ class Plotter:
             (self.fitted_curve_line,) = self.time_domain_plot.plot(
                 self.curve_fitter.time_scatter_values,
                 self.curve_fitter.approximated_amplitude_scatter_values,
-                "r-",  # Red line for fitted curve
+                color="red",  # Red line for fitted curve
                 label="Fitted Curve",
+                linestyle="--"
             )
             self.time_domain_plot.legend()
         else:
@@ -406,37 +409,3 @@ class Plotter:
                         )
 
             self.figure.canvas.draw()
-
-    def generate_plots(self):
-        pass
-
-
-#        """Plots both time_data and frequency domain representations with interactive points."""
-#        self.time_data, self.amplitude_data, self.freq_data, self.magnitude_data, self.n_samples = compute_fft_from_wav_file(self.wav_file.filepath)
-#
-#        # self.figure = plt.figure(figsize=(12,6))
-#        # spec: gridspec.GridSpec = gridspec.GridSpec(nrows=2, ncols=2, width_ratios=[4,1])
-#
-#        # Time-domain plot
-#        # self.time_domain_plot = self.figure.add_subplot(spec[0,0])
-#        self.time_scatter_data, self.time_scatter_annotations = self.plot_time_domain(self.time_domain_plot)
-#
-#        # Frequency-domain plot
-#        ax_freq: Axes = self.figure.add_subplot(spec[1,0])
-#        self.frequency_scatter_data, self.frequency_scatter_annotations = self.plot_frequency_domain(ax_freq, N)
-#
-#        # Generate table info
-#        self.generate_file_info_table(spec)
-#
-#
-#
-#        # Interactive click event handling
-#        self.figure.canvas.mpl_connect('button_press_event',
-#                               lambda event: self.on_click(event, self.time_scatter_data, self.time_domain_plot, self.time_scatter_annotations)
-#                               if event.inaxes == self.time_domain_plot
-#                               else self.on_click(event, self.frequency_scatter_data, ax_freq, self.frequency_scatter_annotations))
-
-
-#       plt.tight_layout()
-#       self.figure.canvas.mpl_connect('close_event', lambda event: self.on_close(event))
-#       plt.show()
