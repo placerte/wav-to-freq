@@ -12,6 +12,7 @@ from matplotlib.axes import Axes
 from matplotlib.text import Annotation
 from matplotlib.backend_bases import MouseButton, MouseEvent, CloseEvent
 from matplotlib.figure import Figure
+from mpl_toolkits.axes_grid1 import Size 
 
 from typing import List, Optional
 
@@ -31,7 +32,6 @@ class Plotter:
     n_samples: int
 
     time_scatter_data: PathCollection
-    time_scatter_annotations: list[Annotation]
     frequency_scatter_data: PathCollection | None
     frequency_scatter_annotations: list[Annotation]
 
@@ -51,6 +51,7 @@ class Plotter:
         self.curve_fitter = DampingEnvelopeCurveFitter()
         self.fitted_curve_line = None
         self.frequency_scatter_data = None
+        self.frequency_scatter_annotations = []
         self.extract_data_from_wav_file()
         self.build_figure_layout()
         self.generate_initial_plots()
@@ -67,16 +68,16 @@ class Plotter:
     def build_figure_layout(self):
         # Set up the figure and layout
         self.figure = plt.figure(figsize=(12, 6))
-        self.figure_grid_spec = gridspec.GridSpec(nrows=2, ncols=2, width_ratios=[4, 1])
+        self.figure_grid_spec = gridspec.GridSpec(nrows=2, ncols=2, width_ratios=[6, 3])
 
         # Place elements
         self.time_domain_plot = self.figure.add_subplot(self.figure_grid_spec[0, 0])
         self.frequency_domain_plot = self.figure.add_subplot(
             self.figure_grid_spec[1, 0]
         )
-        self.file_info_plot = self.figure.add_subplot(self.figure_grid_spec[0, 1])
+        self.file_info_plot = self.figure.add_subplot(self.figure_grid_spec[1, 1])
         self.fitted_curve_info_plot = self.figure.add_subplot(
-            self.figure_grid_spec[1, 1]
+            self.figure_grid_spec[0, 1]
         )
 
         # Register Click Event
@@ -107,14 +108,14 @@ class Plotter:
         self.time_domain_plot.grid()
         self.time_domain_plot.legend()
         # Initialize scatter plot with no points
-        self.time_scatter_data = self.time_domain_plot.scatter([], [], color="red")
-        self.time_scatter_annotations = []
+        self.time_scatter_data = self.time_domain_plot.scatter([], [], color="red", label="Considered peaks")
 
     def plot_frequency_domain(self):
         """Plots the frequency-domain representation."""
         self.frequency_domain_plot.plot(
             self.freq_data[: self.n_samples // 2],
             np.abs(self.magnitude_data[: self.n_samples // 2]) / self.n_samples,
+            label="Frequency spectrum of response"
         )
         self.frequency_domain_plot.set_title(
             f"Frequency Domain Representation - {self.wav_file.friendly_identifier}"
@@ -122,6 +123,9 @@ class Plotter:
         self.frequency_domain_plot.set_xlabel("Frequency (Hz)")
         self.frequency_domain_plot.set_ylabel("Magnitude")
         self.frequency_domain_plot.grid()
+        # Initialize scatter plot with no points
+        self.frequency_scatter_data = self.frequency_domain_plot.scatter([], [], color="red", label="Modal natural frequencies")
+        self.frequency_scatter_annotations = []
     # TODO: move to filehandler
     def get_file_info(self) -> list[list[str]]:
 
@@ -238,15 +242,13 @@ class Plotter:
         event: MouseEvent,
         scatter: PathCollection,
         ax: Axes,
-        annotations: List[Annotation],
+        annotations: List[Annotation] | None,
     ) -> None:
         """Handles mouse click events for adding/removing points interactively."""
         if event.button == MouseButton.LEFT and event.inaxes:
-            print(f"Adding point: ({event.xdata:.4f}, {event.ydata:.4f})")
             self.add_point(event, scatter, ax, annotations)
             self.generate_curve_fit()
         elif event.button == MouseButton.RIGHT and event.inaxes:
-            print(f"Removing point near: ({event.xdata:.4f}, {event.ydata:.4f})")
             self.remove_point(event, scatter, annotations)
             self.generate_curve_fit()
 
@@ -259,7 +261,7 @@ class Plotter:
                 event,
                 self.time_scatter_data,
                 self.time_domain_plot,
-                self.time_scatter_annotations,
+                None,
             )
         elif event.inaxes == self.frequency_domain_plot:
             self.on_click(
@@ -274,7 +276,7 @@ class Plotter:
         event: MouseEvent,
         scatter: PathCollection,
         ax: Axes,
-        annotations: List[Annotation],
+        annotations: List[Annotation] | None,
     ) -> None:
         """Adds a point to the scatter plot on left-click."""
         existing_points = scatter.get_offsets()
@@ -286,20 +288,23 @@ class Plotter:
 
         scatter.set_offsets(new_points)  # Update scatter plot
 
-        annotation = ax.annotate(
-            f"({event.xdata:.4f}, {event.ydata:.4f})",
-            (event.xdata, event.ydata),
-            textcoords="offset points",
-            xytext=(5, 5),
-            ha="left",
-            color="red",
-        )
-        annotations.append(annotation)
+
+        if ax == self.frequency_domain_plot and annotations is not None:
+            # Only show frequency data labels
+            annotation = ax.annotate(
+                f"({event.xdata:.1f}Hz)",
+                (event.xdata, event.ydata),
+                textcoords="offset points",
+                xytext=(5, 5),
+                ha="left",
+                color="red",
+            )
+            annotations.append(annotation)
 
         ax.figure.canvas.draw()  # Redraw plot
 
     def remove_point(
-        self, event: MouseEvent, scatter: PathCollection, annotations: List[Annotation]
+        self, event: MouseEvent, scatter: PathCollection, annotations: List[Annotation] | None
     ) -> None:
         """Removes the nearest point and updates scatter data properly."""
         if scatter.get_offsets().shape[0] == 0:
@@ -313,8 +318,9 @@ class Plotter:
         new_offsets = np.delete(scatter.get_offsets(), index, axis=0)
         scatter.set_offsets(new_offsets)
 
-        annotations[index].remove()
-        annotations.pop(index)
+        if annotations is not None:
+            annotations[index].remove()
+            annotations.pop(index)
 
         # Force an update to scatter data in the curve fitter
         self.curve_fitter.time_domain_scatter_data = scatter
