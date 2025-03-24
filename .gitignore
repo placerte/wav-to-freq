@@ -1,3 +1,8 @@
+# Virtual environment
 .venv/
+
+# Cached python files
 __pycache__/
+
+# Cahced build files
 build/
