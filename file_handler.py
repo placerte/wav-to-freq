@@ -168,6 +168,7 @@ def save_all_data(
 
     if put_in_sub_directory:
         file_base_dir = "./" + file_base_name + "/"
+        os.mkdir(file_base_dir)
         move_wav_file(wav_file, file_base_dir)
     else:
         file_base_dir = "./" + file_base_name

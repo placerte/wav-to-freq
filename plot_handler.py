@@ -210,7 +210,7 @@ class Plotter:
             ],
             [
                 "Time offset, t_offset",
-                f"{int(self.curve_fitter.solved_parameters.t_offset)}",
+                f"{self.curve_fitter.solved_parameters.t_offset:0.3f}s",
             ],
             [
                 "Coefficient of Determination, R²",
@@ -245,6 +245,11 @@ class Plotter:
         annotations: List[Annotation] | None,
     ) -> None:
         """Handles mouse click events for adding/removing points interactively."""
+        if event.key == "control":
+            # bypass point addition / removal
+            return 
+
+
         if event.button == MouseButton.LEFT and event.inaxes:
             self.add_point(event, scatter, ax, annotations)
             self.generate_curve_fit()
