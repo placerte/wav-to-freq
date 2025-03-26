@@ -7,7 +7,10 @@ from scipy.optimize import curve_fit
 import pandas as pd
 import scipy.io.wavfile as wav
 import scipy.fftpack as fft
+import logging
+from scipy.signal import find_peaks
 
+logging.basicConfig(level=logging.INFO)
 
 # Curve to fit
 def damping_envelope_function(
@@ -34,9 +37,30 @@ def compute_fft_from_wav_file(
 
     N: int = len(amplitude_data)
     T: float = 1.0 / sample_rate
-    magnitude_data: np.ndarray = fft.fft(amplitude_data)
+    magnitude_data: np.ndarray = fft.fft(amplitude_data) / N
     freq_data: np.ndarray = np.fft.fftfreq(N, T)
     time_data: np.ndarray = np.linspace(0.0, N / sample_rate, N)
+
+    positive_freq_indices = freq_data > 0
+    magnitude_data = magnitude_data[positive_freq_indices]
+    freq_data= freq_data[positive_freq_indices]
+
+    # TESTS peak detection
+    peak_threshold_ratio: float = 0.01
+    threshold_magnitude: float = peak_threshold_ratio * np.max(magnitude_data)
+    samples_width = int(0.005*N) #harcoded for now
+    peak_indices, properties = find_peaks(x=magnitude_data, height=threshold_magnitude, distance=samples_width)
+
+    peak_magnitudes = np.abs(magnitude_data[peak_indices])
+    
+    sorted_peak_indices = peak_indices[np.argsort(-peak_magnitudes)]
+    sorted_peak_frequencies = freq_data[np.array(sorted_peak_indices)]
+    sorted_peak_magnitudes = peak_magnitudes[np.argsort(-peak_magnitudes)]
+
+    logging.info(f"Samples width = {samples_width}")
+
+    for i in range(len(sorted_peak_frequencies)):
+        logging.info(f"peak {i} = {sorted_peak_frequencies[i]:.1f}Hz at mag. = {sorted_peak_magnitudes[i]}")
 
     return (time_data, amplitude_data, freq_data, magnitude_data, N)
 
@@ -135,6 +159,42 @@ class DampingEnvelopeCurveFitter:
     @property
     def damped_natural_frequency_f_d(self) -> float:
         return self.damped_natural_frequency_omega_d / (2 * np.pi)
+
+    def linearize_time_peaks(self)-> tuple[float, float, float]:
+        #offsetting all amplitudes and making sure that the minimum amplitude value is 1 to avoid numerical errors when taking the ln() of values <=0
+        a_offset: float = float(np.min(self.amplitude_scatter_values))-1
+        t_offset: float = float(np.min(self.time_scatter_values))
+
+        logging.info(f"a_offset = {a_offset:.1f}, t_offset = {t_offset}")
+
+        y: np.ndarray = np.log(self.amplitude_scatter_values - a_offset)
+        x: np.ndarray = (self.time_scatter_values - t_offset)
+        m: float
+        b: float
+
+        coeffs, residuals, rank, _, _ = np.polyfit(x, y, 1, full=True)
+        
+        # getting slope and intercept
+        m = coeffs[0]
+        b = coeffs[1]
+
+        # checking rank is good
+        if rank != 2:
+            logging.warning(f"Rank of the polyfit for a linear regression should be 2 and right now it is = {rank}.")
+
+        # computing R²
+        # total sum of squares
+        y_mean: float = float(np.mean(y))
+        ss_tot: float = np.sum((y - y_mean)**2)
+
+        # residual sum of squares
+        ss_res = residuals[0] if residuals.size > 0 else 0
+
+        # Coefficient_of_determination
+        r_squared: float = 1 - (ss_res/ss_tot)
+        
+        return m, b, r_squared
+        
 
     def guess_initial_t_offset(self) -> float:
         # t_offset guess is based on the minimal t value from the data set.
@@ -280,6 +340,13 @@ class DampingEnvelopeCurveFitter:
         if len(self.time_scatter_values) < 5:
             print("Not enough data points to solve for curve fit.")
             return
+        
+        m: float
+        b: float
+        r_squared: float
+
+        m, b, r_squared = self.linearize_time_peaks()
+        print(f"m = {m:.2f}, b = {b:.2f} and R² = {r_squared:.3f}")
 
         self.guess_initial_parameters()
 

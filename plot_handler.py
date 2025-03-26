@@ -56,6 +56,32 @@ class Plotter:
         self.build_figure_layout()
         self.generate_initial_plots()
 
+    @property
+    def time_scatter_values(self) -> np.ndarray:
+        """Ensures that the scatter points are sorted in ascending order."""
+        if self.time_scatter_data is None:
+            return np.array([])
+
+        offsets = np.asarray(self.time_scatter_data.get_offsets())
+        if offsets.size == 0:
+            return np.array([])
+
+        sorted_indices = np.argsort(offsets[:, 0])  # Sort by time values
+        return offsets[sorted_indices, 0]  # Return sorted time values
+
+    @property
+    def amplitude_scatter_values(self) -> np.ndarray:
+        """Returns amplitude values sorted in the same order as time_scatter_values."""
+        if self.time_scatter_data is None:
+            return np.array([])  # Return empty array if no data
+
+        offsets = np.asarray(self.time_scatter_data.get_offsets())
+        if offsets.size == 0:
+            return np.array([])
+
+        sorted_indices = np.argsort(offsets[:, 0])  # Sort by time values
+        return offsets[sorted_indices, 1]  # Return amplitudes sorted in time order
+
     def extract_data_from_wav_file(self):
         (
             self.time_data,
@@ -99,6 +125,12 @@ class Plotter:
 
     def plot_time_domain(self):
         """Plots the time_data-domain representation."""
+
+        ###TESTING PLOTTING ON A LOG SCALE
+        #a_offset: float = float(np.min(self.amplitude_data))-1
+        #self.time_domain_plot.plot(self.time_data, np.log(self.amplitude_data-a_offset), label="TEST LOG")
+        ### END OF TESTING
+
         self.time_domain_plot.plot(self.time_data, self.amplitude_data, label="Waveform response")
         self.time_domain_plot.set_title(
             f"Time Domain Representation - {self.wav_file.friendly_identifier}"
@@ -112,9 +144,15 @@ class Plotter:
 
     def plot_frequency_domain(self):
         """Plots the frequency-domain representation."""
+        #self.frequency_domain_plot.plot(
+        #    self.freq_data[: self.n_samples // 2],
+        #    np.abs(self.magnitude_data[: self.n_samples // 2]) / self.n_samples,
+        #    label="Frequency spectrum of response"
+        #)
+
         self.frequency_domain_plot.plot(
-            self.freq_data[: self.n_samples // 2],
-            np.abs(self.magnitude_data[: self.n_samples // 2]) / self.n_samples,
+            self.freq_data,
+            np.abs(self.magnitude_data),
             label="Frequency spectrum of response"
         )
         self.frequency_domain_plot.set_title(
