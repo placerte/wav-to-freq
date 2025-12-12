@@ -6,4 +6,12 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "produm>=0.1.2",
+    "scipy>=1.16.3",
+    "soundfile>=0.13.1",
 ]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+extraPaths = ["src"]
+
