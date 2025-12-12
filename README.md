@@ -1,5 +1,7 @@
 # Wav to freq
 
+REWRITE AND TRY TO USE AS MANY EXISTING PACKAGES
+
 An app that takes in a formatted wav file of an impact and returns its natural frequencies.
 
 ## How to use
