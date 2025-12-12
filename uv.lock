@@ -1,0 +1,35 @@
+version = 1
+revision = 3
+requires-python = ">=3.13"
+
+[[package]]
+name = "pathspec"
+version = "0.12.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ca/bc/f35b8446f4531a7cb215605d100cd88b7ac6f44ab3fc94870c120ab3adbf/pathspec-0.12.1.tar.gz", hash = "sha256:a482d51503a1ab33b1c67a6c3813a26953dbdc71c31dacaef9a838c4e29f5712", size = 51043, upload-time = "2023-12-10T22:30:45Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cc/20/ff623b09d963f88bfde16306a54e12ee5ea43e9b597108672ff3a408aad6/pathspec-0.12.1-py3-none-any.whl", hash = "sha256:a0d503e138a4c123b27490a4f7beda6a01c6f288df0e4a8b79c7eb0dc7b4cc08", size = 31191, upload-time = "2023-12-10T22:30:43.14Z" },
+]
+
+[[package]]
+name = "produm"
+version = "0.1.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pathspec" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b1/a9/b1bce11f2b9b17a5c01aed0eb5603a72a90545ba07b18fbe9e581282edd9/produm-0.1.2.tar.gz", hash = "sha256:b611d23e3a4e3a29db41a1c8840bf083da37bacf63e5c5a4c22e85dd8006e846", size = 6836, upload-time = "2025-12-10T12:47:21.152Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e5/9a/56f92a98c56eccd9353a78f87a8261de4c6e2f7891c02ce47451827cd777/produm-0.1.2-py3-none-any.whl", hash = "sha256:ac66e220a4f30d3a358d7150b23e950772d76e626342d384e62760687b9e9bce", size = 9571, upload-time = "2025-12-10T12:47:20.415Z" },
+]
+
+[[package]]
+name = "wav-to-freq"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "produm" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "produm", specifier = ">=0.1.2" }]
