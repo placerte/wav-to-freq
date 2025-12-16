@@ -10,3 +10,6 @@ build/
 
 # Cached temp files
 .temp/
+
+# output files
+*-dump-*
