@@ -20,7 +20,7 @@
 | --- | --- |
 | Hits found | 13 |
 | Hits used | 13 |
-| Threshold (abs) | 0.112069 |
+| Threshold (abs) | 3.20572e-05 |
 | Min separation (s) | 0.3 |
 | Window pre (s) | 0.05 |
 | Window post (s) | 1.5 |
@@ -31,7 +31,7 @@
 hammer_channel=<StereoChannel.LEFT: 'left'>
 n_hits_found=13
 n_hits_used=13
-threshold=0.1120694389000061
+threshold=3.205724246664991e-05
 min_separation_s=0.3
 pre_s=0.05
 post_s=1.5

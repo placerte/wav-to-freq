@@ -176,7 +176,7 @@ def load_stereo_wav(
     else:
         _validate_channel(hammer_channel)
 
-    if hammer_channel == "left":
+    if hammer_channel == StereoChannel.LEFT:
         hammer, accel = left, right
     else:
         hammer, accel = right, left

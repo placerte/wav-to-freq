@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from wav_to_freq.impact_io import prepare_hits
-from wav_to_freq.reporting import write_preprocess_report
+from wav_to_freq.reporting.preprocess import write_preprocess_report
 
 ROOT = Path(__file__).resolve().parents[2]   # repo root (…/wav-to-freq)
 WAV = ROOT / "media" / "hit 251212-2.wav"
@@ -28,5 +28,3 @@ print(rep)
 print("hammer channel:", stereo.hammer_channel)
 print("n windows:", len(wins))
 print("report:", art.report_md)
-print("fig (hits):", art.fig_hammer_hits)
-print("fig (window):", art.fig_example_window)
