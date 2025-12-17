@@ -8,7 +8,11 @@
 | Sample rate (Hz) | 44100.000 |
 | Samples | 5117496 |
 | Duration (s) | 116.042993 |
-| Hammer channel | left |
+| Hammer channel | StereoChannel.LEFT |
+| Autodetect method | kurtosis_hp200 |
+| Autodetect score (left) | 4220.3 |
+| Autodetect score (right) | 208.342 |
+| Autodetect confidence hi/lo | 20.3 |
 
 ## Hit detection summary
 
@@ -16,7 +20,7 @@
 | --- | --- |
 | Hits found | 13 |
 | Hits used | 13 |
-| Threshold (abs) | 3.20572e-05 |
+| Threshold (abs) | 0.112069 |
 | Min separation (s) | 0.3 |
 | Window pre (s) | 0.05 |
 | Window post (s) | 1.5 |
@@ -24,10 +28,10 @@
 ## Raw parameters (traceability)
 
 ```text
-hammer_channel='left'
+hammer_channel=<StereoChannel.LEFT: 'left'>
 n_hits_found=13
 n_hits_used=13
-threshold=3.205724246664991e-05
+threshold=0.1120694389000061
 min_separation_s=0.3
 pre_s=0.05
 post_s=1.5
