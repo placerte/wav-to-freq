@@ -207,16 +207,21 @@ def write_preprocess_report(
     md.h2("WAV file specs")
     duration_s = (len(stereo.hammer) / float(stereo.fs)) if float(stereo.fs) > 0 else float("nan")
 
-    md.table(
-        headers=["Field", "Value"],
-        rows=[
-            ["Path", str(stereo.path)],
-            ["Sample rate (Hz)", f"{float(stereo.fs):.3f}"],
-            ["Samples", f"{len(stereo.hammer)}"],
-            ["Duration (s)", f"{duration_s:.6f}"],
-            ["Hammer channel", str(stereo.hammer_channel)],
-        ],
-    )
+    rows = [
+        ["Path", str(stereo.path)],
+        ["Sample rate (Hz)", f"{float(stereo.fs):.3f}"],
+        ["Samples", f"{len(stereo.hammer)}"],
+        ["Duration (s)", f"{duration_s:.6f}"],
+        ["Hammer channel", str(stereo.hammer_channel)],
+    ]
+
+    if stereo.autodetect is not None:
+        rows.append(["Autodetect method", stereo.autodetect.method])
+        rows.append(["Autodetect score (left)", f"{stereo.autodetect.score_left:.6g}"])
+        rows.append(["Autodetect score (right)", f"{stereo.autodetect.score_right:.6g}"])
+        rows.append(["Autodetect confidence hi/lo", f"{stereo.autodetect.confidence_hi_lo:.3g}"])
+
+    md.table(headers=["Field", "Value"], rows=rows)
 
     # Section: Hit detection summary
     md.h2("Hit detection summary")
@@ -231,6 +236,7 @@ def write_preprocess_report(
             ["Window post (s)", f"{float(report.post_s):.6g}"],
         ],
     )
+
 
     # Section: Raw parameters (nice for traceability)
     md.h2("Raw parameters (traceability)")

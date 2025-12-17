@@ -19,6 +19,19 @@ EPS = 1e-30
 # Data containers
 # -------------------------
 
+@dataclass
+class AutoDetectInfo:
+    method: str
+    score_left: float
+    score_right: float
+    picked: ChannelStr
+
+    @property
+    def confidence_hi_lo(self) -> float:
+        lo = min(self.score_left, self.score_right)
+        hi = max(self.score_left, self.score_right)
+        return hi / (lo +EPS)
+
 @dataclass(frozen=True)
 class StereoWav:
     """Raw stereo acquisition: hammer + response in the same WAV."""
@@ -27,6 +40,7 @@ class StereoWav:
     accel: np.ndarray
     hammer_channel: ChannelStr  # "left" or "right"
     path: Path
+    autodetect: AutoDetectInfo | None = None
 
 
 @dataclass(frozen=True)
@@ -274,12 +288,17 @@ def load_stereo_wav(
     """
     left, right, fs, p = read_wav_stereo(path)
 
+    autodetect: AutoDetectInfo| None = None
+
     if hammer_channel is None:
-        hammer_channel, sL, sR = _auto_pick_hammer_channel(
-            left, right, fs
+        picked, score_left, score_right = _auto_pick_hammer_channel(left, right, fs)
+        hammer_channel = picked
+        autodetect= AutoDetectInfo(
+            method="kurtosis_hp200",
+            score_left = score_left,
+            score_right=score_right,
+            picked=picked
         )
-        # If you ever want to debug:
-        # print("auto hammer:", hammer_channel, "score_left:", sL, "score_right:", sR)
     else:
         _validate_channel(hammer_channel)
 
@@ -294,6 +313,7 @@ def load_stereo_wav(
         accel=accel,
         hammer_channel=hammer_channel,
         path=p,
+        autodetect=autodetect
     )
 
 
