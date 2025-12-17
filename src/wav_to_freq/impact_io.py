@@ -32,8 +32,13 @@ class StereoWav:
 @dataclass(frozen=True)
 class HitWindow:
     """One extracted hit window, aligned on the detected impact peak."""
+    hit_id: int             # 1-based
     hit_index: int          # sample index in the full signal
-    t0: float               # seconds (hit_index / fs)
+
+    t_hit: float            # seconds
+    t_start: float          # seconds
+    t_end: float            # seconds
+
     hammer: np.ndarray      # windowed hammer samples
     accel: np.ndarray       # windowed accel samples
 
@@ -203,25 +208,40 @@ def extract_hit_windows(
     Windows are clipped if they exceed signal bounds (those hits are dropped).
     """
     fs = float(stereo.fs)
-    n_pre = int(round(pre_s * fs))
-    n_post = int(round(post_s * fs))
+    pre_n = int(round(pre_s * fs))
+    post_n = int(round(post_s * fs))
+    n_samples = len(stereo.hammer)
+    
+    hit_id: int = 0
 
-    out: list[HitWindow] = []
-    for idx in hit_indices:
-        idx = int(idx)
-        i0 = idx - n_pre
-        i1 = idx + n_post
+    windows: list[HitWindow] = []
+    for hit_index in hit_indices:
+
+        hit_id+=1
+        hit_index = int(hit_index)
+
+        i0 = max(0, hit_index - pre_n)
+        i1 = min(n_samples, hit_index + post_n)
         if i0 < 0 or i1 > stereo.hammer.size:
             continue
-        out.append(
+
+        
+        t_hit = hit_index / fs
+        t_start = i0 /fs
+        t_end = i1 / fs
+
+        windows.append(
             HitWindow(
-                hit_index=idx,
-                t0=float(idx / fs),
+                hit_id=hit_id,
+                hit_index=hit_index,
+                t_hit=t_hit,
+                t_start=t_start,
+                t_end=t_end,
                 hammer=stereo.hammer[i0:i1].copy(),
                 accel=stereo.accel[i0:i1].copy(),
             )
         )
-    return out
+    return windows
 
 
 def prepare_hits(
@@ -245,7 +265,7 @@ def prepare_hits(
     """
     stereo = load_stereo_wav(wav_path, hammer_channel=hammer_channel)
 
-    hit_idx, thr = detect_hits(
+    hit_index, thr = detect_hits(
         stereo.hammer,
         stereo.fs,
         baseline_s=baseline_s,
@@ -254,10 +274,10 @@ def prepare_hits(
         polarity=polarity,
     )
 
-    windows = extract_hit_windows(stereo, hit_idx, pre_s=pre_s, post_s=post_s)
+    windows = extract_hit_windows(stereo, hit_index, pre_s=pre_s, post_s=post_s)
 
     report = HitDetectionReport(
-        n_hits_found=int(len(hit_idx)),
+        n_hits_found=int(len(hit_index)),
         n_hits_used=int(len(windows)),
         threshold=float(thr),
         min_separation_s=float(min_separation_s),

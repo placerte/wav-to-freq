@@ -95,11 +95,6 @@ def write_preprocess_report(
     report_md = out_dir / "report_preprocess.md"
     report_md.write_text(mdd.to_markdown(), encoding="utf-8")
 
-
-
     return PreprocessReportArtifacts(
         report_md=report_md,
     )
-
-
-

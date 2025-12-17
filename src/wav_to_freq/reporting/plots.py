@@ -64,6 +64,7 @@ def plot_overview_two_channels(
 
     hammer = np.asarray(stereo.hammer)
     accel = np.asarray(stereo.accel)
+    hit_labels = [f"H{i+1:03d}" for i in range(len(windows))]
 
     n = min(hammer.size, accel.size)
 
@@ -79,6 +80,9 @@ def plot_overview_two_channels(
         sharex=True,
         figsize=(10, 6),
     )
+
+    _add_hit_annotations(ax_h, stereo.fs, windows, hit_labels, label_every=1)
+    _add_hit_annotations(ax_a, stereo.fs, windows, hit_labels, label_every=0)  # no labels on bottom
 
     ax_h.plot(t, hammer[:n_plot])
     ax_h.set_title("Overview (aligned): hammer + response")
@@ -100,3 +104,32 @@ def plot_overview_two_channels(
     fig.savefig(out_path, dpi=150)
     plt.close(fig)
     return out_path
+
+def _add_hit_annotations(ax, fs, windows, labels, y_text=None, label_every=1):
+    # y_text: where to put labels in axis coords (None => auto)
+    if y_text is None:
+        y_text = 0.92  # near top of axis (axes fraction)
+
+    w: HitWindow
+
+    for i, (w, lab) in enumerate(zip(windows, labels)):
+        # assuming w.start_idx, w.end_idx, w.hit_idx exist
+        t0 = float(w.t_start)
+        t1 = float(w.t_end)
+        th = float(w.t_hit)
+
+        # alternating shading
+        ax.axvspan(t0, t1, alpha=0.12, zorder=0)
+
+        # hit marker
+        ax.axvline(th, lw=1, alpha=0.35)
+
+        # optional label (only every N hits)
+        if label_every and (i % label_every == 0):
+            ax.text(
+                th, y_text, lab,
+                transform=ax.get_xaxis_transform(),  # x in data, y in axes fraction
+                ha="center", va="top",
+                fontsize=8, alpha=0.85,
+            )
+
