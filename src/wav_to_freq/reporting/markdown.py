@@ -51,3 +51,19 @@ class MarkdownDoc:
     def to_markdown(self) -> str:
         # ensure trailing newline
         return "\n".join(self._lines).rstrip() + "\n"
+
+    
+    def image(self, path: str, *, alt: str = "", title: str | None = None) -> None:
+        """
+        Embed an image using Markdown syntax.
+
+        path: relative path from the markdown file
+        alt: alt text
+        title: optional hover title
+        """
+        if title:
+            self._lines.append(f'![{alt}]({path} "{title}")')
+        else:
+            self._lines.append(f"![{alt}]({path})")
+
+        self._lines.append("")  # blank line for spacing

@@ -21,6 +21,8 @@ class HitModalResult:
     zeta: float
     snr_db: float
     env_fit_r2: float
+    env_log_c: float
+    env_log_m: float
     reject_reason: Optional[str] = None
 
 
@@ -70,6 +72,8 @@ def analyze_hit(
             zeta=float("nan"),
             snr_db=float("nan"),
             env_fit_r2=0.0,
+            env_log_c=float("nan"),
+            env_log_m=float("nan"),
             reject_reason="ringdown_too_short",
         )
 
@@ -92,11 +96,13 @@ def analyze_hit(
             zeta=float("nan"),
             snr_db=snr_db,
             env_fit_r2=0.0,
+            env_log_c=float("nan"),
+            env_log_m=float("nan"),
             reject_reason="no_peak_found",
         )
 
     x_bp = _bandpass(x, fs, low_hz=max(0.05, 0.7 * fn_hz), high_hz=1.3 * fn_hz)
-    zeta, r2 = _estimate_zeta_envelope(x_bp, fs, fn_hz)
+    zeta, r2, c, m = _estimate_zeta_envelope(x_bp, fs, fn_hz)
 
     reject = None
     if not np.isfinite(zeta) or zeta <= 0 or zeta > 0.5:
@@ -113,6 +119,8 @@ def analyze_hit(
         zeta=float(zeta),
         snr_db=float(snr_db),
         env_fit_r2=float(r2),
+        env_log_c=float(c),
+        env_log_m=float(m),
         reject_reason=reject,
     )
 
@@ -138,7 +146,7 @@ def _bandpass(x: NDArray[np.float64], fs: float, *, low_hz: float, high_hz: floa
     return filtfilt(b, a, x)
 
 
-def _estimate_zeta_envelope(x_bp: NDArray[np.float64], fs: float, fn_hz: float) -> tuple[float, float]:
+def _estimate_zeta_envelope(x_bp: NDArray[np.float64], fs: float, fn_hz: float) -> tuple[float, float, float, float]:
     env = np.abs(hilbert(x_bp)) + 1e-12
     t = np.arange(len(env)) / fs
     y = np.log(env)
@@ -162,5 +170,5 @@ def _estimate_zeta_envelope(x_bp: NDArray[np.float64], fs: float, fn_hz: float) 
     alpha = -m
     omega_n = 2.0 * np.pi * fn_hz
     zeta = alpha / (omega_n + 1e-12)
-    return zeta, r2
+    return zeta, r2, c, m
 
