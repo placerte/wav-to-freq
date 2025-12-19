@@ -5,7 +5,7 @@ from wav_to_freq.impact_io import StereoWav, HitWindow, HitDetectionReport
 from wav_to_freq.other_utils import ensure_dir
 from wav_to_freq.reporting.context import PreprocessContext
 from wav_to_freq.reporting.markdown import MarkdownDoc
-from wav_to_freq.reporting.plots import plot_hammer_with_hit_markers, plot_overview_two_channels
+from wav_to_freq.reporting.plots import plot_overview_two_channels
 from wav_to_freq.reporting.sections import add_section_wav_specs
 
 

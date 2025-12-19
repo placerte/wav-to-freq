@@ -1,137 +1,273 @@
+# ==== FILE: src/wav_to_freq/modal.py ====
+
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Sequence
+from typing import Sequence, Optional
 
 import numpy as np
+from numpy.typing import NDArray
 
-from wav_to_freq.impact_io import StereoWav, HitWindow, HitDetectionReport
-from wav_to_freq.modal import HitModalResult
-from wav_to_freq.other_utils import ensure_dir
-from wav_to_freq.reporting.markdown import MarkdownDoc
-from wav_to_freq.reporting.plots import plot_hit_response_with_damping, plot_hit_spectrum
+from scipy.signal import welch, butter, filtfilt, hilbert
+
+from wav_to_freq.impact_io import HitWindow
 
 
 @dataclass(frozen=True)
-class ModalReportArtifacts:
-    report_md: Path
+class HitModalResult:
+    hit_id: int
+    hit_index: int
+    t0_s: float
+    t1_s: float
+    fn_hz: float
+    zeta: float
+    snr_db: float
+    env_fit_r2: float
+    env_log_c: float
+    env_log_m: float
+
+    # New: absolute time range actually used for the decay fit
+    fit_t0_s: float
+    fit_t1_s: float
+
+    reject_reason: Optional[str] = None
 
 
-def write_modal_report(
-    *,
-    out_dir: Path,
-    stereo: StereoWav,
+def analyze_all_hits(
     windows: Sequence[HitWindow],
-    hit_report: HitDetectionReport,
-    modal_results: Sequence[HitModalResult],
-    title: str = "Modal extraction",
-) -> ModalReportArtifacts:
-    ensure_dir(out_dir)
+    fs: float,
+    *,
+    settle_s: float = 0.010,
+    ring_s: float = 1.0,
+    fmin_hz: float = 0.5,
+    fmax_hz: float = 50.0,
+) -> list[HitModalResult]:
+    return [
+        analyze_hit(
+            w,
+            fs,
+            settle_s=settle_s,
+            ring_s=ring_s,
+            fmin_hz=fmin_hz,
+            fmax_hz=fmax_hz,
+        )
+        for w in windows
+    ]
 
-    if len(windows) != len(modal_results):
-        raise ValueError(
-            f"windows/results length mismatch: {len(windows)} != {len(modal_results)}"
+
+def analyze_hit(
+    w: HitWindow,
+    fs: float,
+    *,
+    settle_s: float,
+    ring_s: float,
+    fmin_hz: float,
+    fmax_hz: float,
+) -> HitModalResult:
+    accel: NDArray[np.float64] = np.asarray(w.accel, dtype=np.float64)
+
+    start = int(round(settle_s * fs))
+    end = min(len(accel), start + int(round(ring_s * fs)))
+
+    # Absolute times of the ringdown segment inside the WAV file
+    t0_abs = w.t_start + start / fs
+    t1_abs = w.t_start + end / fs
+
+    if end - start < int(0.1 * fs):
+        return HitModalResult(
+            hit_id=w.hit_id,
+            hit_index=w.hit_index,
+            t0_s=t0_abs,
+            t1_s=t1_abs,
+            fn_hz=float("nan"),
+            zeta=float("nan"),
+            snr_db=float("nan"),
+            env_fit_r2=0.0,
+            env_log_c=float("nan"),
+            env_log_m=float("nan"),
+            fit_t0_s=float("nan"),
+            fit_t1_s=float("nan"),
+            reject_reason="ringdown_too_short",
         )
 
-    mdd = MarkdownDoc()
-    mdd.h1(title)
+    x = accel[start:end].copy()
+    x -= np.mean(x)
 
-    mdd.h2("Hit-by-hit results")
-    mdd.p("Per-hit extracted values (one row per detected impact).")
+    # crude SNR proxy: compare early chunk vs late chunk
+    n = len(x)
+    a = x[: max(1, n // 5)]
+    b = x[max(1, 4 * n // 5) :]
+    snr_db = 20.0 * np.log10((np.std(a) + 1e-12) / (np.std(b) + 1e-12))
 
-    rows: list[list[str]] = []
-    for w, r in zip(windows, modal_results):
-        rows.append(
-            [
-                f"H{r.hit_id:03d}",
-                f"{w.t_hit:.3f}",
-                f"{r.fn_hz:.2f}" if np.isfinite(r.fn_hz) else "nan",
-                f"{r.zeta:.5f}" if np.isfinite(r.zeta) else "nan",
-                f"{r.snr_db:.1f}" if np.isfinite(r.snr_db) else "nan",
-                f"{r.env_fit_r2:.3f}" if np.isfinite(r.env_fit_r2) else "nan",
-                r.reject_reason or "",
-            ]
+    fn_hz = _estimate_fn_psd(x, fs, fmin_hz=fmin_hz, fmax_hz=fmax_hz)
+    if not np.isfinite(fn_hz) or fn_hz <= 0:
+        return HitModalResult(
+            hit_id=w.hit_id,
+            hit_index=w.hit_index,
+            t0_s=t0_abs,
+            t1_s=t1_abs,
+            fn_hz=float("nan"),
+            zeta=float("nan"),
+            snr_db=float(snr_db),
+            env_fit_r2=0.0,
+            env_log_c=float("nan"),
+            env_log_m=float("nan"),
+            fit_t0_s=float("nan"),
+            fit_t1_s=float("nan"),
+            reject_reason="no_peak_found",
         )
 
-    mdd.table(
-        headers=["hit_id", "t_hit (s)", "f_n (Hz)", "zeta", "SNR (dB)", "env R²", "reject"],
-        rows=rows,
+    x_bp = _bandpass(x, fs, low_hz=max(0.05, 0.7 * fn_hz), high_hz=1.3 * fn_hz)
+
+    # NOTE: now returns fit window indices too
+    zeta, r2, c, m, i0_fit, i1_fit = _estimate_zeta_envelope_auto(x_bp, fs, fn_hz)
+
+    # Map fit indices to absolute time in the file
+    # t_rel = np.arange(n)/fs for the ringdown segment
+    fit_t0_s = t0_abs + (i0_fit / fs if np.isfinite(i0_fit) else float("nan"))
+    fit_t1_s = t0_abs + (i1_fit / fs if np.isfinite(i1_fit) else float("nan"))
+
+    reject = None
+    if not np.isfinite(zeta) or zeta <= 0 or zeta > 0.5:
+        reject = "bad_zeta"
+    if r2 < 0.6:
+        reject = (reject + "|low_r2") if reject else "low_r2"
+
+    return HitModalResult(
+        hit_id=w.hit_id,
+        hit_index=w.hit_index,
+        t0_s=t0_abs,
+        t1_s=t1_abs,
+        fn_hz=float(fn_hz),
+        zeta=float(zeta),
+        snr_db=float(snr_db),
+        env_fit_r2=float(r2),
+        env_log_c=float(c),
+        env_log_m=float(m),
+        fit_t0_s=float(fit_t0_s),
+        fit_t1_s=float(fit_t1_s),
+        reject_reason=reject,
     )
 
-    # Summary (accepted hits only)
-    mdd.h2("Summary")
-    ok = [r for r in modal_results if r.reject_reason is None and np.isfinite(r.fn_hz) and np.isfinite(r.zeta)]
-    mdd.p(f"Detected hits: **{hit_report.n_hits_used}**. Accepted for summary: **{len(ok)}**.")
 
-    if ok:
-        fns = np.array([r.fn_hz for r in ok], dtype=float)
-        zts = np.array([r.zeta for r in ok], dtype=float)
+def _estimate_fn_psd(x: NDArray[np.float64], fs: float, *, fmin_hz: float, fmax_hz: float) -> float:
+    nperseg = int(min(len(x), max(256, 2 ** int(np.floor(np.log2(len(x)))))))
+    f, pxx = welch(x, fs=fs, nperseg=nperseg)
+    mask = (f >= fmin_hz) & (f <= fmax_hz)
+    if not np.any(mask):
+        return float("nan")
+    f2 = f[mask]
+    p2 = pxx[mask]
+    return float(f2[int(np.argmax(p2))])
 
-        def _iqr(x: np.ndarray) -> float:
-            q25, q75 = np.percentile(x, [25.0, 75.0])
-            return float(q75 - q25)
 
-        mdd.table(
-            headers=["metric", "median", "IQR"],
-            rows=[
-                ["f_n (Hz)", f"{float(np.median(fns)):.2f}", f"{_iqr(fns):.2f}"],
-                ["zeta", f"{float(np.median(zts)):.5f}", f"{_iqr(zts):.5f}"],
-            ],
-        )
-    else:
-        mdd.p("No accepted hits (all were rejected). Consider adjusting band limits, settle/ring durations, or QC thresholds.")
+def _bandpass(x: NDArray[np.float64], fs: float, *, low_hz: float, high_hz: float) -> NDArray[np.float64]:
+    nyq = 0.5 * fs
+    low = max(1e-6, low_hz / nyq)
+    high = min(0.999999, high_hz / nyq)
+    if high <= low:
+        return x
+    b, a = butter(N=4, Wn=[low, high], btype="bandpass")
+    return filtfilt(b, a, x)
 
-    
-    mdd.h2("Per-hit deep dive")
 
-    fig_dir = out_dir / "figures" / "modal_hits"
-    fig_dir.mkdir(parents=True, exist_ok=True)
+def _linreg_r2(tt: NDArray[np.float64], yy: NDArray[np.float64]) -> tuple[float, float, float]:
+    """
+    Fit yy ~= c + m*tt and return (c, m, r2).
+    """
+    A = np.vstack([np.ones_like(tt), tt]).T
+    coef, *_ = np.linalg.lstsq(A, yy, rcond=None)
+    c, m = float(coef[0]), float(coef[1])
 
-    for w, r in zip(windows, modal_results):
-        mdd.h3(f"Hit {r.hit_id}")
+    yhat = c + m * tt
+    ss_res = float(np.sum((yy - yhat) ** 2))
+    ss_tot = float(np.sum((yy - np.mean(yy)) ** 2)) + 1e-12
+    r2 = 1.0 - ss_res / ss_tot
+    return c, m, r2
 
-        # Isolate ringdown segment inside this window using absolute times
-        # result.t0_s / t1_s are absolute time in file
-        # w.t_start is absolute time of window start
-        i0 = int(round((r.t0_s - w.t_start) * stereo.fs))
-        i1 = int(round((r.t1_s - w.t_start) * stereo.fs))
-        i0 = max(0, min(i0, len(w.accel)))
-        i1 = max(i0 + 1, min(i1, len(w.accel)))
 
-        x = np.asarray(w.accel[i0:i1], dtype=float)
-        t_abs = w.t_start + (np.arange(len(x), dtype=float) + i0) / stereo.fs
+def _estimate_zeta_envelope_auto(
+    x_bp: NDArray[np.float64],
+    fs: float,
+    fn_hz: float,
+) -> tuple[float, float, float, float, int, int]:
+    """
+    Automatic selection of an 'established decay' region:
+      - compute envelope via Hilbert
+      - work in log-domain: y = log(env)
+      - search for a start index i0 that maximizes R² of a linear fit on [i0:i1]
+        where i1 is near the tail (default 85% of the segment).
+    Returns:
+      (zeta, r2, c, m, i0_fit, i1_fit)
+    """
+    env = np.abs(hilbert(x_bp)) + 1e-12
+    t = np.arange(len(env), dtype=np.float64) / fs
+    y = np.log(env)
 
-        # Figures
-        png_time = fig_dir / f"hit_{r.hit_id:03d}_time.png"
-        png_psd = fig_dir / f"hit_{r.hit_id:03d}_psd.png"
+    n = len(y)
+    if n < 30:
+        return float("nan"), 0.0, float("nan"), float("nan"), 0, max(0, n - 1)
 
-        plot_hit_response_with_damping(fs=stereo.fs, t_abs=t_abs, x=x, result=r, out_png=png_time)
-        plot_hit_spectrum(
-            x=x,
-            fs=stereo.fs,
-            result=r,
-            out_png=png_psd,
-            fmin_hz=0.0,
-            fmax_hz=min(stereo.fs / 2.0, 5000.0),  # or your configured expected range
-        )
+    # End of fit: avoid the very end where envelope may hit numerical floor/noise
+    i1 = int(max(10, round(0.85 * n)))
 
-        # Quick metrics line (keeps it readable)
-        mdd.p(
-            f"- t_hit={w.t_hit:.3f}s  "
-            f"- fn={r.fn_hz:.2f}Hz  "
-            f"- zeta={r.zeta:.5f}  "
-            f"- SNR={r.snr_db:.1f}dB  "
-            f"- R²={r.env_fit_r2:.3f}  "
-            f"- reject={(r.reject_reason or 'OK')}"
-        )
+    # Candidate start region:
+    # - too early -> includes filter transient / multi-mode / nonlinearity
+    # - too late -> not enough dynamic range / noisy tail
+    i0_min = int(round(0.02 * n))
+    i0_max = int(round(0.45 * n))
+    i0_max = min(i0_max, i1 - 12)
 
-        # Embed images (paths relative to report file)
-        rel_time = png_time.relative_to(out_dir)
-        rel_psd = png_psd.relative_to(out_dir)
-        mdd.image(str(rel_time), alt=f"Hit {r.hit_id} time response")
-        mdd.image(str(rel_psd), alt=f"Hit {r.hit_id} spectrum")
-        report_md = out_dir / "report_modal.md"
-        report_md.write_text(mdd.to_markdown(), encoding="utf-8")
-        return ModalReportArtifacts(report_md=report_md)
+    if i0_max <= i0_min:
+        i0_min = max(0, i1 - 20)
+        i0_max = max(i0_min, i1 - 12)
+
+    best = None  # (score, i0, c, m, r2)
+
+    # Step size: about 1% of the record (at least 1 sample)
+    step = max(1, int(round(0.01 * n)))
+
+    for i0 in range(i0_min, i0_max + 1, step):
+        tt = t[i0:i1]
+        yy = y[i0:i1]
+        if len(tt) < 12:
+            continue
+
+        c, m, r2 = _linreg_r2(tt, yy)
+
+        # We expect decay => slope negative (m < 0)
+        if not np.isfinite(m) or m >= 0:
+            continue
+        if not np.isfinite(r2):
+            continue
+
+        # Soft penalty if window is too short (prefer a decent span)
+        span_s = float(tt[-1] - tt[0])
+        # encourages at least a few cycles; 3/fn is a decent minimum heuristic
+        min_span = 3.0 / max(fn_hz, 1e-6)
+        penalty = 0.0 if span_s >= min_span else (min_span - span_s) / min_span
+
+        score = float(r2) - 0.15 * penalty
+
+        if best is None or score > best[0]:
+            best = (score, i0, c, m, r2)
+
+    if best is None:
+        # fallback: original heuristic window
+        i0 = max(0, int(0.05 * n))
+        tt = t[i0:i1]
+        yy = y[i0:i1]
+        c, m, r2 = _linreg_r2(tt, yy)
+        alpha = -m
+        omega_n = 2.0 * np.pi * fn_hz
+        zeta = alpha / (omega_n + 1e-12)
+        return float(zeta), float(r2), float(c), float(m), int(i0), int(i1)
+
+    _, i0_fit, c_fit, m_fit, r2_fit = best
+
+    alpha = -m_fit
+    omega_n = 2.0 * np.pi * fn_hz
+    zeta = alpha / (omega_n + 1e-12)
+
+    return float(zeta), float(r2_fit), float(c_fit), float(m_fit), int(i0_fit), int(i1)
 

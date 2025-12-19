@@ -2,7 +2,7 @@ from pathlib import Path
 
 from wav_to_freq.impact_io import prepare_hits
 from wav_to_freq.reporting.preprocess import write_preprocess_report
-from wav_to_freq.reporting.modal import write_modal_report
+from wav_to_freq.reporting.reporting import write_modal_report
 from wav_to_freq.modal import analyze_all_hits
 
 ROOT = Path(__file__).resolve().parents[2]   # repo root (…/wav-to-freq)
@@ -35,11 +35,12 @@ results = analyze_all_hits(
 )
 
 art = write_modal_report(
+    results=results,
     out_dir=out_dir,
-    stereo=stereo,
-    windows=windows,
-    hit_report=rep,
-    modal_results=results,
-    title="Smoke test - modal extraction"
+    # stereo=stereo,
+    # windows=windows,
+    # hit_report=rep,
+    # modal_results=results,
+    # title="Smoke test - modal extraction"
     )
 

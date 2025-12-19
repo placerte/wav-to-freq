@@ -1,55 +1,122 @@
+# ==== FILE: src/wav_to_freq/reporting/plots.py ====
+
+from __future__ import annotations
+
 from pathlib import Path
 from typing import Sequence
 
 import numpy as np
-import matplotlib.pyplot as plt
-from numpy.linalg import lstsq
 from numpy.typing import NDArray
+import matplotlib.pyplot as plt
+from scipy.signal import welch
 
 from wav_to_freq.impact_io import HitWindow, StereoWav
 from wav_to_freq.modal import HitModalResult
 
-from scipy.signal import hilbert, welch, butter, filtfilt
 
-def plot_hammer_with_hit_markers(
-    stereo: StereoWav,
-    windows: Sequence[HitWindow],
-    out_path: Path,
+def plot_hit_response_with_damping(
     *,
-    max_seconds: float | None = None,
-) -> Path:
+    fs: float,
+    t_abs: NDArray[np.float64],
+    x: NDArray[np.float64],
+    result: HitModalResult,
+    out_png: Path,
+) -> None:
     """
-    Plot full hammer signal with vertical lines at detected hit times.
+    Time plot with:
+      - raw accel
+      - envelope (Hilbert abs, approximate via abs(hilbert()) in modal; here we just show |x| smoothed-ish)
+      - fitted exponential envelope based on env_log_c/env_log_m
+      - shaded early transient vs established decay using result.fit_t0_s/result.fit_t1_s
     """
-    fs = float(stereo.fs)
-    hammer = np.asarray(stereo.hammer)
-    n = hammer.size
+    out_png.parent.mkdir(parents=True, exist_ok=True)
 
-    if max_seconds is None:
-        n_plot = n
-    else:
-        n_plot = int(min(n, max_seconds * fs))
+    t_abs = np.asarray(t_abs, dtype=float)
+    x = np.asarray(x, dtype=float)
 
-    t = np.arange(n_plot) / fs
-    y = hammer[:n_plot]
+    # Relative time from start of ringdown segment
+    t0 = float(t_abs[0])
+    t_rel = t_abs - t0
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(11, 4.2))
     ax = fig.add_subplot(1, 1, 1)
-    ax.plot(t, y)
 
-    for w in windows:
-        if w.hit_index < n_plot:
-            ax.axvline(w.hit_index / fs)
+    ax.plot(t_rel, x, lw=0.9, label="accel")
 
-    ax.set_title("Hammer signal with detected hits")
-    ax.set_xlabel("Time (s)")
-    ax.set_ylabel("Amplitude")
+    # If we have fit bounds, shade regions
+    if np.isfinite(result.fit_t0_s):
+        fit_start_rel = float(result.fit_t0_s - t0)
+        fit_end_rel = float(result.fit_t1_s - t0) if np.isfinite(result.fit_t1_s) else float(t_rel[-1])
+
+        fit_start_rel = max(float(t_rel[0]), min(fit_start_rel, float(t_rel[-1])))
+        fit_end_rel = max(fit_start_rel, min(fit_end_rel, float(t_rel[-1])))
+
+        # Early transient
+        ax.axvspan(float(t_rel[0]), fit_start_rel, alpha=0.08, label="early transient")
+        # Established decay (fit zone)
+        ax.axvspan(fit_start_rel, fit_end_rel, alpha=0.10, label="established decay")
+        ax.axvline(fit_start_rel, lw=1.2, linestyle="--", label="fit start")
+
+    # Plot fitted exponential envelope, if available
+    if np.isfinite(result.env_log_c) and np.isfinite(result.env_log_m):
+        # The fit is log(env) = c + m t_rel  => env = exp(c + m t_rel)
+        env_fit = np.exp(result.env_log_c + result.env_log_m * t_rel)
+
+        # To make it comparable to accel amplitude, plot ± envelope
+        ax.plot(t_rel, +env_fit, lw=1.2, label="fit envelope (+)")
+        ax.plot(t_rel, -env_fit, lw=1.2, label="fit envelope (-)")
+
+    title = f"H{result.hit_id:03d}  fn={result.fn_hz:.2f} Hz  zeta={result.zeta:.5f}  R²={result.env_fit_r2:.3f}"
+    if result.reject_reason:
+        title += f"  REJECT: {result.reject_reason}"
+    ax.set_title(title)
+
+    ax.set_xlabel("t (s) relative to ringdown start")
+    ax.set_ylabel("accel (a.u.)")
+    ax.grid(True, alpha=0.25)
+    ax.legend(loc="best", fontsize=9)
 
     fig.tight_layout()
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_path, dpi=150)
+    fig.savefig(out_png, dpi=160)
     plt.close(fig)
-    return out_path
+
+
+def plot_hit_spectrum(
+    *,
+    x: NDArray[np.float64],
+    fs: float,
+    result: HitModalResult,
+    out_png: Path,
+    fmin_hz: float = 0.0,
+    fmax_hz: float = 200.0,
+) -> None:
+    out_png.parent.mkdir(parents=True, exist_ok=True)
+
+    x = np.asarray(x, dtype=float)
+    nperseg = int(min(len(x), max(256, 2 ** int(np.floor(np.log2(len(x)))))))
+    f, pxx = welch(x, fs=fs, nperseg=nperseg)
+
+    mask = (f >= fmin_hz) & (f <= fmax_hz)
+    f2 = f[mask]
+    p2 = pxx[mask]
+
+    fig = plt.figure(figsize=(11, 3.8))
+    ax = fig.add_subplot(1, 1, 1)
+
+    ax.plot(f2, p2, lw=1.0, label="PSD")
+
+    if np.isfinite(result.fn_hz):
+        ax.axvline(result.fn_hz, linestyle="--", lw=1.2, label=f"fn={result.fn_hz:.2f} Hz")
+
+    ax.set_title(f"H{result.hit_id:03d} spectrum")
+    ax.set_xlabel("frequency (Hz)")
+    ax.set_ylabel("PSD (a.u.)")
+    ax.grid(True, alpha=0.25)
+    ax.legend(loc="best", fontsize=9)
+
+    fig.tight_layout()
+    fig.savefig(out_png, dpi=160)
+    plt.close(fig)
 
 def plot_overview_two_channels(
     stereo: StereoWav,
@@ -115,10 +182,7 @@ def _add_hit_annotations(ax, fs, windows, labels, y_text=None, label_every=1):
     if y_text is None:
         y_text = 0.92  # near top of axis (axes fraction)
 
-    w: HitWindow
-
     for i, (w, lab) in enumerate(zip(windows, labels)):
-        # assuming w.start_idx, w.end_idx, w.hit_idx exist
         t0 = float(w.t_start)
         t1 = float(w.t_end)
         th = float(w.t_hit)
@@ -137,143 +201,3 @@ def _add_hit_annotations(ax, fs, windows, labels, y_text=None, label_every=1):
                 ha="center", va="top",
                 fontsize=8, alpha=0.85,
             )
-
-
-def _bandpass(x: NDArray[np.float64], fs: float, *, low_hz: float, high_hz: float) -> NDArray[np.float64]:
-    """Simple Butterworth bandpass used for plotting (mode isolation)."""
-    nyq = 0.5 * float(fs)
-    low = max(1e-6, float(low_hz) / nyq)
-    high = min(0.999999, float(high_hz) / nyq)
-    if high <= low:
-        return x
-    b, a = butter(N=4, Wn=[low, high], btype="bandpass")
-    return filtfilt(b, a, x)
-
-def plot_hit_response_with_damping(
-    *,
-    t_abs: NDArray[np.float64],
-    x: NDArray[np.float64],
-    fs: float,
-    result: HitModalResult,
-    out_png: Path,
-) -> None:
-    """
-    Plot isolated ringdown window in time domain.
-
-    Shows:
-      - raw detrended accel (thin)
-      - mode-isolated (bandpassed) accel (optional, thicker)
-      - envelope of the mode-isolated signal
-      - exponential fit derived from the same envelope regression (if available)
-    """
-    # relative time for nicer axis
-    t0 = float(t_abs[0])
-    t = t_abs - t0
-
-    x_raw = np.asarray(x, dtype=np.float64)
-    x_raw = x_raw - float(np.mean(x_raw))
-
-    # Defaults for plotting clarity (raw can be very dense at high fn)
-    lw_raw = 0.35
-    lw_bp = 0.8
-    lw_env = 1.0
-    lw_fit = 2.0
-    alpha_raw = 0.8
-    alpha_bp = 0.9
-    alpha_env = 0.95
-
-    # If we know fn, isolate mode-0 for envelope/fit comparison
-    have_mode = bool(np.isfinite(result.fn_hz) and result.fn_hz > 0)
-    if have_mode:
-        fn = float(result.fn_hz)
-        x_bp = _bandpass(x_raw, float(fs), low_hz=max(0.05, 0.7 * fn), high_hz=1.3 * fn)
-        env = np.abs(hilbert(x_bp)) + 1e-12
-    else:
-        x_bp = x_raw
-        env = np.abs(hilbert(x_raw)) + 1e-12
-
-    n = len(env)
-    i0 = max(0, int(0.05 * n))
-    i1 = max(i0 +10, int(0.85 *n))
-
-    tt = t[i0:i1]
-    # yy = np.log(env[i0+i1] + 1e-12)
-
-    # A = np.vstack([np.ones_like(tt), tt]).T
-    # coef, *_ = np.linalg.lstsq(A, yy, rcond=None)
-    # c, m = float(coef[0]), float(coef[1])
-
-    # fit = np.exp(c + m * tt)
-
-    plt.figure()
-    plt.plot(t, x_raw, label="accel (raw, detrended)", lw=lw_raw, alpha=alpha_raw)
-
-    # Only plot bandpassed trace if it's meaningfully different (i.e., we had fn)
-    if have_mode:
-        plt.plot(t, x_bp, label="accel (mode-isolated)", lw=lw_bp, alpha=alpha_bp)
-
-    plt.plot(t, env, label="envelope (mode-isolated)", lw=lw_env, alpha=alpha_env)
-
-    txt = f"fn={result.fn_hz:.2f} Hz, zeta={result.zeta:.5f}, R²={result.env_fit_r2:.3f}"
-
-    # Plot exponential fit computed from the same log-envelope regression, if present
-    have_fit = bool(np.isfinite(result.env_log_c) and np.isfinite(result.env_log_m))
-    if have_fit:
-        c = float(result.env_log_c)
-        m = float(result.env_log_m)
-        # fit = np.exp(c + m * t)
-        fit = np.exp(c + m * tt)
-        # plt.plot(t, fit, label="exp fit (log-env regression)", lw=lw_fit)
-        plt.plot(tt, fit, label="exp fit (log-env regression)", lw=lw_fit)
-    else:
-        # Fallback: use zeta,fn anchoring (may not align perfectly with envelope scale)
-        if np.isfinite(result.zeta) and result.zeta > 0 and have_mode:
-            omega_n = 2.0 * np.pi * float(result.fn_hz)
-            alpha = float(result.zeta) * omega_n
-            A0 = float(env[max(0, min(5, len(env)-1))])  # avoid t=0 transient a bit
-            # fit = A0 * np.exp(-alpha * t)
-            fit = A0 * np.exp(-alpha * tt)
-            # plt.plot(t, fit, label="exp fit (from zeta, fn)", lw=lw_fit)
-            plt.plot(tt, fit, label="exp fit (from zeta, fn)", lw=lw_fit)
-
-    plt.title(f"Hit {result.hit_id} ringdown\n{txt}")
-    plt.xlabel("t (s) from ringdown start")
-    plt.ylabel("accel (a.u.)")
-    plt.legend()
-    plt.tight_layout()
-    out_png.parent.mkdir(parents=True, exist_ok=True)
-    plt.savefig(out_png, dpi=160)
-    plt.close()
-def plot_hit_spectrum(
-    *,
-    x: NDArray[np.float64],
-    fs: float,
-    result: HitModalResult,
-    out_png: Path,
-    fmin_hz: float = 0.0,
-    fmax_hz: float | None = None,
-) -> None:
-    """
-    Welch PSD on the isolated ringdown segment.
-    """
-    x0 = x - float(np.mean(x))
-
-    nperseg = int(min(len(x0), max(1024, 2 ** int(np.floor(np.log2(len(x0)))))))
-    f, pxx = welch(x0, fs=fs, nperseg=nperseg)
-
-    if fmax_hz is None:
-        fmax_hz = fs / 2.0
-
-    mask = (f >= fmin_hz) & (f <= fmax_hz)
-
-    plt.figure()
-    plt.semilogy(f[mask], pxx[mask])
-    if np.isfinite(result.fn_hz):
-        plt.axvline(float(result.fn_hz), linestyle="--")  # default color
-    plt.title(f"Hit {result.hit_id} spectrum (Welch PSD)")
-    plt.xlabel("Frequency (Hz)")
-    plt.ylabel("PSD (a.u.)")
-    plt.tight_layout()
-    out_png.parent.mkdir(parents=True, exist_ok=True)
-    plt.savefig(out_png, dpi=160)
-    plt.close()
