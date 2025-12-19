@@ -106,7 +106,7 @@ def write_modal_report(
         png_time = fig_dir / f"hit_{r.hit_id:03d}_time.png"
         png_psd = fig_dir / f"hit_{r.hit_id:03d}_psd.png"
 
-        plot_hit_response_with_damping(t_abs=t_abs, x=x, result=r, out_png=png_time)
+        plot_hit_response_with_damping(fs=stereo.fs, t_abs=t_abs, x=x, result=r, out_png=png_time)
         plot_hit_spectrum(
             x=x,
             fs=stereo.fs,

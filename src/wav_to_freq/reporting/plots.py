@@ -3,6 +3,7 @@ from typing import Sequence
 
 import numpy as np
 import matplotlib.pyplot as plt
+from numpy.linalg import lstsq
 from numpy.typing import NDArray
 
 from wav_to_freq.impact_io import HitWindow, StereoWav
@@ -191,6 +192,19 @@ def plot_hit_response_with_damping(
         x_bp = x_raw
         env = np.abs(hilbert(x_raw)) + 1e-12
 
+    n = len(env)
+    i0 = max(0, int(0.05 * n))
+    i1 = max(i0 +10, int(0.85 *n))
+
+    tt = t[i0:i1]
+    # yy = np.log(env[i0+i1] + 1e-12)
+
+    # A = np.vstack([np.ones_like(tt), tt]).T
+    # coef, *_ = np.linalg.lstsq(A, yy, rcond=None)
+    # c, m = float(coef[0]), float(coef[1])
+
+    # fit = np.exp(c + m * tt)
+
     plt.figure()
     plt.plot(t, x_raw, label="accel (raw, detrended)", lw=lw_raw, alpha=alpha_raw)
 
@@ -207,20 +221,20 @@ def plot_hit_response_with_damping(
     if have_fit:
         c = float(result.env_log_c)
         m = float(result.env_log_m)
-        fit = np.exp(c + m * t)
-    if have_fit:
-        c = float(result.env_log_c)
-        m = float(result.env_log_m)
-        fit = np.exp(c + m * t)
-        plt.plot(t, fit, label="exp fit (log-env regression)", lw=lw_fit)
+        # fit = np.exp(c + m * t)
+        fit = np.exp(c + m * tt)
+        # plt.plot(t, fit, label="exp fit (log-env regression)", lw=lw_fit)
+        plt.plot(tt, fit, label="exp fit (log-env regression)", lw=lw_fit)
     else:
         # Fallback: use zeta,fn anchoring (may not align perfectly with envelope scale)
         if np.isfinite(result.zeta) and result.zeta > 0 and have_mode:
             omega_n = 2.0 * np.pi * float(result.fn_hz)
             alpha = float(result.zeta) * omega_n
             A0 = float(env[max(0, min(5, len(env)-1))])  # avoid t=0 transient a bit
-            fit = A0 * np.exp(-alpha * t)
-            plt.plot(t, fit, label="exp fit (from zeta, fn)", lw=lw_fit)
+            # fit = A0 * np.exp(-alpha * t)
+            fit = A0 * np.exp(-alpha * tt)
+            # plt.plot(t, fit, label="exp fit (from zeta, fn)", lw=lw_fit)
+            plt.plot(tt, fit, label="exp fit (from zeta, fn)", lw=lw_fit)
 
     plt.title(f"Hit {result.hit_id} ringdown\n{txt}")
     plt.xlabel("t (s) from ringdown start")
