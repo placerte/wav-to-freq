@@ -1,14 +1,18 @@
+# ==== FILE: src/wav_to_freq/reporting/sections.py ====
+
+from __future__ import annotations
+
 from wav_to_freq.reporting.markdown import MarkdownDoc
-from wav_to_freq.reporting.preprocess import PreprocessContext
+from wav_to_freq.reporting.context import PreprocessContext
 
-def add_section_wav_specs(mdd: MarkdownDoc, context : PreprocessContext) -> None:
 
+def add_section_wav_specs(mdd: MarkdownDoc, context: PreprocessContext) -> None:
     stereo = context.stereo
 
     mdd.h2("WAV file specs")
     duration_s = (len(stereo.hammer) / float(stereo.fs)) if float(stereo.fs) > 0 else float("nan")
 
-    rows = [
+    rows: list[list[str]] = [
         ["Path", str(stereo.path)],
         ["Sample rate (Hz)", f"{float(stereo.fs):.3f}"],
         ["Samples", f"{len(stereo.hammer)}"],
@@ -23,3 +27,4 @@ def add_section_wav_specs(mdd: MarkdownDoc, context : PreprocessContext) -> None
         rows.append(["Autodetect confidence hi/lo", f"{stereo.autodetect.confidence_hi_lo:.3g}"])
 
     mdd.table(headers=["Field", "Value"], rows=rows)
+
