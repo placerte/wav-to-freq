@@ -155,6 +155,10 @@ def plot_hit_response_report(
       - If modal analysis provided fit_t0_s/fit_t1_s, we use those for shading + fitted curve.
       - Otherwise we fall back to transient_s heuristics (visual-only).
     """
+
+    raw_response_line_width: float = 0.5
+    filtered_response_line_width: float = 0.1
+
     fs = float(fs)
     out_png = Path(out_png)
     out_png.parent.mkdir(parents=True, exist_ok=True)
@@ -213,17 +217,17 @@ def plot_hit_response_report(
     # Plot
     fig, (ax0, ax1) = plt.subplots(2, 1, figsize=(14, 6), sharex=True)
 
-    ax0.plot(t, x_raw, linewidth=0.8, label="raw")
+    ax0.plot(t, x_raw, linewidth=raw_response_line_width, label="raw response")
     ax0.grid(True, alpha=0.2)
     ax0.set_ylabel("Accel (raw)")
     ax0.legend(loc="upper right")
 
-    ax1.plot(t, y, linewidth=0.8, label="filtered")
+    ax1.plot(t, y, linewidth=filtered_response_line_width, label="filtered response")
     ax1.plot(t, env, linewidth=1.2, label="envelope")
 
     # shaded zones
     ax1.axvspan(0.0, t_trans_end, alpha=0.25, label="Transient")
-    ax1.axvspan(t_est0, t_est1, alpha=0.10, label="Established")
+    ax1.axvspan(t_est0, t_est1, alpha=0.10, label="Established decay")
 
     # fitted curve on established region only
     if t_fit.size and fit_curve.size:

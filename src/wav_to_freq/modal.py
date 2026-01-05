@@ -25,8 +25,6 @@ class HitModalResult:
     env_log_c: float
     env_log_m: float
     reject_reason: Optional[str] = None
-
-    # New: fit window chosen by analysis (absolute timestamps)
     fit_t0_s: float | None = None
     fit_t1_s: float | None = None
 
@@ -39,10 +37,13 @@ def analyze_all_hits(
     ring_s: float = 1.0,
     fmin_hz: float = 0.5,
     fmax_hz: float = 50.0,
-    # established-decay selection (analysis-owned)
     transient_s: float = 0.20,
     established_min_s: float = 0.40,
     established_r2_min: float = 0.95,
+    # NEW: limit fit tail so noise floor doesn't destroy R²
+    fit_max_s: float = 0.80,
+    noise_tail_s: float = 0.20,
+    noise_mult: float = 3.0,
 ) -> list[HitModalResult]:
     return [
         analyze_hit(
@@ -55,6 +56,9 @@ def analyze_all_hits(
             transient_s=transient_s,
             established_min_s=established_min_s,
             established_r2_min=established_r2_min,
+            fit_max_s=fit_max_s,
+            noise_tail_s=noise_tail_s,
+            noise_mult=noise_mult,
         )
         for w in windows
     ]
@@ -71,6 +75,9 @@ def analyze_hit(
     transient_s: float,
     established_min_s: float,
     established_r2_min: float,
+    fit_max_s: float,
+    noise_tail_s: float,
+    noise_mult: float,
 ) -> HitModalResult:
     fs = float(fs)
     accel: NDArray[np.float64] = np.asarray(w.accel, dtype=np.float64)
@@ -122,17 +129,18 @@ def analyze_hit(
             fit_t1_s=None,
         )
 
-    # bandpass around fn
-    y = _bandpass(x, fs, fn_hz)
+    y = _bandpass(x, fs, float(fn_hz))
 
-    # analysis-owned: choose established decay start, then fit envelope on that region
     zeta, r2, c, m, i0_fit, i1_fit = _estimate_zeta_envelope_auto(
         y,
         fs,
-        fn_hz=fn_hz,
+        fn_hz=float(fn_hz),
         transient_s=transient_s,
         established_min_s=established_min_s,
         established_r2_min=established_r2_min,
+        fit_max_s=fit_max_s,
+        noise_tail_s=noise_tail_s,
+        noise_mult=noise_mult,
     )
 
     fit_t0_s = w.t_start + (start + i0_fit) / fs
@@ -185,7 +193,6 @@ def _bandpass(x: NDArray[np.float64], fs: float, fn_hz: float) -> NDArray[np.flo
     fs = float(fs)
     fn_hz = float(fn_hz)
 
-    # reasonable band around fn (wide enough to keep the decay shape)
     lo = max(0.5, 0.6 * fn_hz)
     hi = min(0.49 * fs, 1.4 * fn_hz)
     if hi <= lo:
@@ -203,14 +210,10 @@ def _env(x: NDArray[np.float64]) -> NDArray[np.float64]:
 
 
 def _fit_log_envelope(t: NDArray[np.float64], e: NDArray[np.float64]) -> tuple[float, float, float]:
-    """
-    Fit ln(e) = c + m*t  (t is seconds relative to chosen fit start).
-    Returns (c, m, r2).
-    """
     t = np.asarray(t, dtype=np.float64)
     e = np.asarray(e, dtype=np.float64)
 
-    if t.size < 6:
+    if t.size < 8:
         return float("nan"), float("nan"), float("nan")
 
     eps = np.finfo(float).eps
@@ -225,6 +228,42 @@ def _fit_log_envelope(t: NDArray[np.float64], e: NDArray[np.float64]) -> tuple[f
     return float(c), float(m), float(r2)
 
 
+def _choose_fit_end(
+    e: NDArray[np.float64],
+    fs: float,
+    *,
+    i0: int,
+    fit_max_s: float,
+    noise_tail_s: float,
+    noise_mult: float,
+) -> int:
+    """
+    Choose i1 to avoid fitting deep into noise.
+    i1 is min(i0 + fit_max_s, first index where envelope falls near noise floor, n).
+    """
+    fs = float(fs)
+    n = int(e.size)
+    if n <= i0 + 16:
+        return n
+
+    i1_cap = min(n, i0 + int(round(max(0.05, float(fit_max_s)) * fs)))
+
+    tail = int(round(max(0.05, float(noise_tail_s)) * fs))
+    tail = min(tail, n)
+    noise_level = float(np.median(e[n - tail :])) if tail >= 8 else float(np.median(e))
+    thresh = float(noise_mult) * max(noise_level, np.finfo(float).eps)
+
+    # find first crossing below threshold after i0 (up to cap)
+    seg = e[i0:i1_cap]
+    below = np.where(seg <= thresh)[0]
+    if below.size > 0:
+        i1 = i0 + int(below[0])
+        # keep at least some samples
+        return max(i0 + 16, i1)
+
+    return i1_cap
+
+
 def _estimate_zeta_envelope_auto(
     y: NDArray[np.float64],
     fs: float,
@@ -233,11 +272,10 @@ def _estimate_zeta_envelope_auto(
     transient_s: float,
     established_min_s: float,
     established_r2_min: float,
+    fit_max_s: float,
+    noise_tail_s: float,
+    noise_mult: float,
 ) -> tuple[float, float, float, float, int, int]:
-    """
-    Pick the earliest established decay start i0 such that the envelope log-fit R² meets the threshold.
-    Returns (zeta, r2, c, m, i0_fit, i1_fit) where i0/i1 are indices in y.
-    """
     fs = float(fs)
     fn_hz = float(fn_hz)
     y = np.asarray(y, dtype=np.float64)
@@ -248,39 +286,41 @@ def _estimate_zeta_envelope_auto(
 
     e = _env(y)
 
-    i1 = n
-    i0_floor = int(round(max(0.0, transient_s) * fs))
-    i0_min = int(round(max(0.0, established_min_s) * fs))
+    i0_floor = int(round(max(0.0, float(transient_s)) * fs))
+    i0_min = int(round(max(float(transient_s), float(established_min_s)) * fs))
 
-    # ensure the scan region makes sense
-    i0_floor = max(0, min(i0_floor, n - 10))
-    i0_min = max(i0_floor, min(i0_min, n - 10))
+    i0_floor = max(0, min(i0_floor, n - 32))
+    i0_min = max(i0_floor, min(i0_min, n - 32))
 
-    # scan candidate starts from floor..min, choose earliest meeting R²
-    best: tuple[float, int, float, float, float] | None = None
-    step = max(1, int(round(0.005 * fs)))  # 5 ms steps
+    step = max(1, int(round(0.005 * fs)))  # 5 ms
+
+    best: tuple[float, int, int, float, float] | None = None  # (r2, i0, i1, c, m)
 
     for i0 in range(i0_floor, i0_min + 1, step):
+        i1 = _choose_fit_end(e, fs, i0=i0, fit_max_s=fit_max_s, noise_tail_s=noise_tail_s, noise_mult=noise_mult)
+        if i1 - i0 < 32:
+            continue
+
         t = (np.arange(i0, i1, dtype=np.float64) - float(i0)) / fs
         c, m, r2 = _fit_log_envelope(t, e[i0:i1])
         if not np.isfinite(r2):
             continue
         if r2 >= established_r2_min:
-            best = (r2, i0, c, m, r2)
+            best = (float(r2), int(i0), int(i1), float(c), float(m))
             break
 
-    # fallback: use i0_min if nothing meets threshold
     if best is None:
         i0 = i0_min
+        i1 = _choose_fit_end(e, fs, i0=i0, fit_max_s=fit_max_s, noise_tail_s=noise_tail_s, noise_mult=noise_mult)
         t = (np.arange(i0, i1, dtype=np.float64) - float(i0)) / fs
         c, m, r2 = _fit_log_envelope(t, e[i0:i1])
-        best = (r2, i0, c, m, r2)
+        best = (float(r2), int(i0), int(i1), float(c), float(m))
 
-    _, i0_fit, c_fit, m_fit, r2_fit = best
+    r2_fit, i0_fit, i1_fit, c_fit, m_fit = best
 
     alpha = -m_fit
     omega_n = 2.0 * np.pi * fn_hz
     zeta = alpha / (omega_n + 1e-12)
 
-    return float(zeta), float(r2_fit), float(c_fit), float(m_fit), int(i0_fit), int(i1)
+    return float(zeta), float(r2_fit), float(c_fit), float(m_fit), int(i0_fit), int(i1_fit)
 
