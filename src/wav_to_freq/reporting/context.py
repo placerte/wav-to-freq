@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Sequence
 from wav_to_freq.impact_io import HitDetectionReport, HitWindow, StereoWav
 
+
 @dataclass(frozen=True)
 class PreprocessContext:
     out_dir: Path

@@ -4,6 +4,7 @@ from wav_to_freq.enums import StereoChannel
 from wav_to_freq.signal_utils import EPS, highpass, moving_mean, kurtosis_spikiness
 import numpy as np
 
+
 @dataclass
 class AutoDetectInfo:
     method: str
@@ -15,7 +16,8 @@ class AutoDetectInfo:
     def confidence_hi_lo(self) -> float:
         lo = min(self.score_left, self.score_right)
         hi = max(self.score_left, self.score_right)
-        return hi / (lo +EPS)
+        return hi / (lo + EPS)
+
 
 def _channel_impulsiveness_score(
     x: np.ndarray,
@@ -57,8 +59,8 @@ def _channel_impulsiveness_score(
         return num / rms
 
     # energy windows (tuned for impact tests)
-    early = int(max(1, round(0.006 * fs)))          # 6 ms
-    late0 = int(max(1, round(0.050 * fs)))          # start 50 ms after peak
+    early = int(max(1, round(0.006 * fs)))  # 6 ms
+    late0 = int(max(1, round(0.050 * fs)))  # start 50 ms after peak
     late1 = int(max(late0 + 1, round(0.150 * fs)))  # end 150 ms after peak
 
     ratios: list[float] = []
@@ -75,7 +77,9 @@ def _channel_impulsiveness_score(
     return float(np.median(ratios)) if ratios else 0.0
 
 
-def auto_pick_hammer_channel(left: np.ndarray, right: np.ndarray, fs: float) -> tuple[StereoChannel, float, float]:
+def auto_pick_hammer_channel(
+    left: np.ndarray, right: np.ndarray, fs: float
+) -> tuple[StereoChannel, float, float]:
     # high-pass helps remove low-frequency drift and emphasizes impulse character
     L = highpass(left, fs, fc_hz=200.0)
     R = highpass(right, fs, fc_hz=200.0)

@@ -52,7 +52,6 @@ class MarkdownDoc:
         # ensure trailing newline
         return "\n".join(self._lines).rstrip() + "\n"
 
-    
     def image(self, path: str, *, alt: str = "", title: str | None = None) -> None:
         """
         Embed an image using Markdown syntax.

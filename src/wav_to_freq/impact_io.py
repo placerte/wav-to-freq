@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass 
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, Sequence
 
@@ -21,6 +21,7 @@ from wav_to_freq.enums import StereoChannel
 @dataclass(frozen=True)
 class StereoWav:
     """Raw stereo acquisition: hammer + response in the same WAV."""
+
     fs: float
     hammer: np.ndarray
     accel: np.ndarray
@@ -32,15 +33,16 @@ class StereoWav:
 @dataclass(frozen=True)
 class HitWindow:
     """One extracted hit window, aligned on the detected impact peak."""
-    hit_id: int             # 1-based
-    hit_index: int          # sample index in the full signal
 
-    t_hit: float            # seconds
-    t_start: float          # seconds
-    t_end: float            # seconds
+    hit_id: int  # 1-based
+    hit_index: int  # sample index in the full signal
 
-    hammer: np.ndarray      # windowed hammer samples
-    accel: np.ndarray       # windowed accel samples
+    t_hit: float  # seconds
+    t_start: float  # seconds
+    t_end: float  # seconds
+
+    hammer: np.ndarray  # windowed hammer samples
+    accel: np.ndarray  # windowed accel samples
 
 
 @dataclass(frozen=True)
@@ -58,7 +60,6 @@ class HitDetectionReport:
 # -------------------------
 
 
-
 def _validate_channel(ch: StereoChannel) -> None:
     if ch not in (StereoChannel.LEFT, StereoChannel.RIGHT):
         raise ValueError(f"hammer_channel must be 'left' or 'right'. Got {ch!r}")
@@ -67,6 +68,7 @@ def _validate_channel(ch: StereoChannel) -> None:
 # -------------------------
 # Stage 0: read WAV
 # -------------------------
+
 
 def read_wav_stereo(path: str | Path) -> tuple[np.ndarray, np.ndarray, float, Path]:
     """
@@ -90,6 +92,7 @@ def read_wav_stereo(path: str | Path) -> tuple[np.ndarray, np.ndarray, float, Pa
 # -------------------------
 # Stage 2: hit detection (on hammer channel only)
 # -------------------------
+
 
 def detect_hits(
     hammer: np.ndarray,
@@ -152,6 +155,7 @@ def detect_hits(
 # Stage 3: map to StereoWav + extract windows
 # -------------------------
 
+
 def load_stereo_wav(
     path: str | Path,
     *,
@@ -167,16 +171,16 @@ def load_stereo_wav(
     """
     left, right, fs, p = read_wav_stereo(path)
 
-    autodetect: AutoDetectInfo| None = None
+    autodetect: AutoDetectInfo | None = None
 
     if hammer_channel is StereoChannel.UNKNOWN:
         picked, score_left, score_right = auto_pick_hammer_channel(left, right, fs)
         hammer_channel = picked
-        autodetect= AutoDetectInfo(
+        autodetect = AutoDetectInfo(
             method="kurtosis_hp200",
-            score_left = score_left,
+            score_left=score_left,
             score_right=score_right,
-            picked=picked
+            picked=picked,
         )
     else:
         _validate_channel(hammer_channel)
@@ -192,7 +196,7 @@ def load_stereo_wav(
         accel=accel,
         hammer_channel=hammer_channel,
         path=p,
-        autodetect=autodetect
+        autodetect=autodetect,
     )
 
 
@@ -211,13 +215,13 @@ def extract_hit_windows(
     pre_n = int(round(pre_s * fs))
     post_n = int(round(post_s * fs))
     n_samples = len(stereo.hammer)
-    
+
     hit_id: int = 0
 
     windows: list[HitWindow] = []
     for hit_index in hit_indices:
 
-        hit_id+=1
+        hit_id += 1
         hit_index = int(hit_index)
 
         i0 = max(0, hit_index - pre_n)
@@ -225,9 +229,8 @@ def extract_hit_windows(
         if i0 < 0 or i1 > stereo.hammer.size:
             continue
 
-        
         t_hit = hit_index / fs
-        t_start = i0 /fs
+        t_start = i0 / fs
         t_end = i1 / fs
 
         windows.append(
@@ -285,4 +288,3 @@ def prepare_hits(
         post_s=float(post_s),
     )
     return stereo, windows, report
-

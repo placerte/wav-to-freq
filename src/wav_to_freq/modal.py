@@ -169,7 +169,9 @@ def analyze_hit(
     )
 
 
-def _estimate_fn_psd(x: NDArray[np.float64], fs: float, *, fmin_hz: float, fmax_hz: float) -> float:
+def _estimate_fn_psd(
+    x: NDArray[np.float64], fs: float, *, fmin_hz: float, fmax_hz: float
+) -> float:
     fs = float(fs)
     x = np.asarray(x, dtype=np.float64)
     if x.size < 16:
@@ -209,7 +211,9 @@ def _env(x: NDArray[np.float64]) -> NDArray[np.float64]:
     return np.abs(hilbert(x)).astype(np.float64)
 
 
-def _fit_log_envelope(t: NDArray[np.float64], e: NDArray[np.float64]) -> tuple[float, float, float]:
+def _fit_log_envelope(
+    t: NDArray[np.float64], e: NDArray[np.float64]
+) -> tuple[float, float, float]:
     t = np.asarray(t, dtype=np.float64)
     e = np.asarray(e, dtype=np.float64)
 
@@ -297,7 +301,14 @@ def _estimate_zeta_envelope_auto(
     best: tuple[float, int, int, float, float] | None = None  # (r2, i0, i1, c, m)
 
     for i0 in range(i0_floor, i0_min + 1, step):
-        i1 = _choose_fit_end(e, fs, i0=i0, fit_max_s=fit_max_s, noise_tail_s=noise_tail_s, noise_mult=noise_mult)
+        i1 = _choose_fit_end(
+            e,
+            fs,
+            i0=i0,
+            fit_max_s=fit_max_s,
+            noise_tail_s=noise_tail_s,
+            noise_mult=noise_mult,
+        )
         if i1 - i0 < 32:
             continue
 
@@ -311,7 +322,14 @@ def _estimate_zeta_envelope_auto(
 
     if best is None:
         i0 = i0_min
-        i1 = _choose_fit_end(e, fs, i0=i0, fit_max_s=fit_max_s, noise_tail_s=noise_tail_s, noise_mult=noise_mult)
+        i1 = _choose_fit_end(
+            e,
+            fs,
+            i0=i0,
+            fit_max_s=fit_max_s,
+            noise_tail_s=noise_tail_s,
+            noise_mult=noise_mult,
+        )
         t = (np.arange(i0, i1, dtype=np.float64) - float(i0)) / fs
         c, m, r2 = _fit_log_envelope(t, e[i0:i1])
         best = (float(r2), int(i0), int(i1), float(c), float(m))
@@ -322,5 +340,11 @@ def _estimate_zeta_envelope_auto(
     omega_n = 2.0 * np.pi * fn_hz
     zeta = alpha / (omega_n + 1e-12)
 
-    return float(zeta), float(r2_fit), float(c_fit), float(m_fit), int(i0_fit), int(i1_fit)
-
+    return (
+        float(zeta),
+        float(r2_fit),
+        float(c_fit),
+        float(m_fit),
+        int(i0_fit),
+        int(i1_fit),
+    )

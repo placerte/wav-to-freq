@@ -12,6 +12,7 @@ An app that takes in a formatted wav file of an impact and returns its natural f
 
 ## TODOs
 
+- [x] Working POC
 - [x] Basic fft of the wav file
 - [x] Selection of points of interest on the GUI
 - [x] Save as image and scatter points for post processing.
@@ -24,4 +25,8 @@ An app that takes in a formatted wav file of an impact and returns its natural f
 - [ ] Clean LSP warnings
 - [x] Remove the abundance of np.pi. It may affect numerical precision.
 - [ ] Unit test all computations
-- [ ] Simplify solving for linearized function 
+- [ ] Simplify solving for linearized function
+- [ ] Clean up the code
+  - [ ] Make a package plantUML
+  - [ ] Reduce modules
+  - [ ] Reduce function length

@@ -71,4 +71,3 @@ def write_preprocess_report(
     report_md.write_text(mdd.to_markdown(), encoding="utf-8")
 
     return PreprocessReportArtifacts(report_md=report_md, fig_overview=fig_overview)
-

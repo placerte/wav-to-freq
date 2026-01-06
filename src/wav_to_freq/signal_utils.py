@@ -4,8 +4,10 @@ from scipy import signal
 # Epsilon value to avoid dividing bu zero
 EPS = 1e-30
 
+
 def as_f64(x: np.ndarray) -> np.ndarray:
     return np.asarray(x, dtype=np.float64)
+
 
 def moving_mean(x: np.ndarray, win: int) -> np.ndarray:
     """Fast moving average using convolution. win must be >= 1."""
@@ -15,6 +17,7 @@ def moving_mean(x: np.ndarray, win: int) -> np.ndarray:
     k = np.ones(int(win), dtype=np.float64) / float(win)
     return np.convolve(x, k, mode="same")
 
+
 def robust_sigma_mad(x: np.ndarray) -> float:
     """Robust sigma estimate based on MAD."""
     x = as_f64(x)
@@ -22,7 +25,10 @@ def robust_sigma_mad(x: np.ndarray) -> float:
     mad = float(np.median(np.abs(x - med)) + EPS)
     return 1.4826 * mad
 
-def highpass(x: np.ndarray, fs: float, fc_hz: float = 200.0, order: int = 4) -> np.ndarray:
+
+def highpass(
+    x: np.ndarray, fs: float, fc_hz: float = 200.0, order: int = 4
+) -> np.ndarray:
     """
     High-pass filter to emphasize the hammer impulse vs the long ringdown.
     fc_hz=200 Hz is a decent default for typical impact testing recordings.
@@ -32,6 +38,7 @@ def highpass(x: np.ndarray, fs: float, fc_hz: float = 200.0, order: int = 4) -> 
     fc = max(1.0, min(fc_hz, 0.45 * nyq))
     sos = signal.butter(order, fc / nyq, btype="highpass", output="sos")
     return signal.sosfiltfilt(sos, x)
+
 
 def kurtosis_spikiness(x: np.ndarray) -> float:
     """

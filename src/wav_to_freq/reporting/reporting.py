@@ -145,7 +145,12 @@ def write_modal_report(
         for r in rejected:
             key = r.reject_reason or "unknown"
             counts[key] = counts.get(key, 0) + 1
-        mdd.bullet([f"{k}: {v}" for k, v in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))])
+        mdd.bullet(
+            [
+                f"{k}: {v}"
+                for k, v in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+            ]
+        )
 
     # -----------------------
     # Per-hit section + figures
@@ -184,4 +189,3 @@ def write_modal_report(
     md_path.write_text(mdd.to_markdown(), encoding="utf-8")
 
     return csv_path, md_path
-

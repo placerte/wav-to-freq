@@ -47,7 +47,9 @@ def _exp_fit_with_offset(t: np.ndarray, y: np.ndarray) -> tuple[float, float, fl
     return A, b, r2
 
 
-def _analysis_segment_in_window(window: HitWindow, result: HitModalResult, fs: float) -> tuple[int, int]:
+def _analysis_segment_in_window(
+    window: HitWindow, result: HitModalResult, fs: float
+) -> tuple[int, int]:
     fs = float(fs)
 
     t0_rel = float(result.t0_s) - float(window.t_start)
@@ -145,6 +147,7 @@ def _auto_psd_band(
 # Preprocess overview figure (unchanged)
 # -------------------------
 
+
 def plot_overview_two_channels(
     stereo: StereoWav,
     windows: list[HitWindow] | None = None,
@@ -196,6 +199,7 @@ def plot_overview_two_channels(
 # Per-hit modal figure
 # -------------------------
 
+
 @dataclass(frozen=True)
 class EstablishedZones:
     transient_s: float
@@ -229,7 +233,9 @@ def plot_hit_response_report(
         lo = max(0.5, 0.6 * fn)
         hi = min(0.49 * fs, 1.4 * fn)
         if hi > lo:
-            b, a = signal.butter(4, [lo / (0.5 * fs), hi / (0.5 * fs)], btype="bandpass")
+            b, a = signal.butter(
+                4, [lo / (0.5 * fs), hi / (0.5 * fs)], btype="bandpass"
+            )
             y = signal.filtfilt(b, a, y)
 
     y = y - float(np.mean(y))
@@ -248,8 +254,16 @@ def plot_hit_response_report(
         t_est1 = float(t[-1]) if t.size else float(transient_s)
 
     # Fit curve for display
-    m_fit = float(result.env_log_m) if np.isfinite(float(result.env_log_m)) else float("nan")
-    c_fit = float(result.env_log_c) if np.isfinite(float(result.env_log_c)) else float("nan")
+    m_fit = (
+        float(result.env_log_m)
+        if np.isfinite(float(result.env_log_m))
+        else float("nan")
+    )
+    c_fit = (
+        float(result.env_log_c)
+        if np.isfinite(float(result.env_log_c))
+        else float("nan")
+    )
 
     in_fit = (t >= t_est0) & (t <= t_est1)
     t_fit = t[in_fit]
@@ -261,7 +275,11 @@ def plot_hit_response_report(
         r2_fit = float(result.env_fit_r2)
     else:
         A_fit, b_fit, r2_fit = _exp_fit_with_offset(t_fit, env_fit)
-        fit_curve = A_fit * np.exp(-b_fit * (t_fit - float(t_fit[0]))) if t_fit.size else np.array([])
+        fit_curve = (
+            A_fit * np.exp(-b_fit * (t_fit - float(t_fit[0])))
+            if t_fit.size
+            else np.array([])
+        )
 
     # ---------- PSD band auto-scale ----------
     psd_lo, psd_hi = _auto_psd_band(
@@ -280,7 +298,9 @@ def plot_hit_response_report(
         nperseg = min(4096, max(256, seg.size // 2))
         f, pxx = signal.welch(seg, fs=fs, nperseg=nperseg)
         db = 10.0 * np.log10(pxx + np.finfo(float).eps)
-        peak_idx = _pick_psd_peaks(f, db, n_modes=n_modes, fmin_hz=psd_lo, fmax_hz=psd_hi)
+        peak_idx = _pick_psd_peaks(
+            f, db, n_modes=n_modes, fmin_hz=psd_lo, fmax_hz=psd_hi
+        )
     else:
         f = np.array([], dtype=float)
         db = np.array([], dtype=float)
@@ -299,7 +319,13 @@ def plot_hit_response_report(
     ax1.axvspan(0.0, t_trans_end, alpha=0.25, label="Transient", zorder=0)
     ax1.axvspan(t_est0, t_est1, alpha=0.10, label="Established", zorder=0)
     if t_fit.size and fit_curve.size:
-        ax1.plot(t_fit, fit_curve, linewidth=2.5, linestyle="--", label=f"fit (R²={r2_fit:.3f})")
+        ax1.plot(
+            t_fit,
+            fit_curve,
+            linewidth=2.5,
+            linestyle="--",
+            label=f"fit (R²={r2_fit:.3f})",
+        )
     ax1.set_xlabel("Time from window start (s)")
     ax1.set_ylabel("Accel (filtered / envelope)")
     ax1.grid(True, alpha=0.2)
@@ -310,7 +336,9 @@ def plot_hit_response_report(
 
         if np.isfinite(float(result.fn_hz)):
             fn = float(result.fn_hz)
-            ax2.axvline(fn, linewidth=1.2, linestyle="--", alpha=0.9, label=f"fn={fn:.2f} Hz")
+            ax2.axvline(
+                fn, linewidth=1.2, linestyle="--", alpha=0.9, label=f"fn={fn:.2f} Hz"
+            )
 
         for j, k in enumerate(peak_idx, start=1):
             fj = float(f[k])
@@ -330,7 +358,14 @@ def plot_hit_response_report(
         ax2.grid(True, alpha=0.2)
         ax2.legend(loc="upper right")
     else:
-        ax2.text(0.5, 0.5, "PSD unavailable (segment too short)", transform=ax2.transAxes, ha="center", va="center")
+        ax2.text(
+            0.5,
+            0.5,
+            "PSD unavailable (segment too short)",
+            transform=ax2.transAxes,
+            ha="center",
+            va="center",
+        )
         ax2.set_axis_off()
 
     title_bits = [f"H{result.hit_id:03d}"]
@@ -349,4 +384,3 @@ def plot_hit_response_report(
     plt.close(fig)
 
     return out_png
-

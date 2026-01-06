@@ -150,7 +150,9 @@ def analyze_hit(
     )
 
 
-def _estimate_fn_psd(x: NDArray[np.float64], fs: float, *, fmin_hz: float, fmax_hz: float) -> float:
+def _estimate_fn_psd(
+    x: NDArray[np.float64], fs: float, *, fmin_hz: float, fmax_hz: float
+) -> float:
     nperseg = int(min(len(x), max(256, 2 ** int(np.floor(np.log2(len(x)))))))
     f, pxx = welch(x, fs=fs, nperseg=nperseg)
     mask = (f >= fmin_hz) & (f <= fmax_hz)
@@ -161,7 +163,9 @@ def _estimate_fn_psd(x: NDArray[np.float64], fs: float, *, fmin_hz: float, fmax_
     return float(f2[int(np.argmax(p2))])
 
 
-def _bandpass(x: NDArray[np.float64], fs: float, *, low_hz: float, high_hz: float) -> NDArray[np.float64]:
+def _bandpass(
+    x: NDArray[np.float64], fs: float, *, low_hz: float, high_hz: float
+) -> NDArray[np.float64]:
     nyq = 0.5 * fs
     low = max(1e-6, low_hz / nyq)
     high = min(0.999999, high_hz / nyq)
@@ -171,7 +175,9 @@ def _bandpass(x: NDArray[np.float64], fs: float, *, low_hz: float, high_hz: floa
     return filtfilt(b, a, x)
 
 
-def _linreg_r2(tt: NDArray[np.float64], yy: NDArray[np.float64]) -> tuple[float, float, float]:
+def _linreg_r2(
+    tt: NDArray[np.float64], yy: NDArray[np.float64]
+) -> tuple[float, float, float]:
     """
     Fit yy ~= c + m*tt and return (c, m, r2).
     """
@@ -270,4 +276,3 @@ def _estimate_zeta_envelope_auto(
     zeta = alpha / (omega_n + 1e-12)
 
     return float(zeta), float(r2_fit), float(c_fit), float(m_fit), int(i0_fit), int(i1)
-
