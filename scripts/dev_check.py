@@ -1,8 +1,8 @@
 from pathlib import Path
 
 from wav_to_freq.analysis.modal import analyze_all_hits
-from wav_to_freq.reporting.preprocess import write_preprocess_report
-from wav_to_freq.reporting.reporting import write_modal_report
+from wav_to_freq.reporting.writers.preprocess import write_preprocess_report
+from wav_to_freq.reporting.writers.modal import write_modal_report
 from wav_to_freq.io.hit_detection import prepare_hits
 
 def main():

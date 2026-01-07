@@ -14,3 +14,13 @@ class PreprocessContext:
     hit_report: HitDetectionReport
     title: str
     max_plot_seconds: float | None
+
+@dataclass(frozen=True)
+class ReportContext:
+    out_dir: Path
+    fig_dir: Path
+    title: str
+
+    def rel(self, path: Path) -> str:
+        # markdown-friendly relative path
+        return path.relative_to(self.out_dir).as_posix()

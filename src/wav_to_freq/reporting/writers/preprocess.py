@@ -11,7 +11,7 @@ from wav_to_freq.utils.paths import ensure_dir
 from wav_to_freq.reporting.context import PreprocessContext
 from wav_to_freq.reporting.markdown import MarkdownDoc
 from wav_to_freq.reporting.plots import plot_overview_two_channels
-from wav_to_freq.reporting.sections import add_section_wav_specs
+from wav_to_freq.reporting.sections.preprocess import add_section_wav_specs
 
 
 @dataclass(frozen=True)
