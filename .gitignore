@@ -10,6 +10,7 @@ build/
 
 # Cached temp files
 .temp/
+*egg-info
 
 # output files
 *-dump-*
