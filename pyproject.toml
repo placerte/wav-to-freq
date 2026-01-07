@@ -19,6 +19,7 @@ extraPaths = ["src"]
 dev = [
     "black>=25.12.0",
     "produm>=0.1.2",
+    "pyclean>=3.4.0",
     "pydeps>=3.0.1",
     "radon>=6.0.1",
 ]
