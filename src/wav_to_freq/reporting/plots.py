@@ -9,8 +9,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
 
-from wav_to_freq.impact_io import HitWindow, StereoWav
-from wav_to_freq.modal import HitModalResult
+from wav_to_freq.domain.types import HitModalResult, HitWindow, StereoWav
+
 
 
 def _hilbert_envelope(x: np.ndarray) -> np.ndarray:

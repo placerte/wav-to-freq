@@ -5,11 +5,10 @@ import csv
 import math
 from dataclasses import asdict
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import Sequence
 
-from wav_to_freq.impact_io import HitWindow
-from wav_to_freq.modal import HitModalResult
-from wav_to_freq.other_utils import ensure_dir
+from wav_to_freq.domain.types import HitModalResult, HitWindow
+from wav_to_freq.utils.paths import ensure_dir
 from wav_to_freq.reporting.markdown import MarkdownDoc
 from wav_to_freq.reporting.plots import plot_hit_response_report
 

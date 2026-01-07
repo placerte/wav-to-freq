@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Sequence
-from wav_to_freq.impact_io import HitDetectionReport, HitWindow, StereoWav
+
+from wav_to_freq.domain.types import HitDetectionReport, HitWindow, StereoWav
 
 
 @dataclass(frozen=True)

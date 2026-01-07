@@ -1,13 +1,13 @@
 from pathlib import Path
 
-from wav_to_freq.impact_io import prepare_hits
-from wav_to_freq.modal import analyze_all_hits
+from wav_to_freq.analysis.modal import analyze_all_hits
 from wav_to_freq.reporting.preprocess import write_preprocess_report
 from wav_to_freq.reporting.reporting import write_modal_report
+from wav_to_freq.io.hit_detection import prepare_hits
 
 def main():
 
-    ROOT = Path(__file__).resolve().parents[2]  # repo root
+    ROOT = Path(__file__).resolve().parents[1]  # repo root
     WAV = ROOT / "media" / "hit 251212-2.wav"
 
     stereo, windows, rep = prepare_hits(

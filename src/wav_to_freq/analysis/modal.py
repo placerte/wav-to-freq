@@ -1,32 +1,13 @@
 # ==== FILE: src/wav_to_freq/modal.py ====
 
 from __future__ import annotations
-
-from dataclasses import dataclass
 from typing import Sequence, Optional
 
 import numpy as np
 from numpy.typing import NDArray
 from scipy.signal import welch, butter, filtfilt, hilbert
 
-from wav_to_freq.impact_io import HitWindow
-
-
-@dataclass(frozen=True)
-class HitModalResult:
-    hit_id: int
-    hit_index: int
-    t0_s: float
-    t1_s: float
-    fn_hz: float
-    zeta: float
-    snr_db: float
-    env_fit_r2: float
-    env_log_c: float
-    env_log_m: float
-    reject_reason: Optional[str] = None
-    fit_t0_s: float | None = None
-    fit_t1_s: float | None = None
+from wav_to_freq.domain.types import HitModalResult, HitWindow
 
 
 def analyze_all_hits(

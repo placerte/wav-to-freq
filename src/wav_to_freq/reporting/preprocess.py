@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Sequence
 
-from wav_to_freq.impact_io import StereoWav, HitWindow, HitDetectionReport
-from wav_to_freq.other_utils import ensure_dir
+from wav_to_freq.domain.types import HitDetectionReport, HitWindow, StereoWav
+from wav_to_freq.utils.paths import ensure_dir
 from wav_to_freq.reporting.context import PreprocessContext
 from wav_to_freq.reporting.markdown import MarkdownDoc
 from wav_to_freq.reporting.plots import plot_overview_two_channels

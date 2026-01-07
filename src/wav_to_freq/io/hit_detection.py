@@ -1,98 +1,15 @@
-from __future__ import annotations
-
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, Sequence
-
 import numpy as np
+
+from wav_to_freq.domain.enums import StereoChannel
+from wav_to_freq.domain.types import HitDetectionReport, HitWindow, StereoWav
+from wav_to_freq.dsp.filters import highpass
+from wav_to_freq.dsp.stats import as_f64, moving_mean, robust_sigma_mad
+
 from scipy import signal
-import soundfile as sf
 
-from wav_to_freq.autodetect import AutoDetectInfo, auto_pick_hammer_channel
-from wav_to_freq.signal_utils import as_f64, highpass, moving_mean, robust_sigma_mad
-from wav_to_freq.enums import StereoChannel
-
-
-# -------------------------
-# Data containers
-# -------------------------
-
-
-@dataclass(frozen=True)
-class StereoWav:
-    """Raw stereo acquisition: hammer + response in the same WAV."""
-
-    fs: float
-    hammer: np.ndarray
-    accel: np.ndarray
-    path: Path
-    autodetect: AutoDetectInfo | None = None
-    hammer_channel: StereoChannel = StereoChannel.UNKNOWN
-
-
-@dataclass(frozen=True)
-class HitWindow:
-    """One extracted hit window, aligned on the detected impact peak."""
-
-    hit_id: int  # 1-based
-    hit_index: int  # sample index in the full signal
-
-    t_hit: float  # seconds
-    t_start: float  # seconds
-    t_end: float  # seconds
-
-    hammer: np.ndarray  # windowed hammer samples
-    accel: np.ndarray  # windowed accel samples
-
-
-@dataclass(frozen=True)
-class HitDetectionReport:
-    n_hits_found: int
-    n_hits_used: int
-    threshold: float
-    min_separation_s: float
-    pre_s: float
-    post_s: float
-
-
-# -------------------------
-# Low-level helpers
-# -------------------------
-
-
-def _validate_channel(ch: StereoChannel) -> None:
-    if ch not in (StereoChannel.LEFT, StereoChannel.RIGHT):
-        raise ValueError(f"hammer_channel must be 'left' or 'right'. Got {ch!r}")
-
-
-# -------------------------
-# Stage 0: read WAV
-# -------------------------
-
-
-def read_wav_stereo(path: str | Path) -> tuple[np.ndarray, np.ndarray, float, Path]:
-    """
-    Read a stereo wav and return (left, right, fs, Path).
-    """
-    p = Path(path)
-    data, fs = sf.read(str(p), always_2d=True)
-    if data.shape[1] != 2:
-        raise ValueError(f"Expected stereo WAV (2 channels). Got shape={data.shape}")
-
-    left = as_f64(data[:, 0])
-    right = as_f64(data[:, 1])
-    return left, right, float(fs), p
-
-
-# -------------------------
-# Stage 1: auto-pick hammer channel
-# -------------------------
-
-
-# -------------------------
-# Stage 2: hit detection (on hammer channel only)
-# -------------------------
-
+from wav_to_freq.io.wav_reader import load_stereo_wav
 
 def detect_hits(
     hammer: np.ndarray,
@@ -148,57 +65,8 @@ def detect_hits(
 
     min_sep = int(max(1, round(min_separation_s * fs)))
     peaks, _ = signal.find_peaks(y, height=thr, distance=min_sep, prominence=prom)
+
     return peaks.astype(int, copy=False), thr
-
-
-# -------------------------
-# Stage 3: map to StereoWav + extract windows
-# -------------------------
-
-
-def load_stereo_wav(
-    path: str | Path,
-    *,
-    hammer_channel: StereoChannel,
-) -> StereoWav:
-    """
-    Load a stereo WAV and return hammer + accel channels.
-
-    If hammer_channel is None:
-      pick hammer via an impulsiveness score designed for:
-        - small sharp hammer spikes
-        - larger long response ringdown
-    """
-    left, right, fs, p = read_wav_stereo(path)
-
-    autodetect: AutoDetectInfo | None = None
-
-    if hammer_channel is StereoChannel.UNKNOWN:
-        picked, score_left, score_right = auto_pick_hammer_channel(left, right, fs)
-        hammer_channel = picked
-        autodetect = AutoDetectInfo(
-            method="kurtosis_hp200",
-            score_left=score_left,
-            score_right=score_right,
-            picked=picked,
-        )
-    else:
-        _validate_channel(hammer_channel)
-
-    if hammer_channel == StereoChannel.LEFT:
-        hammer, accel = left, right
-    else:
-        hammer, accel = right, left
-
-    return StereoWav(
-        fs=fs,
-        hammer=hammer,
-        accel=accel,
-        hammer_channel=hammer_channel,
-        path=p,
-        autodetect=autodetect,
-    )
-
 
 def extract_hit_windows(
     stereo: StereoWav,
@@ -245,7 +113,6 @@ def extract_hit_windows(
             )
         )
     return windows
-
 
 def prepare_hits(
     wav_path: str | Path,

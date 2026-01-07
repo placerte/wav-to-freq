@@ -1,8 +1,6 @@
 import numpy as np
 from scipy import signal
-
-# Epsilon value to avoid dividing bu zero
-EPS = 1e-30
+from wav_to_freq.domain.config import EPS
 
 
 def as_f64(x: np.ndarray) -> np.ndarray:
@@ -26,18 +24,6 @@ def robust_sigma_mad(x: np.ndarray) -> float:
     return 1.4826 * mad
 
 
-def highpass(
-    x: np.ndarray, fs: float, fc_hz: float = 200.0, order: int = 4
-) -> np.ndarray:
-    """
-    High-pass filter to emphasize the hammer impulse vs the long ringdown.
-    fc_hz=200 Hz is a decent default for typical impact testing recordings.
-    """
-    x = as_f64(x)
-    nyq = 0.5 * fs
-    fc = max(1.0, min(fc_hz, 0.45 * nyq))
-    sos = signal.butter(order, fc / nyq, btype="highpass", output="sos")
-    return signal.sosfiltfilt(sos, x)
 
 
 def kurtosis_spikiness(x: np.ndarray) -> float:
