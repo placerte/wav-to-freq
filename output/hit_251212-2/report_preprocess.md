@@ -1,4 +1,4 @@
-# WAV preprocessing (smoke test)
+# WAV preprocessing report
 
 ## WAV file specs
 

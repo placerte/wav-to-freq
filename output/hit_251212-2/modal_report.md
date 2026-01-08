@@ -1,4 +1,4 @@
-# Smoke test - modal extraction
+# Modal report
 
 - Total hits: **13**
 - Accepted: **13**
