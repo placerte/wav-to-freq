@@ -1,0 +1,852 @@
+[208M]  dist
+└── [208M]  wav-to-freq
+    ├── [191M]  _internal
+    │   ├── [1.3M]  base_library.zip
+    │   ├── [341K]  _cffi_backend.cpython-313-x86_64-linux-gnu.so
+    │   ├── [936K]  contourpy
+    │   │   └── [932K]  _contourpy.cpython-313-x86_64-linux-gnu.so
+    │   ├── [161K]  dateutil
+    │   │   └── [157K]  zoneinfo
+    │   │       └── [153K]  dateutil-zoneinfo.tar.gz
+    │   ├── [5.5M]  kiwisolver
+    │   │   └── [5.5M]  _cext.cpython-313-x86_64-linux-gnu.so
+    │   ├── [  38]  libavif-01e67780.so.16.3.0 -> pillow.libs/libavif-01e67780.so.16.3.0
+    │   ├── [  45]  libbrotlicommon-c55a5f7a.so.1.1.0 -> pillow.libs/libbrotlicommon-c55a5f7a.so.1.1.0
+    │   ├── [138K]  libbrotlicommon.so.1
+    │   ├── [  42]  libbrotlidec-2ced2f3a.so.1.1.0 -> pillow.libs/libbrotlidec-2ced2f3a.so.1.1.0
+    │   ├── [ 50K]  libbrotlidec.so.1
+    │   ├── [ 73K]  libbz2.so.1.0
+    │   ├── [6.2M]  libcrypto.so.3
+    │   ├── [174K]  libexpat.so.1
+    │   ├── [ 46K]  libffi.so.8
+    │   ├── [310K]  libfontconfig.so.1
+    │   ├── [  42]  libfreetype-5bb46249.so.6.20.4 -> pillow.libs/libfreetype-5bb46249.so.6.20.4
+    │   ├── [826K]  libfreetype.so.6
+    │   ├── [179K]  libgcc_s.so.1
+    │   ├── [  49]  libgfortran-040039e1-0352e75f.so.5.0.0 -> numpy.libs/libgfortran-040039e1-0352e75f.so.5.0.0
+    │   ├── [  40]  libgfortran-040039e1.so.5.0.0 -> scipy.libs/libgfortran-040039e1.so.5.0.0
+    │   ├── [  45]  libharfbuzz-525aa570.so.0.61210.0 -> pillow.libs/libharfbuzz-525aa570.so.0.61210.0
+    │   ├── [  38]  libjpeg-a41b0190.so.62.4.0 -> pillow.libs/libjpeg-a41b0190.so.62.4.0
+    │   ├── [  39]  liblcms2-cc10e42f.so.2.0.17 -> pillow.libs/liblcms2-cc10e42f.so.2.0.17
+    │   ├── [  37]  liblzma-64b7ab39.so.5.8.1 -> pillow.libs/liblzma-64b7ab39.so.5.8.1
+    │   ├── [194K]  liblzma.so.5
+    │   ├── [994K]  libmvec.so.1
+    │   ├── [230K]  libncursesw.so.6
+    │   ├── [ 90K]  libobjc.so.4
+    │   ├── [  40]  libopenjp2-94e588ba.so.2.5.4 -> pillow.libs/libopenjp2-94e588ba.so.2.5.4
+    │   ├── [  40]  libpng16-00127801.so.16.50.0 -> pillow.libs/libpng16-00127801.so.16.50.0
+    │   ├── [222K]  libpng16.so.16
+    │   ├── [7.2M]  libpython3.13.so.1.0
+    │   ├── [  49]  libquadmath-96973f99-934c22de.so.0.0.0 -> numpy.libs/libquadmath-96973f99-934c22de.so.0.0.0
+    │   ├── [  40]  libquadmath-96973f99.so.0.0.0 -> scipy.libs/libquadmath-96973f99.so.0.0.0
+    │   ├── [354K]  libreadline.so.8
+    │   ├── [  43]  libscipy_openblas64_-fdde5778.so -> numpy.libs/libscipy_openblas64_-fdde5778.so
+    │   ├── [  40]  libscipy_openblas-b75cc656.so -> scipy.libs/libscipy_openblas-b75cc656.so
+    │   ├── [  41]  libsharpyuv-95d8a097.so.0.1.2 -> pillow.libs/libsharpyuv-95d8a097.so.0.1.2
+    │   ├── [1.0M]  libssl.so.3
+    │   ├── [2.4M]  libstdc++.so.6
+    │   ├── [1.8M]  libtcl8.6.so
+    │   ├── [  37]  libtiff-295fd75c.so.6.2.0 -> pillow.libs/libtiff-295fd75c.so.6.2.0
+    │   ├── [215K]  libtinfo.so.6
+    │   ├── [1.5M]  libtk8.6.so
+    │   ├── [ 38K]  libuuid.so.1
+    │   ├── [  37]  libwebp-d8b9687f.so.7.2.0 -> pillow.libs/libwebp-d8b9687f.so.7.2.0
+    │   ├── [  43]  libwebpdemux-747f2b49.so.2.0.17 -> pillow.libs/libwebpdemux-747f2b49.so.2.0.17
+    │   ├── [  40]  libwebpmux-7f11e5ce.so.3.1.2 -> pillow.libs/libwebpmux-7f11e5ce.so.3.1.2
+    │   ├── [1.3M]  libX11.so.6
+    │   ├── [  36]  libXau-154567c4.so.6.0.0 -> pillow.libs/libXau-154567c4.so.6.0.0
+    │   ├── [ 14K]  libXau.so.6
+    │   ├── [  36]  libxcb-64009ff3.so.1.1.0 -> pillow.libs/libxcb-64009ff3.so.1.1.0
+    │   ├── [ 26K]  libXdmcp.so.6
+    │   ├── [ 80K]  libXext.so.6
+    │   ├── [103K]  libXft.so.2
+    │   ├── [ 46K]  libXrender.so.1
+    │   ├── [ 14K]  libXss.so.1
+    │   ├── [122K]  libz.so.1
+    │   ├── [  37]  libzstd-761a17b6.so.1.5.7 -> pillow.libs/libzstd-761a17b6.so.1.5.7
+    │   ├── [806K]  libzstd.so.1
+    │   ├── [ 14M]  matplotlib
+    │   │   ├── [1.0M]  backends
+    │   │   │   ├── [772K]  _backend_agg.cpython-313-x86_64-linux-gnu.so
+    │   │   │   └── [298K]  _tkagg.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [271K]  _c_internal_utils.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [1.4M]  ft2font.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [574K]  _image.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [8.7M]  mpl-data
+    │   │   │   ├── [7.9M]  fonts
+    │   │   │   │   ├── [722K]  afm
+    │   │   │   │   │   ├── [ 12K]  cmex10.afm
+    │   │   │   │   │   ├── [ 10K]  cmmi10.afm
+    │   │   │   │   │   ├── [9.9K]  cmr10.afm
+    │   │   │   │   │   ├── [8.1K]  cmsy10.afm
+    │   │   │   │   │   ├── [6.3K]  cmtt10.afm
+    │   │   │   │   │   ├── [ 17K]  pagd8a.afm
+    │   │   │   │   │   ├── [ 17K]  pagdo8a.afm
+    │   │   │   │   │   ├── [ 17K]  pagk8a.afm
+    │   │   │   │   │   ├── [ 17K]  pagko8a.afm
+    │   │   │   │   │   ├── [ 15K]  pbkd8a.afm
+    │   │   │   │   │   ├── [ 15K]  pbkdi8a.afm
+    │   │   │   │   │   ├── [ 15K]  pbkl8a.afm
+    │   │   │   │   │   ├── [ 15K]  pbkli8a.afm
+    │   │   │   │   │   ├── [ 15K]  pcrb8a.afm
+    │   │   │   │   │   ├── [ 15K]  pcrbo8a.afm
+    │   │   │   │   │   ├── [ 15K]  pcrr8a.afm
+    │   │   │   │   │   ├── [ 15K]  pcrro8a.afm
+    │   │   │   │   │   ├── [ 17K]  phvb8a.afm
+    │   │   │   │   │   ├── [ 17K]  phvb8an.afm
+    │   │   │   │   │   ├── [ 17K]  phvbo8a.afm
+    │   │   │   │   │   ├── [ 17K]  phvbo8an.afm
+    │   │   │   │   │   ├── [ 15K]  phvl8a.afm
+    │   │   │   │   │   ├── [ 15K]  phvlo8a.afm
+    │   │   │   │   │   ├── [ 17K]  phvr8a.afm
+    │   │   │   │   │   ├── [ 17K]  phvr8an.afm
+    │   │   │   │   │   ├── [ 17K]  phvro8a.afm
+    │   │   │   │   │   ├── [ 17K]  phvro8an.afm
+    │   │   │   │   │   ├── [ 16K]  pncb8a.afm
+    │   │   │   │   │   ├── [ 17K]  pncbi8a.afm
+    │   │   │   │   │   ├── [ 16K]  pncr8a.afm
+    │   │   │   │   │   ├── [ 17K]  pncri8a.afm
+    │   │   │   │   │   ├── [ 15K]  pplb8a.afm
+    │   │   │   │   │   ├── [ 15K]  pplbi8a.afm
+    │   │   │   │   │   ├── [ 15K]  pplr8a.afm
+    │   │   │   │   │   ├── [ 15K]  pplri8a.afm
+    │   │   │   │   │   ├── [9.4K]  psyr.afm
+    │   │   │   │   │   ├── [ 18K]  ptmb8a.afm
+    │   │   │   │   │   ├── [ 18K]  ptmbi8a.afm
+    │   │   │   │   │   ├── [ 18K]  ptmr8a.afm
+    │   │   │   │   │   ├── [ 18K]  ptmri8a.afm
+    │   │   │   │   │   ├── [ 21K]  putb8a.afm
+    │   │   │   │   │   ├── [ 21K]  putbi8a.afm
+    │   │   │   │   │   ├── [ 22K]  putr8a.afm
+    │   │   │   │   │   ├── [ 21K]  putri8a.afm
+    │   │   │   │   │   ├── [ 16K]  pzcmi8a.afm
+    │   │   │   │   │   └── [9.2K]  pzdr.afm
+    │   │   │   │   ├── [609K]  pdfcorefonts
+    │   │   │   │   │   ├── [ 15K]  Courier.afm
+    │   │   │   │   │   ├── [ 15K]  Courier-Bold.afm
+    │   │   │   │   │   ├── [ 15K]  Courier-BoldOblique.afm
+    │   │   │   │   │   ├── [ 15K]  Courier-Oblique.afm
+    │   │   │   │   │   ├── [ 73K]  Helvetica.afm
+    │   │   │   │   │   ├── [ 68K]  Helvetica-Bold.afm
+    │   │   │   │   │   ├── [ 68K]  Helvetica-BoldOblique.afm
+    │   │   │   │   │   ├── [ 73K]  Helvetica-Oblique.afm
+    │   │   │   │   │   ├── [ 828]  readme.txt
+    │   │   │   │   │   ├── [9.5K]  Symbol.afm
+    │   │   │   │   │   ├── [ 63K]  Times-Bold.afm
+    │   │   │   │   │   ├── [ 58K]  Times-BoldItalic.afm
+    │   │   │   │   │   ├── [ 65K]  Times-Italic.afm
+    │   │   │   │   │   ├── [ 59K]  Times-Roman.afm
+    │   │   │   │   │   └── [9.3K]  ZapfDingbats.afm
+    │   │   │   │   └── [6.6M]  ttf
+    │   │   │   │       ├── [ 25K]  cmb10.ttf
+    │   │   │   │       ├── [ 21K]  cmex10.ttf
+    │   │   │   │       ├── [ 32K]  cmmi10.ttf
+    │   │   │   │       ├── [ 26K]  cmr10.ttf
+    │   │   │   │       ├── [ 20K]  cmss10.ttf
+    │   │   │   │       ├── [ 29K]  cmsy10.ttf
+    │   │   │   │       ├── [ 27K]  cmtt10.ttf
+    │   │   │   │       ├── [627K]  DejaVuSans-BoldOblique.ttf
+    │   │   │   │       ├── [688K]  DejaVuSans-Bold.ttf
+    │   │   │   │       ├── [ 25K]  DejaVuSansDisplay.ttf
+    │   │   │   │       ├── [247K]  DejaVuSansMono-BoldOblique.ttf
+    │   │   │   │       ├── [324K]  DejaVuSansMono-Bold.ttf
+    │   │   │   │       ├── [246K]  DejaVuSansMono-Oblique.ttf
+    │   │   │   │       ├── [332K]  DejaVuSansMono.ttf
+    │   │   │   │       ├── [619K]  DejaVuSans-Oblique.ttf
+    │   │   │   │       ├── [738K]  DejaVuSans.ttf
+    │   │   │   │       ├── [339K]  DejaVuSerif-BoldItalic.ttf
+    │   │   │   │       ├── [347K]  DejaVuSerif-Bold.ttf
+    │   │   │   │       ├── [ 14K]  DejaVuSerifDisplay.ttf
+    │   │   │   │       ├── [338K]  DejaVuSerif-Italic.ttf
+    │   │   │   │       ├── [371K]  DejaVuSerif.ttf
+    │   │   │   │       ├── [4.7K]  LICENSE_DEJAVU
+    │   │   │   │       ├── [5.3K]  LICENSE_STIX
+    │   │   │   │       ├── [177K]  STIXGeneralBolIta.ttf
+    │   │   │   │       ├── [232K]  STIXGeneralBol.ttf
+    │   │   │   │       ├── [171K]  STIXGeneralItalic.ttf
+    │   │   │   │       ├── [438K]  STIXGeneral.ttf
+    │   │   │   │       ├── [ 40K]  STIXNonUniBolIta.ttf
+    │   │   │   │       ├── [ 30K]  STIXNonUniBol.ttf
+    │   │   │   │       ├── [ 46K]  STIXNonUniIta.ttf
+    │   │   │   │       ├── [ 58K]  STIXNonUni.ttf
+    │   │   │   │       ├── [ 13K]  STIXSizFiveSymReg.ttf
+    │   │   │   │       ├── [ 12K]  STIXSizFourSymBol.ttf
+    │   │   │   │       ├── [ 16K]  STIXSizFourSymReg.ttf
+    │   │   │   │       ├── [ 12K]  STIXSizOneSymBol.ttf
+    │   │   │   │       ├── [ 19K]  STIXSizOneSymReg.ttf
+    │   │   │   │       ├── [ 12K]  STIXSizThreeSymBol.ttf
+    │   │   │   │       ├── [ 15K]  STIXSizThreeSymReg.ttf
+    │   │   │   │       ├── [ 12K]  STIXSizTwoSymBol.ttf
+    │   │   │   │       └── [ 15K]  STIXSizTwoSymReg.ttf
+    │   │   │   ├── [157K]  images
+    │   │   │   │   ├── [ 620]  back_large.png
+    │   │   │   │   ├── [1.6K]  back.pdf
+    │   │   │   │   ├── [ 380]  back.png
+    │   │   │   │   ├── [1.5K]  back.svg
+    │   │   │   │   ├── [1.5K]  back-symbolic.svg
+    │   │   │   │   ├── [ 720]  filesave_large.png
+    │   │   │   │   ├── [1.7K]  filesave.pdf
+    │   │   │   │   ├── [ 458]  filesave.png
+    │   │   │   │   ├── [2.0K]  filesave.svg
+    │   │   │   │   ├── [2.0K]  filesave-symbolic.svg
+    │   │   │   │   ├── [ 593]  forward_large.png
+    │   │   │   │   ├── [1.6K]  forward.pdf
+    │   │   │   │   ├── [ 357]  forward.png
+    │   │   │   │   ├── [1.5K]  forward.svg
+    │   │   │   │   ├── [1.5K]  forward-symbolic.svg
+    │   │   │   │   ├── [4.1K]  hand.pdf
+    │   │   │   │   ├── [ 979]  hand.png
+    │   │   │   │   ├── [4.8K]  hand.svg
+    │   │   │   │   ├── [ 747]  help_large.png
+    │   │   │   │   ├── [1.8K]  help.pdf
+    │   │   │   │   ├── [ 472]  help.png
+    │   │   │   │   ├── [1.8K]  help.svg
+    │   │   │   │   ├── [1.8K]  help-symbolic.svg
+    │   │   │   │   ├── [ 790]  home_large.png
+    │   │   │   │   ├── [1.7K]  home.pdf
+    │   │   │   │   ├── [ 468]  home.png
+    │   │   │   │   ├── [1.9K]  home.svg
+    │   │   │   │   ├── [1.9K]  home-symbolic.svg
+    │   │   │   │   ├── [3.0K]  matplotlib_large.png
+    │   │   │   │   ├── [ 22K]  matplotlib.pdf
+    │   │   │   │   ├── [1.3K]  matplotlib.png
+    │   │   │   │   ├── [ 61K]  matplotlib.svg
+    │   │   │   │   ├── [ 767]  move_large.png
+    │   │   │   │   ├── [1.8K]  move.pdf
+    │   │   │   │   ├── [ 481]  move.png
+    │   │   │   │   ├── [2.5K]  move.svg
+    │   │   │   │   ├── [2.5K]  move-symbolic.svg
+    │   │   │   │   ├── [ 619]  qt4_editor_options_large.png
+    │   │   │   │   ├── [1.5K]  qt4_editor_options.pdf
+    │   │   │   │   ├── [ 380]  qt4_editor_options.png
+    │   │   │   │   ├── [1.2K]  qt4_editor_options.svg
+    │   │   │   │   ├── [ 662]  subplots_large.png
+    │   │   │   │   ├── [1.7K]  subplots.pdf
+    │   │   │   │   ├── [ 445]  subplots.png
+    │   │   │   │   ├── [2.1K]  subplots.svg
+    │   │   │   │   ├── [2.1K]  subplots-symbolic.svg
+    │   │   │   │   ├── [1016]  zoom_to_rect_large.png
+    │   │   │   │   ├── [1.6K]  zoom_to_rect.pdf
+    │   │   │   │   ├── [ 530]  zoom_to_rect.png
+    │   │   │   │   ├── [1.5K]  zoom_to_rect.svg
+    │   │   │   │   └── [1.5K]  zoom_to_rect-symbolic.svg
+    │   │   │   ├── [ 139]  kpsewhich.lua
+    │   │   │   ├── [ 42K]  matplotlibrc
+    │   │   │   ├── [4.3K]  plot_directive
+    │   │   │   │   └── [ 318]  plot_directive.css
+    │   │   │   ├── [517K]  sample_data
+    │   │   │   │   ├── [5.8K]  axes_grid
+    │   │   │   │   │   └── [1.8K]  bivariate_normal.npy
+    │   │   │   │   ├── [ 132]  data_x_x2_x3.csv
+    │   │   │   │   ├── [ 25K]  eeg.dat
+    │   │   │   │   ├── [2.1K]  embedding_in_wx3.xrc
+    │   │   │   │   ├── [ 22K]  goog.npz
+    │   │   │   │   ├── [ 60K]  grace_hopper.jpg
+    │   │   │   │   ├── [170K]  jacksboro_fault_dem.npz
+    │   │   │   │   ├── [ 22K]  logo2.png
+    │   │   │   │   ├── [ 47K]  membrane.dat
+    │   │   │   │   ├── [ 13K]  Minduka_Present_Blue_Pack.png
+    │   │   │   │   ├── [3.1K]  msft.csv
+    │   │   │   │   ├── [ 128]  README.txt
+    │   │   │   │   ├── [ 32K]  s1045.ima.gz
+    │   │   │   │   ├── [ 66K]  Stocks.csv
+    │   │   │   │   └── [ 44K]  topobathy.npz
+    │   │   │   └── [ 41K]  stylelib
+    │   │   │       ├── [ 712]  bmh.mplstyle
+    │   │   │       ├── [ 24K]  classic.mplstyle
+    │   │   │       ├── [ 167]  _classic_test_patch.mplstyle
+    │   │   │       ├── [ 607]  dark_background.mplstyle
+    │   │   │       ├── [ 288]  fast.mplstyle
+    │   │   │       ├── [ 780]  fivethirtyeight.mplstyle
+    │   │   │       ├── [ 956]  ggplot.mplstyle
+    │   │   │       ├── [ 526]  grayscale.mplstyle
+    │   │   │       ├── [ 504]  _mpl-gallery.mplstyle
+    │   │   │       ├── [ 489]  _mpl-gallery-nogrid.mplstyle
+    │   │   │       ├── [ 298]  petroff10.mplstyle
+    │   │   │       ├── [ 144]  seaborn-v0_8-bright.mplstyle
+    │   │   │       ├── [ 148]  seaborn-v0_8-colorblind.mplstyle
+    │   │   │       ├── [ 670]  seaborn-v0_8-darkgrid.mplstyle
+    │   │   │       ├── [ 667]  seaborn-v0_8-dark.mplstyle
+    │   │   │       ├── [ 142]  seaborn-v0_8-dark-palette.mplstyle
+    │   │   │       ├── [ 142]  seaborn-v0_8-deep.mplstyle
+    │   │   │       ├── [1.1K]  seaborn-v0_8.mplstyle
+    │   │   │       ├── [ 143]  seaborn-v0_8-muted.mplstyle
+    │   │   │       ├── [ 382]  seaborn-v0_8-notebook.mplstyle
+    │   │   │       ├── [ 393]  seaborn-v0_8-paper.mplstyle
+    │   │   │       ├── [ 144]  seaborn-v0_8-pastel.mplstyle
+    │   │   │       ├── [ 403]  seaborn-v0_8-poster.mplstyle
+    │   │   │       ├── [ 403]  seaborn-v0_8-talk.mplstyle
+    │   │   │       ├── [ 665]  seaborn-v0_8-ticks.mplstyle
+    │   │   │       ├── [ 664]  seaborn-v0_8-whitegrid.mplstyle
+    │   │   │       ├── [ 665]  seaborn-v0_8-white.mplstyle
+    │   │   │       ├── [1.2K]  Solarize_Light2.mplstyle
+    │   │   │       └── [ 190]  tableau-colorblind10.mplstyle
+    │   │   ├── [501K]  _path.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [756K]  _qhull.cpython-313-x86_64-linux-gnu.so
+    │   │   └── [433K]  _tri.cpython-313-x86_64-linux-gnu.so
+    │   ├── [ 14M]  numpy
+    │   │   ├── [ 10M]  _core
+    │   │   │   ├── [138K]  _multiarray_tests.cpython-313-x86_64-linux-gnu.so
+    │   │   │   └── [ 10M]  _multiarray_umath.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [530K]  fft
+    │   │   │   └── [526K]  _pocketfft_umath.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [230K]  linalg
+    │   │   │   └── [226K]  _umath_linalg.cpython-313-x86_64-linux-gnu.so
+    │   │   └── [2.6M]  random
+    │   │       ├── [213K]  bit_generator.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [313K]  _bounded_integers.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [236K]  _common.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [790K]  _generator.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [127K]  _mt19937.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [605K]  mtrand.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [138K]  _pcg64.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [115K]  _philox.cpython-313-x86_64-linux-gnu.so
+    │   │       └── [ 85K]  _sfc64.cpython-313-x86_64-linux-gnu.so
+    │   ├── [193K]  numpy-2.3.5.dist-info
+    │   │   ├── [ 220]  entry_points.txt
+    │   │   ├── [   2]  INSTALLER
+    │   │   ├── [ 47K]  LICENSE.txt
+    │   │   ├── [ 61K]  METADATA
+    │   │   ├── [ 81K]  RECORD
+    │   │   ├── [   0]  REQUESTED
+    │   │   └── [ 138]  WHEEL
+    │   ├── [ 27M]  numpy.libs
+    │   │   ├── [2.7M]  libgfortran-040039e1-0352e75f.so.5.0.0
+    │   │   ├── [245K]  libquadmath-96973f99-934c22de.so.0.0.0
+    │   │   └── [ 24M]  libscipy_openblas64_-fdde5778.so
+    │   ├── [4.0M]  PIL
+    │   │   ├── [ 86K]  _avif.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [154K]  _imagingcms.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [3.2M]  _imaging.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [315K]  _imagingft.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [164K]  _imagingmath.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [ 46K]  _imagingtk.cpython-313-x86_64-linux-gnu.so
+    │   │   └── [106K]  _webp.cpython-313-x86_64-linux-gnu.so
+    │   ├── [ 13M]  pillow.libs
+    │   │   ├── [4.9M]  libavif-01e67780.so.16.3.0
+    │   │   ├── [141K]  libbrotlicommon-c55a5f7a.so.1.1.0
+    │   │   ├── [ 61K]  libbrotlidec-2ced2f3a.so.1.1.0
+    │   │   ├── [1.4M]  libfreetype-5bb46249.so.6.20.4
+    │   │   ├── [919K]  libharfbuzz-525aa570.so.0.61210.0
+    │   │   ├── [817K]  libjpeg-a41b0190.so.62.4.0
+    │   │   ├── [507K]  liblcms2-cc10e42f.so.2.0.17
+    │   │   ├── [260K]  liblzma-64b7ab39.so.5.8.1
+    │   │   ├── [572K]  libopenjp2-94e588ba.so.2.5.4
+    │   │   ├── [271K]  libpng16-00127801.so.16.50.0
+    │   │   ├── [ 45K]  libsharpyuv-95d8a097.so.0.1.2
+    │   │   ├── [737K]  libtiff-295fd75c.so.6.2.0
+    │   │   ├── [714K]  libwebp-d8b9687f.so.7.2.0
+    │   │   ├── [ 30K]  libwebpdemux-747f2b49.so.2.0.17
+    │   │   ├── [ 57K]  libwebpmux-7f11e5ce.so.3.1.2
+    │   │   ├── [ 22K]  libXau-154567c4.so.6.0.0
+    │   │   ├── [246K]  libxcb-64009ff3.so.1.1.0
+    │   │   └── [1.7M]  libzstd-761a17b6.so.1.5.7
+    │   ├── [2.2M]  python3.13
+    │   │   └── [2.2M]  lib-dynload
+    │   │       ├── [ 76K]  _asyncio.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [ 27K]  _bz2.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [150K]  _codecs_cn.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [158K]  _codecs_hk.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [ 30K]  _codecs_iso2022.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [266K]  _codecs_jp.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [138K]  _codecs_kr.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [110K]  _codecs_tw.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [ 14K]  _contextvars.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [147K]  _ctypes.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [121K]  _curses.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [343K]  _decimal.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [ 67K]  _hashlib.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [ 40K]  _lzma.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [ 32K]  mmap.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [ 53K]  _multibytecodec.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [ 24K]  _multiprocessing.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [ 14K]  _posixshmem.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [ 23K]  _queue.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [ 40K]  readline.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [ 19K]  resource.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [218K]  _ssl.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [ 35K]  termios.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [ 65K]  _tkinter.cpython-313-x86_64-linux-gnu.so
+    │   │       └── [ 14K]  _uuid.cpython-313-x86_64-linux-gnu.so
+    │   ├── [ 47M]  scipy
+    │   │   ├── [191K]  _cyutility.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [1.2M]  fft
+    │   │   │   └── [1.2M]  _pocketfft
+    │   │   │       └── [1.2M]  pypocketfft.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [1.7M]  integrate
+    │   │   │   ├── [118K]  _dop.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [505K]  _lsoda.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [468K]  _odepack.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [109K]  _quadpack.cpython-313-x86_64-linux-gnu.so
+    │   │   │   └── [557K]  _vode.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [1.6M]  interpolate
+    │   │   │   ├── [342K]  _dfitpack.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [151K]  _dierckx.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [ 89K]  _fitpack.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [295K]  _interpnd.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [306K]  _ppoly.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [251K]  _rbfinterp_pythran.cpython-313-x86_64-linux-gnu.so
+    │   │   │   └── [150K]  _rgi_cython.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [379K]  _lib
+    │   │   │   ├── [ 97K]  _ccallback_c.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [ 16K]  _fpumode.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [ 84K]  messagestream.cpython-313-x86_64-linux-gnu.so
+    │   │   │   └── [178K]  _uarray
+    │   │   │       └── [174K]  _uarray.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [7.5M]  linalg
+    │   │   │   ├── [197K]  cython_blas.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [450K]  _cythonized_array_utils.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [859K]  cython_lapack.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [780K]  _decomp_interpolative.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [124K]  _decomp_lu_cython.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [345K]  _decomp_update.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [1016K]  _fblas.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [2.5M]  _flapack.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [137K]  _linalg_pythran.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [499K]  _matfuncs_expm.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [483K]  _matfuncs_schur_sqrtm.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [136K]  _matfuncs_sqrtm_triu.cpython-313-x86_64-linux-gnu.so
+    │   │   │   └── [149K]  _solve_toeplitz.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [467K]  ndimage
+    │   │   │   ├── [144K]  _nd_image.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [292K]  _ni_label.cpython-313-x86_64-linux-gnu.so
+    │   │   │   └── [ 27K]  _rank_filter_1d.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [8.2M]  optimize
+    │   │   │   ├── [213K]  _bglu_dense.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [ 42K]  _direct.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [ 98K]  _group_columns.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [6.1M]  _highspy
+    │   │   │   │   ├── [5.7M]  _core.cpython-313-x86_64-linux-gnu.so
+    │   │   │   │   └── [431K]  _highs_options.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [451K]  _lbfgsb.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [ 26K]  _lsap.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [ 77K]  _lsq
+    │   │   │   │   └── [ 73K]  givens_elimination.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [ 96K]  _minpack.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [147K]  _moduleTNC.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [244K]  _pava_pybind.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [448K]  _slsqplib.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [231K]  _trlib
+    │   │   │   │   └── [227K]  _trlib.cpython-313-x86_64-linux-gnu.so
+    │   │   │   └── [ 21K]  _zeros.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [807K]  signal
+    │   │   │   ├── [ 76K]  _max_len_seq_inner.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [156K]  _peak_finding_utils.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [110K]  _sigtools.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [162K]  _sosfilt.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [ 55K]  _spline.cpython-313-x86_64-linux-gnu.so
+    │   │   │   └── [244K]  _upfirdn_apply.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [ 10M]  sparse
+    │   │   │   ├── [1.8M]  csgraph
+    │   │   │   │   ├── [195K]  _flow.cpython-313-x86_64-linux-gnu.so
+    │   │   │   │   ├── [200K]  _matching.cpython-313-x86_64-linux-gnu.so
+    │   │   │   │   ├── [117K]  _min_spanning_tree.cpython-313-x86_64-linux-gnu.so
+    │   │   │   │   ├── [184K]  _reordering.cpython-313-x86_64-linux-gnu.so
+    │   │   │   │   ├── [442K]  _shortest_path.cpython-313-x86_64-linux-gnu.so
+    │   │   │   │   ├── [198K]  _tools.cpython-313-x86_64-linux-gnu.so
+    │   │   │   │   └── [469K]  _traversal.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [543K]  _csparsetools.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [3.7M]  linalg
+    │   │   │   │   ├── [796K]  _dsolve
+    │   │   │   │   │   └── [792K]  _superlu.cpython-313-x86_64-linux-gnu.so
+    │   │   │   │   ├── [869K]  _eigen
+    │   │   │   │   │   └── [865K]  arpack
+    │   │   │   │   │       └── [861K]  _arpack.cpython-313-x86_64-linux-gnu.so
+    │   │   │   │   └── [2.1M]  _propack
+    │   │   │   │       ├── [557K]  _cpropack.cpython-313-x86_64-linux-gnu.so
+    │   │   │   │       ├── [521K]  _dpropack.cpython-313-x86_64-linux-gnu.so
+    │   │   │   │       ├── [521K]  _spropack.cpython-313-x86_64-linux-gnu.so
+    │   │   │   │       └── [545K]  _zpropack.cpython-313-x86_64-linux-gnu.so
+    │   │   │   └── [4.1M]  _sparsetools.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [3.9M]  spatial
+    │   │   │   ├── [838K]  _ckdtree.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [658K]  _distance_pybind.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [111K]  _distance_wrap.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [ 99K]  _hausdorff.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [953K]  _qhull.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [1.2M]  transform
+    │   │   │   │   ├── [398K]  _rigid_transform.cpython-313-x86_64-linux-gnu.so
+    │   │   │   │   └── [816K]  _rotation.cpython-313-x86_64-linux-gnu.so
+    │   │   │   └── [ 91K]  _voronoi.cpython-313-x86_64-linux-gnu.so
+    │   │   ├── [9.1M]  special
+    │   │   │   ├── [ 59K]  _comb.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [3.1M]  cython_special.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [143K]  _ellip_harm_2.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [736K]  _gufuncs.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [231K]  _specfun.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [1.5M]  _special_ufuncs.cpython-313-x86_64-linux-gnu.so
+    │   │   │   ├── [1.6M]  _ufuncs.cpython-313-x86_64-linux-gnu.so
+    │   │   │   └── [1.7M]  _ufuncs_cxx.cpython-313-x86_64-linux-gnu.so
+    │   │   └── [1.9M]  stats
+    │   │       ├── [123K]  _ansari_swilk_statistics.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [311K]  _biasedurn.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [ 70K]  _levy_stable
+    │   │       │   └── [ 66K]  levyst.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [148K]  _qmc_cy.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [140K]  _qmvnt_cy.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [116K]  _rcont
+    │   │       │   └── [112K]  rcont.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [239K]  _sobol.cpython-313-x86_64-linux-gnu.so
+    │   │       ├── [559K]  _stats.cpython-313-x86_64-linux-gnu.so
+    │   │       └── [198K]  _stats_pythran.cpython-313-x86_64-linux-gnu.so
+    │   ├── [ 29M]  scipy.libs
+    │   │   ├── [2.7M]  libgfortran-040039e1-0352e75f.so.5.0.0
+    │   │   ├── [2.6M]  libgfortran-040039e1.so.5.0.0
+    │   │   ├── [245K]  libquadmath-96973f99-934c22de.so.0.0.0
+    │   │   ├── [242K]  libquadmath-96973f99.so.0.0.0
+    │   │   └── [ 24M]  libscipy_openblas-b75cc656.so
+    │   ├── [ 40K]  setuptools
+    │   │   └── [ 36K]  _vendor
+    │   │       ├── [ 22K]  importlib_metadata-8.0.0.dist-info
+    │   │       │   ├── [   4]  INSTALLER
+    │   │       │   ├── [ 11K]  LICENSE
+    │   │       │   ├── [4.5K]  METADATA
+    │   │       │   ├── [2.5K]  RECORD
+    │   │       │   ├── [   0]  REQUESTED
+    │   │       │   ├── [  19]  top_level.txt
+    │   │       │   └── [  91]  WHEEL
+    │   │       └── [9.3K]  jaraco
+    │   │           └── [5.3K]  text
+    │   │               └── [1.3K]  Lorem ipsum.txt
+    │   ├── [3.5M]  _soundfile_data
+    │   │   ├── [ 26K]  COPYING
+    │   │   └── [3.5M]  libsndfile_x86_64.so
+    │   ├── [2.1M]  _tcl_data
+    │   │   ├── [ 20K]  auto.tcl
+    │   │   ├── [126K]  clock.tcl
+    │   │   ├── [1.4M]  encoding
+    │   │   │   ├── [1.1K]  ascii.enc
+    │   │   │   ├── [ 91K]  big5.enc
+    │   │   │   ├── [ 95K]  cns11643.enc
+    │   │   │   ├── [1.1K]  cp1250.enc
+    │   │   │   ├── [1.1K]  cp1251.enc
+    │   │   │   ├── [1.1K]  cp1252.enc
+    │   │   │   ├── [1.1K]  cp1253.enc
+    │   │   │   ├── [1.1K]  cp1254.enc
+    │   │   │   ├── [1.1K]  cp1255.enc
+    │   │   │   ├── [1.1K]  cp1256.enc
+    │   │   │   ├── [1.1K]  cp1257.enc
+    │   │   │   ├── [1.1K]  cp1258.enc
+    │   │   │   ├── [1.1K]  cp437.enc
+    │   │   │   ├── [1.1K]  cp737.enc
+    │   │   │   ├── [1.1K]  cp775.enc
+    │   │   │   ├── [1.1K]  cp850.enc
+    │   │   │   ├── [1.1K]  cp852.enc
+    │   │   │   ├── [1.1K]  cp855.enc
+    │   │   │   ├── [1.1K]  cp857.enc
+    │   │   │   ├── [1.1K]  cp860.enc
+    │   │   │   ├── [1.1K]  cp861.enc
+    │   │   │   ├── [1.1K]  cp862.enc
+    │   │   │   ├── [1.1K]  cp863.enc
+    │   │   │   ├── [1.1K]  cp864.enc
+    │   │   │   ├── [1.1K]  cp865.enc
+    │   │   │   ├── [1.1K]  cp866.enc
+    │   │   │   ├── [1.1K]  cp869.enc
+    │   │   │   ├── [1.1K]  cp874.enc
+    │   │   │   ├── [ 47K]  cp932.enc
+    │   │   │   ├── [129K]  cp936.enc
+    │   │   │   ├── [127K]  cp949.enc
+    │   │   │   ├── [ 90K]  cp950.enc
+    │   │   │   ├── [1.1K]  dingbats.enc
+    │   │   │   ├── [1.0K]  ebcdic.enc
+    │   │   │   ├── [ 84K]  euc-cn.enc
+    │   │   │   ├── [ 81K]  euc-jp.enc
+    │   │   │   ├── [ 92K]  euc-kr.enc
+    │   │   │   ├── [ 85K]  gb12345.enc
+    │   │   │   ├── [1.1K]  gb1988.enc
+    │   │   │   ├── [ 84K]  gb2312.enc
+    │   │   │   ├── [ 83K]  gb2312-raw.enc
+    │   │   │   ├── [ 226]  iso2022.enc
+    │   │   │   ├── [ 192]  iso2022-jp.enc
+    │   │   │   ├── [ 115]  iso2022-kr.enc
+    │   │   │   ├── [1.1K]  iso8859-10.enc
+    │   │   │   ├── [1.1K]  iso8859-11.enc
+    │   │   │   ├── [1.1K]  iso8859-13.enc
+    │   │   │   ├── [1.1K]  iso8859-14.enc
+    │   │   │   ├── [1.1K]  iso8859-15.enc
+    │   │   │   ├── [1.1K]  iso8859-16.enc
+    │   │   │   ├── [1.1K]  iso8859-1.enc
+    │   │   │   ├── [1.1K]  iso8859-2.enc
+    │   │   │   ├── [1.1K]  iso8859-3.enc
+    │   │   │   ├── [1.1K]  iso8859-4.enc
+    │   │   │   ├── [1.1K]  iso8859-5.enc
+    │   │   │   ├── [1.1K]  iso8859-6.enc
+    │   │   │   ├── [1.1K]  iso8859-7.enc
+    │   │   │   ├── [1.1K]  iso8859-8.enc
+    │   │   │   ├── [1.1K]  iso8859-9.enc
+    │   │   │   ├── [1.1K]  jis0201.enc
+    │   │   │   ├── [ 79K]  jis0208.enc
+    │   │   │   ├── [ 69K]  jis0212.enc
+    │   │   │   ├── [1.1K]  koi8-r.enc
+    │   │   │   ├── [1.1K]  koi8-ru.enc
+    │   │   │   ├── [1.1K]  koi8-t.enc
+    │   │   │   ├── [1.1K]  koi8-u.enc
+    │   │   │   ├── [ 91K]  ksc5601.enc
+    │   │   │   ├── [1.1K]  macCentEuro.enc
+    │   │   │   ├── [1.1K]  macCroatian.enc
+    │   │   │   ├── [1.1K]  macCyrillic.enc
+    │   │   │   ├── [1.1K]  macDingbats.enc
+    │   │   │   ├── [1.1K]  macGreek.enc
+    │   │   │   ├── [1.1K]  macIceland.enc
+    │   │   │   ├── [ 47K]  macJapan.enc
+    │   │   │   ├── [1.1K]  macRoman.enc
+    │   │   │   ├── [1.1K]  macRomania.enc
+    │   │   │   ├── [1.1K]  macThai.enc
+    │   │   │   ├── [1.1K]  macTurkish.enc
+    │   │   │   ├── [1.1K]  macUkraine.enc
+    │   │   │   ├── [ 41K]  shiftjis.enc
+    │   │   │   ├── [1.1K]  symbol.enc
+    │   │   │   └── [1.1K]  tis-620.enc
+    │   │   ├── [7.7K]  history.tcl
+    │   │   ├── [ 14K]  http1.0
+    │   │   │   ├── [9.4K]  http.tcl
+    │   │   │   └── [ 735]  pkgIndex.tcl
+    │   │   ├── [ 24K]  init.tcl
+    │   │   ├── [114K]  msgs
+    │   │   │   ├── [ 989]  af.msg
+    │   │   │   ├── [ 251]  af_za.msg
+    │   │   │   ├── [ 259]  ar_in.msg
+    │   │   │   ├── [1.8K]  ar_jo.msg
+    │   │   │   ├── [1.8K]  ar_lb.msg
+    │   │   │   ├── [1.9K]  ar.msg
+    │   │   │   ├── [1.8K]  ar_sy.msg
+    │   │   │   ├── [2.1K]  be.msg
+    │   │   │   ├── [1.8K]  bg.msg
+    │   │   │   ├── [ 259]  bn_in.msg
+    │   │   │   ├── [2.2K]  bn.msg
+    │   │   │   ├── [1.1K]  ca.msg
+    │   │   │   ├── [1.3K]  cs.msg
+    │   │   │   ├── [1.1K]  da.msg
+    │   │   │   ├── [ 812]  de_at.msg
+    │   │   │   ├── [1.2K]  de_be.msg
+    │   │   │   ├── [1.2K]  de.msg
+    │   │   │   ├── [2.2K]  el.msg
+    │   │   │   ├── [ 300]  en_au.msg
+    │   │   │   ├── [ 305]  en_be.msg
+    │   │   │   ├── [ 251]  en_bw.msg
+    │   │   │   ├── [ 288]  en_ca.msg
+    │   │   │   ├── [ 279]  en_gb.msg
+    │   │   │   ├── [ 321]  en_hk.msg
+    │   │   │   ├── [ 279]  en_ie.msg
+    │   │   │   ├── [ 310]  en_in.msg
+    │   │   │   ├── [ 300]  en_nz.msg
+    │   │   │   ├── [ 321]  en_ph.msg
+    │   │   │   ├── [ 251]  en_sg.msg
+    │   │   │   ├── [ 245]  en_za.msg
+    │   │   │   ├── [ 251]  en_zw.msg
+    │   │   │   ├── [1.2K]  eo.msg
+    │   │   │   ├── [ 242]  es_ar.msg
+    │   │   │   ├── [ 251]  es_bo.msg
+    │   │   │   ├── [ 251]  es_cl.msg
+    │   │   │   ├── [ 251]  es_co.msg
+    │   │   │   ├── [ 251]  es_cr.msg
+    │   │   │   ├── [ 251]  es_do.msg
+    │   │   │   ├── [ 251]  es_ec.msg
+    │   │   │   ├── [ 251]  es_gt.msg
+    │   │   │   ├── [ 251]  es_hn.msg
+    │   │   │   ├── [1.2K]  es.msg
+    │   │   │   ├── [ 251]  es_mx.msg
+    │   │   │   ├── [ 251]  es_ni.msg
+    │   │   │   ├── [ 251]  es_pa.msg
+    │   │   │   ├── [ 251]  es_pe.msg
+    │   │   │   ├── [ 251]  es_pr.msg
+    │   │   │   ├── [ 251]  es_py.msg
+    │   │   │   ├── [ 251]  es_sv.msg
+    │   │   │   ├── [ 251]  es_uy.msg
+    │   │   │   ├── [ 251]  es_ve.msg
+    │   │   │   ├── [1.2K]  et.msg
+    │   │   │   ├── [ 287]  eu_es.msg
+    │   │   │   ├── [ 985]  eu.msg
+    │   │   │   ├── [1.9K]  fa_in.msg
+    │   │   │   ├── [ 417]  fa_ir.msg
+    │   │   │   ├── [1.6K]  fa.msg
+    │   │   │   ├── [1.1K]  fi.msg
+    │   │   │   ├── [ 279]  fo_fo.msg
+    │   │   │   ├── [ 986]  fo.msg
+    │   │   │   ├── [ 279]  fr_be.msg
+    │   │   │   ├── [ 279]  fr_ca.msg
+    │   │   │   ├── [ 281]  fr_ch.msg
+    │   │   │   ├── [1.2K]  fr.msg
+    │   │   │   ├── [ 279]  ga_ie.msg
+    │   │   │   ├── [1.1K]  ga.msg
+    │   │   │   ├── [ 251]  gl_es.msg
+    │   │   │   ├── [ 950]  gl.msg
+    │   │   │   ├── [ 251]  gv_gb.msg
+    │   │   │   ├── [1.0K]  gv.msg
+    │   │   │   ├── [1.9K]  he.msg
+    │   │   │   ├── [ 251]  hi_in.msg
+    │   │   │   ├── [1.7K]  hi.msg
+    │   │   │   ├── [1.1K]  hr.msg
+    │   │   │   ├── [1.3K]  hu.msg
+    │   │   │   ├── [ 251]  id_id.msg
+    │   │   │   ├── [ 914]  id.msg
+    │   │   │   ├── [1.2K]  is.msg
+    │   │   │   ├── [ 244]  it_ch.msg
+    │   │   │   ├── [1.2K]  it.msg
+    │   │   │   ├── [1.6K]  ja.msg
+    │   │   │   ├── [ 279]  kl_gl.msg
+    │   │   │   ├── [ 978]  kl.msg
+    │   │   │   ├── [ 254]  kok_in.msg
+    │   │   │   ├── [1.9K]  kok.msg
+    │   │   │   ├── [ 346]  ko_kr.msg
+    │   │   │   ├── [1.5K]  ko.msg
+    │   │   │   ├── [ 251]  kw_gb.msg
+    │   │   │   ├── [ 966]  kw.msg
+    │   │   │   ├── [1.2K]  lt.msg
+    │   │   │   ├── [1.2K]  lv.msg
+    │   │   │   ├── [2.1K]  mk.msg
+    │   │   │   ├── [ 251]  mr_in.msg
+    │   │   │   ├── [1.8K]  mr.msg
+    │   │   │   ├── [ 910]  ms.msg
+    │   │   │   ├── [ 259]  ms_my.msg
+    │   │   │   ├── [ 690]  mt.msg
+    │   │   │   ├── [1.1K]  nb.msg
+    │   │   │   ├── [ 279]  nl_be.msg
+    │   │   │   ├── [1.1K]  nl.msg
+    │   │   │   ├── [1.1K]  nn.msg
+    │   │   │   ├── [1.2K]  pl.msg
+    │   │   │   ├── [ 279]  pt_br.msg
+    │   │   │   ├── [1.1K]  pt.msg
+    │   │   │   ├── [1.1K]  ro.msg
+    │   │   │   ├── [2.0K]  ru.msg
+    │   │   │   ├── [ 242]  ru_ua.msg
+    │   │   │   ├── [1.1K]  sh.msg
+    │   │   │   ├── [1.2K]  sk.msg
+    │   │   │   ├── [1.1K]  sl.msg
+    │   │   │   ├── [1.2K]  sq.msg
+    │   │   │   ├── [2.0K]  sr.msg
+    │   │   │   ├── [1.1K]  sv.msg
+    │   │   │   ├── [ 991]  sw.msg
+    │   │   │   ├── [ 251]  ta_in.msg
+    │   │   │   ├── [1.8K]  ta.msg
+    │   │   │   ├── [ 411]  te_in.msg
+    │   │   │   ├── [2.1K]  te.msg
+    │   │   │   ├── [2.3K]  th.msg
+    │   │   │   ├── [1.1K]  tr.msg
+    │   │   │   ├── [2.1K]  uk.msg
+    │   │   │   ├── [1.4K]  vi.msg
+    │   │   │   ├── [ 312]  zh_cn.msg
+    │   │   │   ├── [ 752]  zh_hk.msg
+    │   │   │   ├── [3.3K]  zh.msg
+    │   │   │   ├── [ 339]  zh_sg.msg
+    │   │   │   └── [ 346]  zh_tw.msg
+    │   │   ├── [ 37K]  opt0.4
+    │   │   │   ├── [ 32K]  optparse.tcl
+    │   │   │   └── [ 624]  pkgIndex.tcl
+    │   │   ├── [ 23K]  package.tcl
+    │   │   ├── [ 816]  parray.tcl
+    │   │   ├── [ 40K]  safe.tcl
+    │   │   ├── [273K]  tcl8
+    │   │   │   ├── [112K]  http-2.9.8.tm
+    │   │   │   ├── [ 33K]  msgcat-1.6.1.tm
+    │   │   │   ├── [9.9K]  platform
+    │   │   │   │   └── [5.9K]  shell-1.1.4.tm
+    │   │   │   ├── [ 11K]  platform-1.0.19.tm
+    │   │   │   └── [103K]  tcltest-2.5.9.tm
+    │   │   ├── [4.8K]  tclAppInit.c
+    │   │   ├── [7.2K]  tclIndex
+    │   │   ├── [ 12K]  tm.tcl
+    │   │   └── [4.8K]  word.tcl
+    │   ├── [ 35K]  textual-7.0.1.dist-info
+    │   │   ├── [   2]  INSTALLER
+    │   │   ├── [1.0K]  LICENSE
+    │   │   ├── [8.8K]  METADATA
+    │   │   ├── [ 21K]  RECORD
+    │   │   ├── [   0]  REQUESTED
+    │   │   └── [  88]  WHEEL
+    │   └── [823K]  _tk_data
+    │       ├── [8.3K]  bgerror.tcl
+    │       ├── [ 20K]  button.tcl
+    │       ├── [9.5K]  choosedir.tcl
+    │       ├── [ 21K]  clrpick.tcl
+    │       ├── [8.2K]  comdlg.tcl
+    │       ├── [ 31K]  console.tcl
+    │       ├── [5.7K]  dialog.tcl
+    │       ├── [ 18K]  entry.tcl
+    │       ├── [4.7K]  focus.tcl
+    │       ├── [ 17K]  fontchooser.tcl
+    │       ├── [ 16K]  iconlist.tcl
+    │       ├── [ 11K]  icons.tcl
+    │       ├── [ 99K]  images
+    │       │   ├── [2.3K]  logo100.gif
+    │       │   ├── [1.6K]  logo64.gif
+    │       │   ├── [ 32K]  logo.eps
+    │       │   ├── [ 11K]  logoLarge.gif
+    │       │   ├── [3.8K]  logoMed.gif
+    │       │   ├── [1.6K]  pwrdLogo100.gif
+    │       │   ├── [2.4K]  pwrdLogo150.gif
+    │       │   ├── [2.9K]  pwrdLogo175.gif
+    │       │   ├── [3.4K]  pwrdLogo200.gif
+    │       │   ├── [1.1K]  pwrdLogo75.gif
+    │       │   ├── [ 27K]  pwrdLogo.eps
+    │       │   ├── [ 322]  README
+    │       │   └── [5.3K]  tai-ku.gif
+    │       ├── [ 14K]  listbox.tcl
+    │       ├── [9.3K]  megawidget.tcl
+    │       ├── [ 38K]  menu.tcl
+    │       ├── [ 29K]  mkpsenc.tcl
+    │       ├── [ 16K]  msgbox.tcl
+    │       ├── [ 82K]  msgs
+    │       │   ├── [4.1K]  cs.msg
+    │       │   ├── [3.8K]  da.msg
+    │       │   ├── [4.7K]  de.msg
+    │       │   ├── [8.5K]  el.msg
+    │       │   ├── [  63]  en_gb.msg
+    │       │   ├── [3.2K]  en.msg
+    │       │   ├── [3.9K]  eo.msg
+    │       │   ├── [3.9K]  es.msg
+    │       │   ├── [4.5K]  fi.msg
+    │       │   ├── [3.7K]  fr.msg
+    │       │   ├── [4.5K]  hu.msg
+    │       │   ├── [3.6K]  it.msg
+    │       │   ├── [4.4K]  nl.msg
+    │       │   ├── [4.7K]  pl.msg
+    │       │   ├── [3.8K]  pt.msg
+    │       │   ├── [8.3K]  ru.msg
+    │       │   ├── [3.7K]  sv.msg
+    │       │   └── [4.7K]  zh_cn.msg
+    │       ├── [5.5K]  obsolete.tcl
+    │       ├── [1.5K]  optMenu.tcl
+    │       ├── [8.0K]  palette.tcl
+    │       ├── [5.1K]  panedwindow.tcl
+    │       ├── [7.2K]  safetk.tcl
+    │       ├── [8.2K]  scale.tcl
+    │       ├── [ 12K]  scrlbar.tcl
+    │       ├── [ 16K]  spinbox.tcl
+    │       ├── [ 24K]  tclIndex
+    │       ├── [4.4K]  tearoff.tcl
+    │       ├── [ 33K]  text.tcl
+    │       ├── [4.5K]  tkAppInit.c
+    │       ├── [ 37K]  tkfbox.tcl
+    │       ├── [ 23K]  tk.tcl
+    │       ├── [135K]  ttk
+    │       │   ├── [4.6K]  altTheme.tcl
+    │       │   ├── [3.6K]  aquaTheme.tcl
+    │       │   ├── [2.9K]  button.tcl
+    │       │   ├── [5.8K]  clamTheme.tcl
+    │       │   ├── [4.1K]  classicTheme.tcl
+    │       │   ├── [ 12K]  combobox.tcl
+    │       │   ├── [4.4K]  cursors.tcl
+    │       │   ├── [4.7K]  defaults.tcl
+    │       │   ├── [ 17K]  entry.tcl
+    │       │   ├── [5.4K]  fonts.tcl
+    │       │   ├── [6.0K]  menubutton.tcl
+    │       │   ├── [5.5K]  notebook.tcl
+    │       │   ├── [2.0K]  panedwindow.tcl
+    │       │   ├── [1.1K]  progress.tcl
+    │       │   ├── [2.6K]  scale.tcl
+    │       │   ├── [3.1K]  scrollbar.tcl
+    │       │   ├── [2.3K]  sizegrip.tcl
+    │       │   ├── [4.7K]  spinbox.tcl
+    │       │   ├── [9.6K]  treeview.tcl
+    │       │   ├── [5.2K]  ttk.tcl
+    │       │   ├── [8.1K]  utils.tcl
+    │       │   ├── [ 10K]  vistaTheme.tcl
+    │       │   ├── [3.6K]  winTheme.tcl
+    │       │   └── [2.9K]  xpTheme.tcl
+    │       ├── [ 10K]  unsupported.tcl
+    │       └── [ 25K]  xmfbox.tcl
+    └── [ 16M]  wav-to-freq
+-  [error opening dir]
+
+ 208M used in 76 directories, 773 files

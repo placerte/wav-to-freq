@@ -4,6 +4,20 @@ REWRITE AND TRY TO USE AS MANY EXISTING PACKAGES
 
 An app that takes in a formatted wav file of an impact and returns its natural frequencies.
 
+## Installation
+
+### Linux
+
+Download the pre-built binary and install it system-wide:
+
+```bash
+curl -L -o wav-to-freq \
+  https://github.com/placerte/wav-to-freq/releases/latest/download/wav-to-freq-v0.1.0-linux-x86_64
+
+chmod +x wav-to-freq
+sudo mv wav-to-freq /usr/local/bin/wav-to-freq
+
+
 ## How to use
 
 1. Provide a small .wav sample of an impact (should be less than a coupl of seconds for performance)
