@@ -204,7 +204,10 @@ class WavToFreqApp(App):
         )
         self.call_from_thread(self._set_status, msg)
 
+def main():
+    WavToFreqApp().run()
 
 if __name__ == "__main__":
-    WavToFreqApp().run()
+    main()
+
 

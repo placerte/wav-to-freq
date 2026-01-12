@@ -22,6 +22,9 @@ dev = [
     "produm>=0.1.2",
     "pyclean>=3.4.0",
     "pydeps>=3.0.1",
+    "pyinstaller>=6.17.0",
     "radon>=6.0.1",
 ]
 
+[project.scripts]
+wav-to-freq = "wav_to_freq.tui_app:main"
