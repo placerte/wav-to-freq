@@ -1,39 +1,135 @@
-[208M]  dist
-└── [208M]  wav-to-freq
-    ├── [191M]  _internal
+[237M]  dist
+└── [237M]  wav-to-freq
+    ├── [219M]  _internal
     │   ├── [1.3M]  base_library.zip
+    │   ├── [4.9M]  _brotli.cpython-313-x86_64-linux-gnu.so
     │   ├── [341K]  _cffi_backend.cpython-313-x86_64-linux-gnu.so
     │   ├── [936K]  contourpy
     │   │   └── [932K]  _contourpy.cpython-313-x86_64-linux-gnu.so
     │   ├── [161K]  dateutil
     │   │   └── [157K]  zoneinfo
     │   │       └── [153K]  dateutil-zoneinfo.tar.gz
+    │   ├── [127K]  etc
+    │   │   └── [123K]  fonts
+    │   │       ├── [ 24K]  conf.avail
+    │   │       │   ├── [ 864]  20-unhint-small-dejavu-lgc-sans.conf
+    │   │       │   ├── [ 874]  20-unhint-small-dejavu-lgc-sans-mono.conf
+    │   │       │   ├── [ 866]  20-unhint-small-dejavu-lgc-serif.conf
+    │   │       │   ├── [ 856]  20-unhint-small-dejavu-sans.conf
+    │   │       │   ├── [ 866]  20-unhint-small-dejavu-sans-mono.conf
+    │   │       │   ├── [ 858]  20-unhint-small-dejavu-serif.conf
+    │   │       │   ├── [ 348]  30-droid-noto.conf
+    │   │       │   ├── [ 218]  30-droid-noto-mono.conf
+    │   │       │   ├── [1.7K]  57-dejavu-sans.conf
+    │   │       │   ├── [1.2K]  57-dejavu-sans-mono.conf
+    │   │       │   ├── [1.3K]  57-dejavu-serif.conf
+    │   │       │   ├── [2.0K]  58-dejavu-lgc-sans.conf
+    │   │       │   ├── [1.5K]  58-dejavu-lgc-sans-mono.conf
+    │   │       │   ├── [1.6K]  58-dejavu-lgc-serif.conf
+    │   │       │   ├── [ 202]  65-droid-sans-fallback.conf
+    │   │       │   ├── [2.8K]  65-fonts-lmodern.conf
+    │   │       │   ├── [1.7K]  65-fonts-texgyre.conf
+    │   │       │   └── [ 155]  65-fonts-texgyre-math.conf
+    │   │       ├── [ 93K]  conf.d
+    │   │       │   ├── [ 620]  10-hinting-slight.conf
+    │   │       │   ├── [2.0K]  10-scale-bitmap-fonts.conf
+    │   │       │   ├── [ 647]  10-sub-pixel-none.conf
+    │   │       │   ├── [ 258]  10-yes-antialias.conf
+    │   │       │   ├── [ 695]  11-lcdfilter-default.conf
+    │   │       │   ├── [  50]  20-unhint-small-dejavu-lgc-sans.conf -> ../conf.avail/20-unhint-small-dejavu-lgc-sans.conf
+    │   │       │   ├── [  55]  20-unhint-small-dejavu-lgc-sans-mono.conf -> ../conf.avail/20-unhint-small-dejavu-lgc-sans-mono.conf
+    │   │       │   ├── [  51]  20-unhint-small-dejavu-lgc-serif.conf -> ../conf.avail/20-unhint-small-dejavu-lgc-serif.conf
+    │   │       │   ├── [  46]  20-unhint-small-dejavu-sans.conf -> ../conf.avail/20-unhint-small-dejavu-sans.conf
+    │   │       │   ├── [  51]  20-unhint-small-dejavu-sans-mono.conf -> ../conf.avail/20-unhint-small-dejavu-sans-mono.conf
+    │   │       │   ├── [  47]  20-unhint-small-dejavu-serif.conf -> ../conf.avail/20-unhint-small-dejavu-serif.conf
+    │   │       │   ├── [1.3K]  20-unhint-small-vera.conf
+    │   │       │   ├── [ 13K]  30-metric-aliases.conf
+    │   │       │   ├── [ 289]  30-opensymbol.conf
+    │   │       │   ├── [7.8K]  40-nonlatin.conf
+    │   │       │   ├── [3.4K]  45-generic.conf
+    │   │       │   ├── [ 537]  45-Hack.conf
+    │   │       │   ├── [7.0K]  45-latin.conf
+    │   │       │   ├── [ 441]  48-spacing.conf
+    │   │       │   ├── [ 639]  49-sansserif.conf
+    │   │       │   ├── [ 751]  50-user.conf
+    │   │       │   ├── [ 263]  51-local.conf
+    │   │       │   ├── [  33]  57-dejavu-sans.conf -> ../conf.avail/57-dejavu-sans.conf
+    │   │       │   ├── [  38]  57-dejavu-sans-mono.conf -> ../conf.avail/57-dejavu-sans-mono.conf
+    │   │       │   ├── [  34]  57-dejavu-serif.conf -> ../conf.avail/57-dejavu-serif.conf
+    │   │       │   ├── [  37]  58-dejavu-lgc-sans.conf -> ../conf.avail/58-dejavu-lgc-sans.conf
+    │   │       │   ├── [  42]  58-dejavu-lgc-sans-mono.conf -> ../conf.avail/58-dejavu-lgc-sans-mono.conf
+    │   │       │   ├── [  38]  58-dejavu-lgc-serif.conf -> ../conf.avail/58-dejavu-lgc-serif.conf
+    │   │       │   ├── [1.9K]  60-generic.conf
+    │   │       │   ├── [2.1K]  60-latin.conf
+    │   │       │   ├── [1021]  61-urw-bookman.conf
+    │   │       │   ├── [1.1K]  61-urw-c059.conf
+    │   │       │   ├── [ 732]  61-urw-d050000l.conf
+    │   │       │   ├── [3.2K]  61-urw-fallback-backwards.conf
+    │   │       │   ├── [2.7K]  61-urw-fallback-generics.conf
+    │   │       │   ├── [ 913]  61-urw-gothic.conf
+    │   │       │   ├── [ 899]  61-urw-nimbus-mono-ps.conf
+    │   │       │   ├── [ 877]  61-urw-nimbus-roman.conf
+    │   │       │   ├── [1.5K]  61-urw-nimbus-sans.conf
+    │   │       │   ├── [ 975]  61-urw-p052.conf
+    │   │       │   ├── [1.0K]  61-urw-standard-symbols-ps.conf
+    │   │       │   ├── [ 865]  61-urw-z003.conf
+    │   │       │   ├── [  35]  65-fonts-lmodern.conf -> ../conf.avail/65-fonts-lmodern.conf
+    │   │       │   ├── [9.9K]  65-fonts-persian.conf
+    │   │       │   ├── [  35]  65-fonts-texgyre.conf -> ../conf.avail/65-fonts-texgyre.conf
+    │   │       │   ├── [  40]  65-fonts-texgyre-math.conf -> ../conf.avail/65-fonts-texgyre-math.conf
+    │   │       │   ├── [9.6K]  65-nonlatin.conf
+    │   │       │   ├── [ 687]  69-unifont.conf
+    │   │       │   ├── [4.8K]  70-fonts-noto-cjk.conf
+    │   │       │   ├── [ 429]  70-no-bitmaps-except-emoji.conf
+    │   │       │   ├── [ 437]  80-delicious.conf
+    │   │       │   ├── [1.7K]  90-synthetic.conf
+    │   │       │   └── [ 979]  README
+    │   │       └── [2.9K]  fonts.conf
+    │   ├── [6.1M]  fontTools
+    │   │   ├── [4.5M]  misc
+    │   │   │   └── [4.5M]  bezierTools.cpython-313-x86_64-linux-gnu.so
+    │   │   └── [1.5M]  varLib
+    │   │       └── [1.5M]  iup.cpython-313-x86_64-linux-gnu.so
     │   ├── [5.5M]  kiwisolver
     │   │   └── [5.5M]  _cext.cpython-313-x86_64-linux-gnu.so
+    │   ├── [ 30K]  libatomic.so.1
     │   ├── [  38]  libavif-01e67780.so.16.3.0 -> pillow.libs/libavif-01e67780.so.16.3.0
+    │   ├── [383K]  libblkid.so.1
     │   ├── [  45]  libbrotlicommon-c55a5f7a.so.1.1.0 -> pillow.libs/libbrotlicommon-c55a5f7a.so.1.1.0
     │   ├── [138K]  libbrotlicommon.so.1
     │   ├── [  42]  libbrotlidec-2ced2f3a.so.1.1.0 -> pillow.libs/libbrotlidec-2ced2f3a.so.1.1.0
     │   ├── [ 50K]  libbrotlidec.so.1
     │   ├── [ 73K]  libbz2.so.1.0
     │   ├── [6.2M]  libcrypto.so.3
+    │   ├── [ 34K]  libdatrie.so.1
     │   ├── [174K]  libexpat.so.1
     │   ├── [ 46K]  libffi.so.8
     │   ├── [310K]  libfontconfig.so.1
     │   ├── [  42]  libfreetype-5bb46249.so.6.20.4 -> pillow.libs/libfreetype-5bb46249.so.6.20.4
     │   ├── [826K]  libfreetype.so.6
+    │   ├── [118K]  libfribidi.so.0
     │   ├── [179K]  libgcc_s.so.1
     │   ├── [  49]  libgfortran-040039e1-0352e75f.so.5.0.0 -> numpy.libs/libgfortran-040039e1-0352e75f.so.5.0.0
     │   ├── [  40]  libgfortran-040039e1.so.5.0.0 -> scipy.libs/libgfortran-040039e1.so.5.0.0
+    │   ├── [2.0M]  libgio-2.0.so.0
+    │   ├── [1.3M]  libglib-2.0.so.0
+    │   ├── [ 22K]  libgmodule-2.0.so.0
+    │   ├── [394K]  libgobject-2.0.so.0
+    │   ├── [162K]  libgraphite2.so.3
     │   ├── [  45]  libharfbuzz-525aa570.so.0.61210.0 -> pillow.libs/libharfbuzz-525aa570.so.0.61210.0
+    │   ├── [1.2M]  libharfbuzz.so.0
     │   ├── [  38]  libjpeg-a41b0190.so.62.4.0 -> pillow.libs/libjpeg-a41b0190.so.62.4.0
     │   ├── [  39]  liblcms2-cc10e42f.so.2.0.17 -> pillow.libs/liblcms2-cc10e42f.so.2.0.17
     │   ├── [  37]  liblzma-64b7ab39.so.5.8.1 -> pillow.libs/liblzma-64b7ab39.so.5.8.1
     │   ├── [194K]  liblzma.so.5
+    │   ├── [491K]  libmount.so.1
     │   ├── [994K]  libmvec.so.1
     │   ├── [230K]  libncursesw.so.6
     │   ├── [ 90K]  libobjc.so.4
     │   ├── [  40]  libopenjp2-94e588ba.so.2.5.4 -> pillow.libs/libopenjp2-94e588ba.so.2.5.4
+    │   ├── [448K]  libpango-1.0.so.0
+    │   ├── [114K]  libpangoft2-1.0.so.0
+    │   ├── [695K]  libpcre2-8.so.0
     │   ├── [  40]  libpng16-00127801.so.16.50.0 -> pillow.libs/libpng16-00127801.so.16.50.0
     │   ├── [222K]  libpng16.so.16
     │   ├── [7.2M]  libpython3.13.so.1.0
@@ -42,10 +138,12 @@
     │   ├── [354K]  libreadline.so.8
     │   ├── [  43]  libscipy_openblas64_-fdde5778.so -> numpy.libs/libscipy_openblas64_-fdde5778.so
     │   ├── [  40]  libscipy_openblas-b75cc656.so -> scipy.libs/libscipy_openblas-b75cc656.so
+    │   ├── [198K]  libselinux.so.1
     │   ├── [  41]  libsharpyuv-95d8a097.so.0.1.2 -> pillow.libs/libsharpyuv-95d8a097.so.0.1.2
     │   ├── [1.0M]  libssl.so.3
     │   ├── [2.4M]  libstdc++.so.6
     │   ├── [1.8M]  libtcl8.6.so
+    │   ├── [ 40K]  libthai.so.0
     │   ├── [  37]  libtiff-295fd75c.so.6.2.0 -> pillow.libs/libtiff-295fd75c.so.6.2.0
     │   ├── [215K]  libtinfo.so.6
     │   ├── [1.5M]  libtk8.6.so
@@ -341,6 +439,92 @@
     │   │   ├── [ 22K]  libXau-154567c4.so.6.0.0
     │   │   ├── [246K]  libxcb-64009ff3.so.1.1.0
     │   │   └── [1.7M]  libzstd-761a17b6.so.1.5.7
+    │   ├── [5.9M]  pyphen
+    │   │   └── [5.9M]  dictionaries
+    │   │       ├── [ 61K]  hyph_af_ZA.dic
+    │   │       ├── [1.6K]  hyph_as_IN.dic
+    │   │       ├── [ 31K]  hyph_be_BY.dic
+    │   │       ├── [ 58K]  hyph_bg_BG.dic
+    │   │       ├── [ 28K]  hyph_ca.dic
+    │   │       ├── [ 20K]  hyph_cs_CZ.dic
+    │   │       ├── [5.9K]  hyph_da_DK.dic
+    │   │       ├── [1.0M]  hyph_de_AT.dic
+    │   │       ├── [1.0M]  hyph_de_CH.dic
+    │   │       ├── [1.0M]  hyph_de_DE.dic
+    │   │       ├── [3.1K]  hyph_el_GR.dic
+    │   │       ├── [105K]  hyph_en_GB.dic
+    │   │       ├── [104K]  hyph_en_US.dic
+    │   │       ├── [ 29K]  hyph_eo.dic
+    │   │       ├── [5.6K]  hyph_es.dic
+    │   │       ├── [ 22K]  hyph_et_EE.dic
+    │   │       ├── [1.1K]  hyph_eu.dic
+    │   │       ├── [ 23K]  hyph_fr.dic
+    │   │       ├── [1.4K]  hyph_gl.dic
+    │   │       ├── [7.6K]  hyph_hr_HR.dic
+    │   │       ├── [916K]  hyph_hu_HU.dic
+    │   │       ├── [102K]  hyph_id_ID.dic
+    │   │       ├── [ 49K]  hyph_is.dic
+    │   │       ├── [2.3K]  hyph_it_IT.dic
+    │   │       ├── [1.6K]  hyph_kn_IN.dic
+    │   │       ├── [7.6K]  hyph_lt.dic
+    │   │       ├── [ 78K]  hyph_lv_LV.dic
+    │   │       ├── [ 13K]  hyph_mn_MN.dic
+    │   │       ├── [2.4K]  hyph_mr_IN.dic
+    │   │       ├── [182K]  hyph_nb_NO.dic
+    │   │       ├── [114K]  hyph_nl_NL.dic
+    │   │       ├── [182K]  hyph_nn_NO.dic
+    │   │       ├── [1.5K]  hyph_or_IN.dic
+    │   │       ├── [1.5K]  hyph_pa_IN.dic
+    │   │       ├── [ 37K]  hyph_pl_PL.dic
+    │   │       ├── [ 11K]  hyph_pt_BR.dic
+    │   │       ├── [1.3K]  hyph_pt_PT.dic
+    │   │       ├── [ 34K]  hyph_ro_RO.dic
+    │   │       ├── [ 35K]  hyph_ru_RU.dic
+    │   │       ├── [1.1K]  hyph_sa_IN.dic
+    │   │       ├── [ 18K]  hyph_sk_SK.dic
+    │   │       ├── [8.1K]  hyph_sl_SI.dic
+    │   │       ├── [124K]  hyph_sq_AL.dic
+    │   │       ├── [ 27K]  hyph_sr.dic
+    │   │       ├── [ 28K]  hyph_sr_Latn.dic
+    │   │       ├── [101K]  hyph_sv.dic
+    │   │       ├── [1.6K]  hyph_te_IN.dic
+    │   │       ├── [ 65K]  hyph_th_TH.dic
+    │   │       ├── [ 20K]  hyph_uk_UA.dic
+    │   │       ├── [1.9K]  hyph_zu_ZA.dic
+    │   │       ├── [ 300]  README_hyph_be_BY.txt
+    │   │       ├── [3.8K]  README_hyph_bg_BG.txt
+    │   │       ├── [ 636]  README_hyph_ca.txt
+    │   │       ├── [ 631]  README_hyph_cs_CZ.txt
+    │   │       ├── [ 482]  README_hyph_da_DK.txt
+    │   │       ├── [1.7K]  README_hyph_de.txt
+    │   │       ├── [ 525]  README_hyph_el_GR.txt
+    │   │       ├── [4.5K]  README_hyph_en_GB.txt
+    │   │       ├── [1.8K]  README_hyph_en_US.txt
+    │   │       ├── [1.7K]  README_hyph_es.txt
+    │   │       ├── [ 52K]  README_hyph_et_EE.txt
+    │   │       ├── [3.6K]  README_hyph_eu.txt
+    │   │       ├── [3.7K]  README_hyph_fr.txt
+    │   │       ├── [ 600]  README_hyph_gl.txt
+    │   │       ├── [3.5K]  README_hyph_hr_HR.txt
+    │   │       ├── [ 544]  README_hyph_hu_HU.txt
+    │   │       ├── [ 33K]  README_hyph_is.txt
+    │   │       ├── [ 949]  README_hyph_it_IT.txt
+    │   │       ├── [ 780]  README_hyph_lt_LT.txt
+    │   │       ├── [5.6K]  README_hyph_lv_LV.txt
+    │   │       ├── [ 341]  README_hyph_NO.txt
+    │   │       ├── [1.5K]  README_hyph_pl_PL.txt
+    │   │       ├── [ 19K]  README_hyph_pt_BR.txt
+    │   │       ├── [ 486]  README_hyph_pt_PT.txt
+    │   │       ├── [ 488]  README_hyph_ro_RO.txt
+    │   │       ├── [ 252]  README_hyph_sk_SK.txt
+    │   │       ├── [2.7K]  README_hyph_sl_SI.txt
+    │   │       ├── [ 423]  README_hyph_sq_AL.txt
+    │   │       ├── [ 284]  README_hyph_sr.txt
+    │   │       ├── [ 650]  README_hyph_sv.txt
+    │   │       ├── [ 860]  README_hyph_te_IN.txt
+    │   │       ├── [ 410]  README_hyph_th_TH.txt
+    │   │       ├── [ 957]  README_hyph_uk_UA.txt
+    │   │       └── [ 251]  update.sh
     │   ├── [2.2M]  python3.13
     │   │   └── [2.2M]  lib-dynload
     │   │       ├── [ 76K]  _asyncio.cpython-313-x86_64-linux-gnu.so
@@ -754,99 +938,108 @@
     │   │   ├── [ 21K]  RECORD
     │   │   ├── [   0]  REQUESTED
     │   │   └── [  88]  WHEEL
-    │   └── [823K]  _tk_data
-    │       ├── [8.3K]  bgerror.tcl
-    │       ├── [ 20K]  button.tcl
-    │       ├── [9.5K]  choosedir.tcl
-    │       ├── [ 21K]  clrpick.tcl
-    │       ├── [8.2K]  comdlg.tcl
-    │       ├── [ 31K]  console.tcl
-    │       ├── [5.7K]  dialog.tcl
-    │       ├── [ 18K]  entry.tcl
-    │       ├── [4.7K]  focus.tcl
-    │       ├── [ 17K]  fontchooser.tcl
-    │       ├── [ 16K]  iconlist.tcl
-    │       ├── [ 11K]  icons.tcl
-    │       ├── [ 99K]  images
-    │       │   ├── [2.3K]  logo100.gif
-    │       │   ├── [1.6K]  logo64.gif
-    │       │   ├── [ 32K]  logo.eps
-    │       │   ├── [ 11K]  logoLarge.gif
-    │       │   ├── [3.8K]  logoMed.gif
-    │       │   ├── [1.6K]  pwrdLogo100.gif
-    │       │   ├── [2.4K]  pwrdLogo150.gif
-    │       │   ├── [2.9K]  pwrdLogo175.gif
-    │       │   ├── [3.4K]  pwrdLogo200.gif
-    │       │   ├── [1.1K]  pwrdLogo75.gif
-    │       │   ├── [ 27K]  pwrdLogo.eps
-    │       │   ├── [ 322]  README
-    │       │   └── [5.3K]  tai-ku.gif
-    │       ├── [ 14K]  listbox.tcl
-    │       ├── [9.3K]  megawidget.tcl
-    │       ├── [ 38K]  menu.tcl
-    │       ├── [ 29K]  mkpsenc.tcl
-    │       ├── [ 16K]  msgbox.tcl
-    │       ├── [ 82K]  msgs
-    │       │   ├── [4.1K]  cs.msg
-    │       │   ├── [3.8K]  da.msg
-    │       │   ├── [4.7K]  de.msg
-    │       │   ├── [8.5K]  el.msg
-    │       │   ├── [  63]  en_gb.msg
-    │       │   ├── [3.2K]  en.msg
-    │       │   ├── [3.9K]  eo.msg
-    │       │   ├── [3.9K]  es.msg
-    │       │   ├── [4.5K]  fi.msg
-    │       │   ├── [3.7K]  fr.msg
-    │       │   ├── [4.5K]  hu.msg
-    │       │   ├── [3.6K]  it.msg
-    │       │   ├── [4.4K]  nl.msg
-    │       │   ├── [4.7K]  pl.msg
-    │       │   ├── [3.8K]  pt.msg
-    │       │   ├── [8.3K]  ru.msg
-    │       │   ├── [3.7K]  sv.msg
-    │       │   └── [4.7K]  zh_cn.msg
-    │       ├── [5.5K]  obsolete.tcl
-    │       ├── [1.5K]  optMenu.tcl
-    │       ├── [8.0K]  palette.tcl
-    │       ├── [5.1K]  panedwindow.tcl
-    │       ├── [7.2K]  safetk.tcl
-    │       ├── [8.2K]  scale.tcl
-    │       ├── [ 12K]  scrlbar.tcl
-    │       ├── [ 16K]  spinbox.tcl
-    │       ├── [ 24K]  tclIndex
-    │       ├── [4.4K]  tearoff.tcl
-    │       ├── [ 33K]  text.tcl
-    │       ├── [4.5K]  tkAppInit.c
-    │       ├── [ 37K]  tkfbox.tcl
-    │       ├── [ 23K]  tk.tcl
-    │       ├── [135K]  ttk
-    │       │   ├── [4.6K]  altTheme.tcl
-    │       │   ├── [3.6K]  aquaTheme.tcl
-    │       │   ├── [2.9K]  button.tcl
-    │       │   ├── [5.8K]  clamTheme.tcl
-    │       │   ├── [4.1K]  classicTheme.tcl
-    │       │   ├── [ 12K]  combobox.tcl
-    │       │   ├── [4.4K]  cursors.tcl
-    │       │   ├── [4.7K]  defaults.tcl
-    │       │   ├── [ 17K]  entry.tcl
-    │       │   ├── [5.4K]  fonts.tcl
-    │       │   ├── [6.0K]  menubutton.tcl
-    │       │   ├── [5.5K]  notebook.tcl
-    │       │   ├── [2.0K]  panedwindow.tcl
-    │       │   ├── [1.1K]  progress.tcl
-    │       │   ├── [2.6K]  scale.tcl
-    │       │   ├── [3.1K]  scrollbar.tcl
-    │       │   ├── [2.3K]  sizegrip.tcl
-    │       │   ├── [4.7K]  spinbox.tcl
-    │       │   ├── [9.6K]  treeview.tcl
-    │       │   ├── [5.2K]  ttk.tcl
-    │       │   ├── [8.1K]  utils.tcl
-    │       │   ├── [ 10K]  vistaTheme.tcl
-    │       │   ├── [3.6K]  winTheme.tcl
-    │       │   └── [2.9K]  xpTheme.tcl
-    │       ├── [ 10K]  unsupported.tcl
-    │       └── [ 25K]  xmfbox.tcl
-    └── [ 16M]  wav-to-freq
+    │   ├── [823K]  _tk_data
+    │   │   ├── [8.3K]  bgerror.tcl
+    │   │   ├── [ 20K]  button.tcl
+    │   │   ├── [9.5K]  choosedir.tcl
+    │   │   ├── [ 21K]  clrpick.tcl
+    │   │   ├── [8.2K]  comdlg.tcl
+    │   │   ├── [ 31K]  console.tcl
+    │   │   ├── [5.7K]  dialog.tcl
+    │   │   ├── [ 18K]  entry.tcl
+    │   │   ├── [4.7K]  focus.tcl
+    │   │   ├── [ 17K]  fontchooser.tcl
+    │   │   ├── [ 16K]  iconlist.tcl
+    │   │   ├── [ 11K]  icons.tcl
+    │   │   ├── [ 99K]  images
+    │   │   │   ├── [2.3K]  logo100.gif
+    │   │   │   ├── [1.6K]  logo64.gif
+    │   │   │   ├── [ 32K]  logo.eps
+    │   │   │   ├── [ 11K]  logoLarge.gif
+    │   │   │   ├── [3.8K]  logoMed.gif
+    │   │   │   ├── [1.6K]  pwrdLogo100.gif
+    │   │   │   ├── [2.4K]  pwrdLogo150.gif
+    │   │   │   ├── [2.9K]  pwrdLogo175.gif
+    │   │   │   ├── [3.4K]  pwrdLogo200.gif
+    │   │   │   ├── [1.1K]  pwrdLogo75.gif
+    │   │   │   ├── [ 27K]  pwrdLogo.eps
+    │   │   │   ├── [ 322]  README
+    │   │   │   └── [5.3K]  tai-ku.gif
+    │   │   ├── [ 14K]  listbox.tcl
+    │   │   ├── [9.3K]  megawidget.tcl
+    │   │   ├── [ 38K]  menu.tcl
+    │   │   ├── [ 29K]  mkpsenc.tcl
+    │   │   ├── [ 16K]  msgbox.tcl
+    │   │   ├── [ 82K]  msgs
+    │   │   │   ├── [4.1K]  cs.msg
+    │   │   │   ├── [3.8K]  da.msg
+    │   │   │   ├── [4.7K]  de.msg
+    │   │   │   ├── [8.5K]  el.msg
+    │   │   │   ├── [  63]  en_gb.msg
+    │   │   │   ├── [3.2K]  en.msg
+    │   │   │   ├── [3.9K]  eo.msg
+    │   │   │   ├── [3.9K]  es.msg
+    │   │   │   ├── [4.5K]  fi.msg
+    │   │   │   ├── [3.7K]  fr.msg
+    │   │   │   ├── [4.5K]  hu.msg
+    │   │   │   ├── [3.6K]  it.msg
+    │   │   │   ├── [4.4K]  nl.msg
+    │   │   │   ├── [4.7K]  pl.msg
+    │   │   │   ├── [3.8K]  pt.msg
+    │   │   │   ├── [8.3K]  ru.msg
+    │   │   │   ├── [3.7K]  sv.msg
+    │   │   │   └── [4.7K]  zh_cn.msg
+    │   │   ├── [5.5K]  obsolete.tcl
+    │   │   ├── [1.5K]  optMenu.tcl
+    │   │   ├── [8.0K]  palette.tcl
+    │   │   ├── [5.1K]  panedwindow.tcl
+    │   │   ├── [7.2K]  safetk.tcl
+    │   │   ├── [8.2K]  scale.tcl
+    │   │   ├── [ 12K]  scrlbar.tcl
+    │   │   ├── [ 16K]  spinbox.tcl
+    │   │   ├── [ 24K]  tclIndex
+    │   │   ├── [4.4K]  tearoff.tcl
+    │   │   ├── [ 33K]  text.tcl
+    │   │   ├── [4.5K]  tkAppInit.c
+    │   │   ├── [ 37K]  tkfbox.tcl
+    │   │   ├── [ 23K]  tk.tcl
+    │   │   ├── [135K]  ttk
+    │   │   │   ├── [4.6K]  altTheme.tcl
+    │   │   │   ├── [3.6K]  aquaTheme.tcl
+    │   │   │   ├── [2.9K]  button.tcl
+    │   │   │   ├── [5.8K]  clamTheme.tcl
+    │   │   │   ├── [4.1K]  classicTheme.tcl
+    │   │   │   ├── [ 12K]  combobox.tcl
+    │   │   │   ├── [4.4K]  cursors.tcl
+    │   │   │   ├── [4.7K]  defaults.tcl
+    │   │   │   ├── [ 17K]  entry.tcl
+    │   │   │   ├── [5.4K]  fonts.tcl
+    │   │   │   ├── [6.0K]  menubutton.tcl
+    │   │   │   ├── [5.5K]  notebook.tcl
+    │   │   │   ├── [2.0K]  panedwindow.tcl
+    │   │   │   ├── [1.1K]  progress.tcl
+    │   │   │   ├── [2.6K]  scale.tcl
+    │   │   │   ├── [3.1K]  scrollbar.tcl
+    │   │   │   ├── [2.3K]  sizegrip.tcl
+    │   │   │   ├── [4.7K]  spinbox.tcl
+    │   │   │   ├── [9.6K]  treeview.tcl
+    │   │   │   ├── [5.2K]  ttk.tcl
+    │   │   │   ├── [8.1K]  utils.tcl
+    │   │   │   ├── [ 10K]  vistaTheme.tcl
+    │   │   │   ├── [3.6K]  winTheme.tcl
+    │   │   │   └── [2.9K]  xpTheme.tcl
+    │   │   ├── [ 10K]  unsupported.tcl
+    │   │   └── [ 25K]  xmfbox.tcl
+    │   ├── [ 38K]  weasyprint
+    │   │   ├── [ 27K]  css
+    │   │   │   ├── [4.5K]  html5_ph.css
+    │   │   │   ├── [ 18K]  html5_ua.css
+    │   │   │   └── [ 310]  html5_ua_form.css
+    │   │   └── [7.0K]  pdf
+    │   │       └── [3.0K]  sRGB2014.icc
+    │   └── [2.7M]  zopfli
+    │       └── [2.7M]  zopfli.abi3.so
+    └── [ 18M]  wav-to-freq
 -  [error opening dir]
 
- 208M used in 76 directories, 773 files
+ 237M used in 89 directories, 953 files

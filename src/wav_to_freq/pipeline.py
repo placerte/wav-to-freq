@@ -5,7 +5,7 @@ from pathlib import Path
 
 from wav_to_freq.analysis.modal import analyze_all_hits
 from wav_to_freq.io.hit_detection import prepare_hits
-from wav_to_freq.reporting.writers.modal import write_modal_report
+from wav_to_freq.reporting.writers.modal import ModalReportArtifacts, write_modal_report
 from wav_to_freq.reporting.writers.preprocess import (
     PreprocessReportArtifacts,
     write_preprocess_report,
@@ -20,8 +20,7 @@ class PipelineArtifacts:
     preprocess: PreprocessReportArtifacts
 
     # modal report
-    modal_csv: Path
-    modal_md: Path
+    modal: ModalReportArtifacts
 
 
 def run_full_report(
@@ -75,7 +74,7 @@ def run_full_report(
         fmax_hz=fmax_hz,
     )
 
-    modal_csv, modal_md = write_modal_report(
+    modal = write_modal_report(
         results=results,
         out_dir=out_dir,
         windows=windows,
@@ -86,7 +85,6 @@ def run_full_report(
     return PipelineArtifacts(
         out_dir=out_dir,
         preprocess=preprocess,
-        modal_csv=modal_csv,
-        modal_md=modal_md,
+        modal=modal
     )
 

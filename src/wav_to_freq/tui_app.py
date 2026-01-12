@@ -109,7 +109,7 @@ class WavToFreqApp(App):
             yield Input(value=self._cfg.output_dir, placeholder="~/path/to/output_dir", id="output_dir")
 
             yield Button("Run (latest WAV)", id="run", variant="primary")
-            yield Static("", id="status")
+            yield Static("", id="status", markup=False)
 
         yield Footer()
 
@@ -190,7 +190,7 @@ class WavToFreqApp(App):
                 f"Reason: {exc!r}\n"
                 f"Run folder: {run_dir}\n"
                 f"WAV remains at: {wav_path}\n"
-                f"Modal CSV: {artifacts.modal_csv}\n"
+                f"Modal CSV: {artifacts.modal.report_csv}\n"
             )
             return
 
@@ -199,8 +199,8 @@ class WavToFreqApp(App):
             f"Run folder:   {run_dir}\n"
             f"Moved WAV:    {dest_wav}\n\n"
             f"Preprocess MD: {artifacts.preprocess.report_md}\n"
-            f"Modal MD:      {artifacts.modal_md}\n"
-            f"Modal CSV:     {artifacts.modal_csv}\n"
+            f"Modal MD:      {artifacts.modal.report_md}\n"
+            f"Modal CSV:     {artifacts.modal.report_csv}\n"
         )
         self.call_from_thread(self._set_status, msg)
 

@@ -12,12 +12,14 @@ from wav_to_freq.reporting.context import PreprocessContext
 from wav_to_freq.reporting.markdown import MarkdownDoc
 from wav_to_freq.reporting.plots import plot_overview_two_channels
 from wav_to_freq.reporting.sections.preprocess import add_section_wav_specs
+from wav_to_freq.reporting.writers.pdf  import md_to_pdf
 
 
 @dataclass(frozen=True)
 class PreprocessReportArtifacts:
     report_md: Path
     fig_overview: Path
+    report_pdf: Path | None = None
 
 
 def write_preprocess_report(
@@ -28,6 +30,7 @@ def write_preprocess_report(
     report: HitDetectionReport,
     title: str = "WAV preprocessing report",
     max_plot_seconds: float | None = None,
+    export_pdf: bool = True
 ) -> PreprocessReportArtifacts:
     """
     Create a markdown report + figures for the preprocessing stage.
@@ -69,5 +72,9 @@ def write_preprocess_report(
 
     report_md = out_dir / "report_preprocess.md"
     report_md.write_text(mdd.to_markdown(), encoding="utf-8")
+    report_pdf: Path | None = None
+    if export_pdf:
+        # root_dir=out_dir so relative image links like figures/... resolve
+        report_pdf = md_to_pdf(report_md, root_dir=out_dir, title=title).pdf_path
 
-    return PreprocessReportArtifacts(report_md=report_md, fig_overview=fig_overview)
+    return PreprocessReportArtifacts(report_md=report_md, fig_overview=fig_overview, report_pdf=report_pdf)

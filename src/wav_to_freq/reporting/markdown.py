@@ -41,11 +41,19 @@ class MarkdownDoc:
         self.add()
 
     def table(self, headers: Sequence[str], rows: Sequence[Sequence[str]]) -> None:
-        # Simple GitHub-flavored markdown table
-        self.add("| " + " | ".join(headers) + " |")
-        self.add("| " + " | ".join(["---"] * len(headers)) + " |")
+        def esc(cell: str) -> str:
+            # Keep tables structurally valid for Pandoc/GFM
+            s = str(cell)
+            s = s.replace("\n", "<br>")     # avoid row breaks
+            s = s.replace("|", "\\|")       # escape pipe (column delimiter)
+            return s
+
+        headers2 = [esc(h) for h in headers]
+        self.add("| " + " | ".join(headers2) + " |")
+        self.add("| " + " | ".join(["---"] * len(headers2)) + " |")
         for r in rows:
-            self.add("| " + " | ".join(r) + " |")
+            r2 = [esc(c) for c in r]
+            self.add("| " + " | ".join(r2) + " |")
         self.add()
 
     def to_markdown(self) -> str:
