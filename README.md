@@ -1,14 +1,33 @@
-# Wav to freq
+# wav-to-freq
 
-REWRITE AND TRY TO USE AS MANY EXISTING PACKAGES
+Extract **natural frequency (fn)** and **damping ratio (ζ)** from an instrumented hammer impact recorded as a **2-channel WAV** (hammer force + structural response). Generates a small set of artifacts (plots + CSV + Markdown/PDF reports) intended for repeatable field surveys and database ingestion.
 
-An app that takes in a formatted wav file of an impact and returns its natural frequencies.
+> Status: working v0.2.0 proof-of-workflow. The “engineer workflow” section below is intentionally a placeholder until field usage is finalized.
+
+---
+
+## What it does
+
+Given a two-channel WAV that contains **multiple impacts**:
+
+- detects individual hits (segmentation),
+- extracts a time window around each hit,
+- estimates modal parameters per hit (**fn**, **ζ**) and fit quality metrics,
+- exports results as:
+  - `modal_results.csv` (for aggregation / database)
+  - `modal_report.md` (+ optional `modal_report.pdf`)
+  - per-hit response plots (PNG)
+  - a preprocessing report (Markdown/PDF) with signal overview + hit detection diagnostics
+
+A reference example is included:
+
+- `examples/aluminium-plate/`
+
+---
 
 ## Installation
 
-### Linux
-
-Download the pre-built binary and install it system-wide:
+### Linux (recommended): pre-built binary
 
 ```bash
 curl -L -o wav-to-freq \
@@ -18,29 +37,89 @@ chmod +x wav-to-freq
 sudo mv wav-to-freq /usr/local/bin/wav-to-freq
 ```
 
-## How to use
+### External dependencies (for PDF export)
 
-1. Provide a small .wav sample of an impact (should be less than a coupl of seconds for performance)
-2. Change the hardcoded filepath in the code so it loads the correct one (feature to be upgraded)
-3. On the matplotlig graph, select points of interest that will be saved.
+Markdown reports can be generated without extra tools, but **PDF export requires**:
 
-## TODOs
+- Pandoc
+- a LaTeX toolchain (e.g., TeX Live)
 
-- [x] Working POC
-- [x] Basic fft of the wav file
-- [x] Selection of points of interest on the GUI
-- [x] Save as image and scatter points for post processing.
-- [x] Solve the curve fitting to extract the natural frequency and the damping ratio (done seperatly for now)
-- [x] upgrade file handling at load and save moments
-- [x] Integrate file info, and solved parameters to the GUI
-- [x] Integrate live curve fitting and solving.
-- [x] Export solved parameters and file info.
-- [x] Make the code a protable executable
-- [ ] Clean LSP warnings
-- [x] Remove the abundance of np.pi. It may affect numerical precision.
-- [ ] Unit test all computations
-- [ ] Simplify solving for linearized function
-- [ ] Clean up the code
-  - [ ] Make a package plantUML
-  - [ ] Reduce modules
-  - [ ] Reduce function length
+Example (Debian/Ubuntu):
+
+```bash
+sudo apt-get update
+sudo apt-get install -y pandoc texlive-latex-base texlive-latex-recommended texlive-latex-extra
+```
+
+---
+
+## How to use (placeholder)
+
+This section will become a “typical engineer workflow” once validated on site.
+
+Planned content:
+
+- acquisition workflow (Audacity / recorder settings)
+- channel conventions (hammer on channel 1, response on channel 2, etc.)
+- file naming + directory hygiene
+- recommended recording length / number of hits / spacing
+- how to interpret the reports and reject bad hits
+
+For now, see:
+
+- `examples/aluminium-plate/`
+
+---
+
+## How it works
+
+High-level pipeline:
+
+1. Read WAV and identify channels.
+2. Detect impacts and segment response windows.
+3. Generate preprocessing diagnostics.
+4. Extract modal parameters per hit.
+5. Export reports and CSV results.
+
+Architecture overview:
+
+- `docs/packages.md`
+
+---
+
+## The science (short version)
+
+An impact hammer approximates an impulse input, exciting the structure’s modes.
+After the impact, the response is dominated by free decay of lightly damped modes.
+
+This project currently targets:
+
+- linear behavior
+- dominant mode (mode 0)
+- repeatable field measurements
+
+See `docs/method.md` for details.
+
+---
+
+## Outputs
+
+```
+out_dir/
+  report_preprocess.md
+  report_preprocess.pdf
+  modal_report.md
+  modal_report.pdf
+  modal_results.csv
+  figures/
+    overview_two_channels.png
+    hits/
+      H001_response.png
+      ...
+```
+
+---
+
+## TODOs / roadmap
+
+See `TODO.md`.
