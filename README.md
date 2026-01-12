@@ -16,7 +16,7 @@ curl -L -o wav-to-freq \
 
 chmod +x wav-to-freq
 sudo mv wav-to-freq /usr/local/bin/wav-to-freq
-
+```
 
 ## How to use
 
