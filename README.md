@@ -1,33 +1,33 @@
 # wav-to-freq
 
-Extract **natural frequency (fn)** and **damping ratio (ζ)** from an instrumented hammer impact recorded as a **2-channel WAV** (hammer force + structural response). Generates a small set of artifacts (plots + CSV + Markdown/PDF reports) intended for repeatable field surveys and database ingestion.
+Extract **natural frequency (fn)** and **damping ratio (ζ)** from an instrumented hammer impact recorded as a **2‑channel WAV** (hammer force + structural response).  
+The tool produces plots, CSV data, and Markdown/PDF reports suitable for **repeatable field surveys** and later database integration.
 
-> Status: working v0.2.0 proof-of-workflow. The “engineer workflow” section below is intentionally a placeholder until field usage is finalized.
+> Status: working v0.2.0 proof‑of‑workflow. The engineer workflow section is intentionally a placeholder until validated on real structures.
 
 ---
 
 ## What it does
 
-Given a two-channel WAV that contains **multiple impacts**:
+Given a two‑channel WAV containing **multiple impacts**, `wav‑to‑freq`:
 
-- detects individual hits (segmentation),
-- extracts a time window around each hit,
-- estimates modal parameters per hit (**fn**, **ζ**) and fit quality metrics,
+- detects individual hammer hits,
+- extracts a response window for each hit,
+- estimates modal parameters per hit (**fn**, **ζ**) with quality metrics,
 - exports results as:
-  - `modal_results.csv` (for aggregation / database)
+  - `modal_results.csv` (database‑friendly)
   - `modal_report.md` (+ optional `modal_report.pdf`)
-  - per-hit response plots (PNG)
-  - a preprocessing report (Markdown/PDF) with signal overview + hit detection diagnostics
+  - per‑hit response plots (PNG)
+  - preprocessing diagnostics (Markdown/PDF)
 
-A reference example is included:
-
-- `examples/aluminium-plate/`
+A reference dataset is provided:
+- [`examples/aluminium-plate/`](examples/aluminium-plate)
 
 ---
 
 ## Installation
 
-### Linux (recommended): pre-built binary
+### Linux (recommended): pre‑built binary
 
 ```bash
 curl -L -o wav-to-freq \
@@ -39,15 +39,15 @@ sudo mv wav-to-freq /usr/local/bin/wav-to-freq
 
 ### External dependencies (for PDF export)
 
-Markdown reports can be generated without extra tools, but **PDF export requires**:
+Markdown reports work out of the box.  
+**PDF export additionally requires**:
 
-- Pandoc
-- a LaTeX toolchain (e.g., TeX Live)
+- **Pandoc**
+- **LaTeX toolchain** (e.g. TeX Live)
 
-Example (Debian/Ubuntu):
+Example (Debian / Ubuntu):
 
 ```bash
-sudo apt-get update
 sudo apt-get install -y pandoc texlive-latex-base texlive-latex-recommended texlive-latex-extra
 ```
 
@@ -55,50 +55,43 @@ sudo apt-get install -y pandoc texlive-latex-base texlive-latex-recommended texl
 
 ## How to use (placeholder)
 
-This section will become a “typical engineer workflow” once validated on site.
+This section will describe a **typical engineer workflow**, including:
 
-Planned content:
+- acquisition setup (Audacity / field recorder)
+- channel conventions (hammer vs response)
+- file naming and directory hygiene
+- recommended hit spacing and count
+- interpretation and rejection of bad hits
 
-- acquisition workflow (Audacity / recorder settings)
-- channel conventions (hammer on channel 1, response on channel 2, etc.)
-- file naming + directory hygiene
-- recommended recording length / number of hits / spacing
-- how to interpret the reports and reject bad hits
-
-For now, see:
-
-- `examples/aluminium-plate/`
+To be written after field validation.
 
 ---
 
 ## How it works
 
-High-level pipeline:
+High‑level pipeline:
 
-1. Read WAV and identify channels.
+1. Read WAV and auto‑identify hammer / response channels.
 2. Detect impacts and segment response windows.
 3. Generate preprocessing diagnostics.
 4. Extract modal parameters per hit.
 5. Export reports and CSV results.
 
-Architecture overview:
-
-- `docs/packages.md`
+For architectural context:
+- [`docs/packages.md`](docs/packages.md)
 
 ---
 
-## The science (short version)
+## The science behind it
 
-An impact hammer approximates an impulse input, exciting the structure’s modes.
-After the impact, the response is dominated by free decay of lightly damped modes.
+A detailed technical description is provided here:
+- **[`docs/method.md`](docs/method.md)**
 
-This project currently targets:
-
-- linear behavior
-- dominant mode (mode 0)
-- repeatable field measurements
-
-See `docs/method.md` for details.
+It covers:
+- signal assumptions and preprocessing
+- frequency‑domain and time‑domain analysis
+- damping extraction methodology
+- practical limitations and field considerations
 
 ---
 
@@ -122,4 +115,5 @@ out_dir/
 
 ## TODOs / roadmap
 
-See `TODO.md`.
+Tracked in:
+- [`TODO.md`](TODO.md)
