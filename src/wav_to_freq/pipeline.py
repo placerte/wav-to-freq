@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from wav_to_freq.analysis.modal import analyze_all_hits
+from wav_to_freq.domain.enums import StereoChannel
 from wav_to_freq.io.hit_detection import prepare_hits
 from wav_to_freq.reporting.writers.modal import ModalReportArtifacts, write_modal_report
 from wav_to_freq.reporting.writers.preprocess import (
@@ -27,6 +28,7 @@ def run_full_report(
     wav_path: str | Path,
     *,
     out_dir: str | Path,
+    hammer_channel: StereoChannel = StereoChannel.UNKNOWN,
     # hit detection / windowing
     pre_s: float = 0.05,
     post_s: float = 1.50,
@@ -55,7 +57,7 @@ def run_full_report(
         post_s=post_s,
         min_separation_s=min_separation_s,
         threshold_sigma=threshold_sigma,
-        # hammer_channel override intentionally left out (auto by default)
+        hammer_channel=hammer_channel
     )
 
     preprocess = write_preprocess_report(

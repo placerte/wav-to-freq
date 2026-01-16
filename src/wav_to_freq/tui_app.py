@@ -1,5 +1,7 @@
 from __future__ import annotations
 import os
+
+from wav_to_freq.domain.enums import StereoChannel
 os.environ["MPLBACKEND"] = "Agg"
 
 import json
@@ -11,7 +13,7 @@ from typing import Any
 
 from textual.app import App, ComposeResult
 from textual.containers import Vertical
-from textual.widgets import Button, Footer, Header, Input, Static
+from textual.widgets import Button, Footer, Header, Input, Select, Static
 
 from wav_to_freq.pipeline import run_full_report
 
@@ -28,6 +30,7 @@ def _default_config_path() -> Path:
 class UiConfig:
     input_dir: str = ""
     output_dir: str = ""
+    hammer_channel: str = "auto" # "auto" | "left" | "right"
 
     @classmethod
     def load(cls, path: Path) -> "UiConfig":
@@ -36,6 +39,7 @@ class UiConfig:
             return cls(
                 input_dir=str(data.get("input_dir", "")),
                 output_dir=str(data.get("output_dir", "")),
+                hammer_channel=str(data.get("hammer_channel","auto"))
             )
         except FileNotFoundError:
             return cls()
@@ -48,6 +52,7 @@ class UiConfig:
         data: dict[str, Any] = {
             "input_dir": self.input_dir,
             "output_dir": self.output_dir,
+            "hammer_channel": self.hammer_channel,
         }
         path.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
@@ -108,6 +113,17 @@ class WavToFreqApp(App):
             yield Static("Output directory (each run goes in a subfolder):", classes="label")
             yield Input(value=self._cfg.output_dir, placeholder="~/path/to/output_dir", id="output_dir")
 
+            yield Static("Hammer channel (force if auto fails):")
+            yield Select(
+               options=[
+                    ("Auto-detect", "auto"),
+                    ("Left", "left"),
+                    ("Right", "right"),
+                ],
+                value=self._cfg.hammer_channel,
+                id="hammer_channel"
+            )
+
             yield Button("Run (latest WAV)", id="run", variant="primary")
             yield Static("", id="status", markup=False)
 
@@ -164,6 +180,7 @@ class WavToFreqApp(App):
 
     def _pipeline_worker(self, wav_path: Path, run_dir: Path) -> None:
         try:
+            hammer_channel = self._parse_hammer_channel()
             artifacts = run_full_report(
                 wav_path,
                 out_dir=run_dir,
@@ -171,6 +188,7 @@ class WavToFreqApp(App):
                 fmax_hz=2000.0,
                 title_preprocess="WAV preprocessing report",
                 title_modal="Modal report",
+                hammer_channel=hammer_channel
             )
         except Exception as exc:
             self.call_from_thread(self._set_status, f"❌ Failed: {exc!r}")
@@ -203,6 +221,15 @@ class WavToFreqApp(App):
             f"Modal CSV:     {artifacts.modal.report_csv}\n"
         )
         self.call_from_thread(self._set_status, msg)
+
+    def _parse_hammer_channel(self)->StereoChannel:
+        val = self.query_one("#hammer_channel", Select).value
+        if val == "left":
+            return StereoChannel.LEFT
+        if val == "right":
+            return StereoChannel.RIGHT
+        else:
+            return StereoChannel.UNKNOWN
 
 def main():
     WavToFreqApp().run()
