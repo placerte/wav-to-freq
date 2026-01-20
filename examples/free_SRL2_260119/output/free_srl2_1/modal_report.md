@@ -1,109 +1,104 @@
 # Modal report
 
 - Total hits: **10**
-- Accepted: **9**
-- Rejected: **1**
+- Accepted: **10**
+- Rejected: **0**
 
 ## Accepted summary
 
-- fn (Hz): mean=197.388, min=150.732, max=570.630
-- zeta: mean=0.164201, min=0.001091, max=0.625997
-- SNR (dB): mean=11.17, min=7.79, max=14.41
-- Envelope fit R²: mean=0.988, min=0.961, max=1.000
-
-## Rejections (by reason)
-
-- bad_zeta: 1
+- fn (Hz): mean=150.732, min=150.732, max=150.732
+- zeta: mean=0.687860, min=0.387700, max=1.126275
+- SNR (dB): mean=25.19, min=20.98, max=28.93
+- Envelope fit R²: mean=0.977, min=0.954, max=0.996
 
 ## Hit-by-hit
 
 ### H001
 
 - fn=150.732 Hz
-- zeta=0.374967
-- SNR=11.51 dB
-- R²=1.000
+- zeta=0.988850
+- SNR=26.37 dB
+- R²=0.996
 
 ![H001 response](figures/hits/H001_response.png)
 
 ### H002
 
 - fn=150.732 Hz
-- zeta=-0.275816
-- SNR=11.85 dB
-- R²=1.000
-- reject_reason: `bad_zeta`
+- zeta=1.123689
+- SNR=28.56 dB
+- R²=0.982
 
 ![H002 response](figures/hits/H002_response.png)
 
 ### H003
 
 - fn=150.732 Hz
-- zeta=0.050227
-- SNR=11.19 dB
-- R²=0.981
+- zeta=0.570237
+- SNR=24.90 dB
+- R²=0.968
 
 ![H003 response](figures/hits/H003_response.png)
 
 ### H004
 
 - fn=150.732 Hz
-- zeta=0.064909
-- SNR=7.79 dB
-- R²=0.996
+- zeta=0.820310
+- SNR=20.98 dB
+- R²=0.978
 
 ![H004 response](figures/hits/H004_response.png)
 
 ### H005
 
-- fn=570.630 Hz
-- zeta=0.001091
-- SNR=14.41 dB
-- R²=0.980
+- fn=150.732 Hz
+- zeta=1.126275
+- SNR=28.93 dB
+- R²=0.976
 
 ![H005 response](figures/hits/H005_response.png)
 
 ### H006
 
 - fn=150.732 Hz
-- zeta=0.089847
-- SNR=11.68 dB
-- R²=0.990
+- zeta=0.412540
+- SNR=24.91 dB
+- R²=0.963
 
 ![H006 response](figures/hits/H006_response.png)
 
 ### H007
 
 - fn=150.732 Hz
-- zeta=0.076497
-- SNR=10.02 dB
-- R²=0.984
+- zeta=0.549361
+- SNR=24.71 dB
+- R²=0.967
 
 ![H007 response](figures/hits/H007_response.png)
 
 ### H008
 
 - fn=150.732 Hz
-- zeta=0.151271
-- SNR=12.88 dB
-- R²=0.997
+- zeta=0.493270
+- SNR=26.23 dB
+- R²=0.954
 
 ![H008 response](figures/hits/H008_response.png)
 
 ### H009
 
 - fn=150.732 Hz
-- zeta=0.043005
-- SNR=11.72 dB
-- R²=0.961
+- zeta=0.387700
+- SNR=25.21 dB
+- R²=0.990
 
 ![H009 response](figures/hits/H009_response.png)
 
 ### H010
 
 - fn=150.732 Hz
-- zeta=0.625997
-- SNR=9.33 dB
-- R²=0.999
+- zeta=0.406370
+- SNR=21.12 dB
+- R²=0.993
 
 ![H010 response](figures/hits/H010_response.png)
