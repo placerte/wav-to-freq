@@ -1,0 +1,342 @@
+.
+├── build
+│   └── wav-to-freq
+│       ├── Analysis-00.toc
+│       ├── base_library.zip
+│       ├── EXE-00.toc
+│       ├── localpycs
+│       │   ├── pyimod01_archive.pyc
+│       │   ├── pyimod02_importers.pyc
+│       │   ├── pyimod03_ctypes.pyc
+│       │   └── struct.pyc
+│       ├── PKG-00.toc
+│       ├── PYZ-00.pyz
+│       ├── PYZ-00.toc
+│       ├── warn-wav-to-freq.txt
+│       ├── wav-to-freq.pkg
+│       └── xref-wav-to-freq.html
+├── dist
+│   └── wav-to-freq
+├── docs
+│   ├── method.md
+│   └── packages.md
+├── examples
+│   ├── aluminium-plate
+│   │   ├── aluminum_plate_impact_test.md
+│   │   ├── input
+│   │   │   └── hit_251212-2.wav
+│   │   └── output
+│   │       └── hit_251212-2
+│   │           ├── figures
+│   │           │   ├── hits
+│   │           │   │   ├── H001_response.png
+│   │           │   │   ├── H002_response.png
+│   │           │   │   ├── H003_response.png
+│   │           │   │   ├── H004_response.png
+│   │           │   │   ├── H005_response.png
+│   │           │   │   ├── H006_response.png
+│   │           │   │   ├── H007_response.png
+│   │           │   │   ├── H008_response.png
+│   │           │   │   ├── H009_response.png
+│   │           │   │   ├── H010_response.png
+│   │           │   │   ├── H011_response.png
+│   │           │   │   ├── H012_response.png
+│   │           │   │   └── H013_response.png
+│   │           │   └── overview_two_channels.png
+│   │           ├── hit_251212-2.wav
+│   │           ├── modal_report.md
+│   │           ├── modal_report.pdf
+│   │           ├── modal_results.csv
+│   │           ├── report_preprocess.md
+│   │           ├── report_preprocess.pdf
+│   │           └── _wav_to_freq_header.tex
+│   ├── aluminium-plate-confirmation
+│   │   ├── input
+│   │   │   └── 260116-1.wav
+│   │   └── output
+│   │       └── 260116-1
+│   │           ├── 260116-1.wav
+│   │           ├── figures
+│   │           │   ├── hits
+│   │           │   │   ├── H001_response.png
+│   │           │   │   ├── H002_response.png
+│   │           │   │   ├── H003_response.png
+│   │           │   │   ├── H004_response.png
+│   │           │   │   ├── H005_response.png
+│   │           │   │   ├── H006_response.png
+│   │           │   │   ├── H007_response.png
+│   │           │   │   ├── H008_response.png
+│   │           │   │   ├── H009_response.png
+│   │           │   │   └── H010_response.png
+│   │           │   └── overview_two_channels.png
+│   │           ├── modal_report.md
+│   │           ├── modal_report.pdf
+│   │           ├── modal_results.csv
+│   │           ├── report_preprocess.md
+│   │           ├── report_preprocess.pdf
+│   │           └── _wav_to_freq_header.tex
+│   ├── free srl2
+│   │   ├── 250116-2.wav
+│   │   ├── free srl2 10 sec crop.aup3
+│   │   ├── free srl2.aup3
+│   │   ├── free srl2 normalized.aup3
+│   │   └── input
+│   ├── free_srl2
+│   │   └── output
+│   │       └── free_srl2_10_sec_crop
+│   │           ├── figures
+│   │           │   ├── hits
+│   │           │   │   ├── H001_response.png
+│   │           │   │   ├── H002_response.png
+│   │           │   │   ├── H003_response.png
+│   │           │   │   ├── H004_response.png
+│   │           │   │   ├── H005_response.png
+│   │           │   │   ├── H006_response.png
+│   │           │   │   ├── H007_response.png
+│   │           │   │   ├── H008_response.png
+│   │           │   │   └── H009_response.png
+│   │           │   └── overview_two_channels.png
+│   │           ├── free srl2 10 sec crop.wav
+│   │           ├── modal_report.md
+│   │           ├── modal_report.pdf
+│   │           ├── modal_results.csv
+│   │           ├── report_preprocess.md
+│   │           ├── report_preprocess.pdf
+│   │           └── _wav_to_freq_header.tex
+│   └── free_SRL2_260119
+│       ├── docs
+│       │   └── SW_FREQ_SIM_SRL2.pdf
+│       ├── input
+│       │   ├── free srl2 1.wav:Zone.Identifier
+│       │   ├── free srl2 2.wav:Zone.Identifier
+│       │   ├── free srl2 3.wav:Zone.Identifier
+│       │   └── free srl2 4.wav:Zone.Identifier
+│       ├── media
+│       │   ├── audio
+│       │   │   ├── free srl2 1.aup3
+│       │   │   ├── free srl2 1.wav
+│       │   │   ├── free srl2 2.aup3
+│       │   │   ├── free srl2 2.wav
+│       │   │   ├── free srl2 3.aup3
+│       │   │   ├── free srl2 3.wav
+│       │   │   ├── free srl2 4.aup3
+│       │   │   └── free srl2 4.wav
+│       │   └── images
+│       │       ├── FSRL2-10-FRONT.png
+│       │       ├── FSRL2-10-LEFT.png
+│       │       ├── FSRL2-10-TOP.png
+│       │       ├── FSRL2-11-FRONT.png
+│       │       ├── FSRL2-11-LEFT.png
+│       │       ├── FSRL2-11-TOP.png
+│       │       ├── FSRL2-12-FRONT.png
+│       │       ├── FSRL2-12-LEFT.png
+│       │       ├── FSRL2-12-TOP.png
+│       │       ├── FSRL2-13-FRONT.png
+│       │       ├── FSRL2-13-LEFT.png
+│       │       ├── FSRL2-13-TOP.png
+│       │       ├── FSRL2-14-FRONT.png
+│       │       ├── FSRL2-14-LEFT.png
+│       │       ├── FSRL2-14-TOP.png
+│       │       ├── FSRL2-15-FRONT.png
+│       │       ├── FSRL2-15-LEFT.png
+│       │       ├── FSRL2-15-TOP.png
+│       │       ├── FSRL2-16-FRONT.png
+│       │       ├── FSRL2-16-LEFT.png
+│       │       ├── FSRL2-16-TOP.png
+│       │       ├── FSRL2-7-FRONT.png
+│       │       ├── FSRL2-7-LEFT.png
+│       │       ├── FSRL2-7-TOP.png
+│       │       ├── FSRL2-8-FRONT.png
+│       │       ├── FSRL2-8-LEFT.png
+│       │       ├── FSRL2-8-TOP.png
+│       │       ├── FSRL2-9-FRONT.png
+│       │       ├── FSRL2-9-LEFT.png
+│       │       └── FSRL2-9-TOP.png
+│       └── output
+│           ├── free_srl2_1
+│           │   ├── figures
+│           │   │   ├── hits
+│           │   │   │   ├── H001_response.png
+│           │   │   │   ├── H002_response.png
+│           │   │   │   ├── H003_response.png
+│           │   │   │   ├── H004_response.png
+│           │   │   │   ├── H005_response.png
+│           │   │   │   ├── H006_response.png
+│           │   │   │   ├── H007_response.png
+│           │   │   │   ├── H008_response.png
+│           │   │   │   ├── H009_response.png
+│           │   │   │   ├── H010_response.png
+│           │   │   │   └── H011_response.png
+│           │   │   └── overview_two_channels.png
+│           │   ├── free srl2 1.wav
+│           │   ├── modal_report.md
+│           │   ├── modal_report.pdf
+│           │   ├── modal_results.csv
+│           │   ├── report_preprocess.md
+│           │   ├── report_preprocess.pdf
+│           │   └── _wav_to_freq_header.tex
+│           ├── free_srl2_2
+│           │   ├── figures
+│           │   │   ├── hits
+│           │   │   │   ├── H001_response.png
+│           │   │   │   ├── H002_response.png
+│           │   │   │   ├── H003_response.png
+│           │   │   │   ├── H004_response.png
+│           │   │   │   ├── H005_response.png
+│           │   │   │   ├── H006_response.png
+│           │   │   │   ├── H007_response.png
+│           │   │   │   ├── H008_response.png
+│           │   │   │   ├── H009_response.png
+│           │   │   │   └── H010_response.png
+│           │   │   └── overview_two_channels.png
+│           │   ├── free srl2 2.wav
+│           │   ├── modal_report.md
+│           │   ├── modal_report.pdf
+│           │   ├── modal_results.csv
+│           │   ├── report_preprocess.md
+│           │   ├── report_preprocess.pdf
+│           │   └── _wav_to_freq_header.tex
+│           ├── free_srl2_3
+│           │   ├── figures
+│           │   │   ├── hits
+│           │   │   │   ├── H001_response.png
+│           │   │   │   ├── H002_response.png
+│           │   │   │   ├── H003_response.png
+│           │   │   │   ├── H004_response.png
+│           │   │   │   ├── H005_response.png
+│           │   │   │   ├── H006_response.png
+│           │   │   │   ├── H007_response.png
+│           │   │   │   ├── H008_response.png
+│           │   │   │   ├── H009_response.png
+│           │   │   │   └── H010_response.png
+│           │   │   └── overview_two_channels.png
+│           │   ├── free srl2 3.wav
+│           │   ├── modal_report.md
+│           │   ├── modal_report.pdf
+│           │   ├── modal_results.csv
+│           │   ├── report_preprocess.md
+│           │   ├── report_preprocess.pdf
+│           │   └── _wav_to_freq_header.tex
+│           └── free_srl2_4
+│               ├── figures
+│               │   ├── hits
+│               │   │   ├── H001_response.png
+│               │   │   ├── H002_response.png
+│               │   │   ├── H003_response.png
+│               │   │   ├── H004_response.png
+│               │   │   ├── H005_response.png
+│               │   │   ├── H006_response.png
+│               │   │   ├── H007_response.png
+│               │   │   ├── H008_response.png
+│               │   │   ├── H009_response.png
+│               │   │   ├── H010_response.png
+│               │   │   ├── H011_response.png
+│               │   │   └── H012_response.png
+│               │   └── overview_two_channels.png
+│               ├── free srl2 4.wav
+│               ├── modal_report.md
+│               ├── modal_report.pdf
+│               ├── modal_results.csv
+│               ├── report_preprocess.md
+│               ├── report_preprocess.pdf
+│               └── _wav_to_freq_header.tex
+├── pyproject.toml
+├── README.md
+├── scripts
+│   ├── dev_check.py
+│   └── stitch_views.sh
+├── src
+│   ├── wav_to_freq
+│   │   ├── analysis
+│   │   │   ├── __init__.py
+│   │   │   ├── modal.py
+│   │   │   └── __pycache__
+│   │   │       ├── __init__.cpython-313.pyc
+│   │   │       └── modal.cpython-313.pyc
+│   │   ├── domain
+│   │   │   ├── config.py
+│   │   │   ├── enums.py
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── config.cpython-313.pyc
+│   │   │   │   ├── enums.cpython-313.pyc
+│   │   │   │   ├── __init__.cpython-313.pyc
+│   │   │   │   └── types.cpython-313.pyc
+│   │   │   └── types.py
+│   │   ├── dsp
+│   │   │   ├── filters.py
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── filters.cpython-313.pyc
+│   │   │   │   ├── __init__.cpython-313.pyc
+│   │   │   │   └── stats.cpython-313.pyc
+│   │   │   └── stats.py
+│   │   ├── __init__.py
+│   │   ├── io
+│   │   │   ├── channel_pick.py
+│   │   │   ├── hit_detection.py
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── channel_pick.cpython-313.pyc
+│   │   │   │   ├── hit_detection.cpython-313.pyc
+│   │   │   │   ├── __init__.cpython-313.pyc
+│   │   │   │   └── wav_reader.cpython-313.pyc
+│   │   │   └── wav_reader.py
+│   │   ├── pipeline.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-313.pyc
+│   │   │   ├── pipeline.cpython-313.pyc
+│   │   │   └── tui_app.cpython-313.pyc
+│   │   ├── reporting
+│   │   │   ├── chapters
+│   │   │   │   └── __init__.py
+│   │   │   ├── context.py
+│   │   │   ├── __init__.py
+│   │   │   ├── latex
+│   │   │   │   └── header.tex
+│   │   │   ├── markdown.py
+│   │   │   ├── plots.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── context.cpython-313.pyc
+│   │   │   │   ├── __init__.cpython-313.pyc
+│   │   │   │   ├── markdown.cpython-313.pyc
+│   │   │   │   └── plots.cpython-313.pyc
+│   │   │   ├── sections
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── modal.py
+│   │   │   │   ├── preprocess.py
+│   │   │   │   └── __pycache__
+│   │   │   │       ├── __init__.cpython-313.pyc
+│   │   │   │       ├── modal.cpython-313.pyc
+│   │   │   │       └── preprocess.cpython-313.pyc
+│   │   │   └── writers
+│   │   │       ├── __init__.py
+│   │   │       ├── modal.py
+│   │   │       ├── pdf.py
+│   │   │       ├── preprocess.py
+│   │   │       └── __pycache__
+│   │   │           ├── __init__.cpython-313.pyc
+│   │   │           ├── modal.cpython-313.pyc
+│   │   │           ├── pdf.cpython-313.pyc
+│   │   │           └── preprocess.cpython-313.pyc
+│   │   ├── tui_app.py
+│   │   └── utils
+│   │       ├── formating.py
+│   │       ├── __init__.py
+│   │       ├── paths.py
+│   │       └── __pycache__
+│   │           ├── formating.cpython-313.pyc
+│   │           ├── __init__.cpython-313.pyc
+│   │           └── paths.cpython-313.pyc
+│   └── wav_to_freq.egg-info
+│       ├── dependency_links.txt
+│       ├── PKG-INFO
+│       ├── requires.txt
+│       ├── SOURCES.txt
+│       └── top_level.txt
+├── TODO.md
+├── tree.txt
+├── uv.lock
+└── wav-to-freq.spec
+
+68 directories, 272 files
