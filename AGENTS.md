@@ -34,6 +34,15 @@ This repo includes `uv.lock`, so uv is the simplest way to get a matching env.
 - Install dev tools:
   - `uv sync --group dev`
 
+Run commands via uv (recommended)
+
+- Run tests:
+  - `uv run pytest -q`
+- Run formatter:
+  - `uv run black .`
+- Run the TUI without installing entry points:
+  - `uv run python -m wav_to_freq.tui_app`
+
 Environment setup (fallback: venv + pip)
 
 - `python -m venv .venv`
