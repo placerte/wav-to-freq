@@ -41,7 +41,7 @@ Status values:
 | G44 | Energy decay proxy (envelope_sq) | todo |  | Not implemented. |
 | G46 | EFFECTIVE_DAMPING_ONLY labeling | todo |  | Not implemented (no structured reason codes yet). |
 | H47 | Deterministic status mapping | todo |  | Not implemented (ad-hoc reject_reason only). |
-| H50 | NOT_COMPUTED status exists | todo |  | Not implemented (no status enum yet). |
+| H50 | NOT_COMPUTED status exists | done | `src/wav_to_freq/domain/status.py` | `EstimateStatus.NOT_COMPUTED` introduced as v1 status. |
 | H51 | Show rejected values; exclude from aggregates | partial | `src/wav_to_freq/reporting/writers/modal.py` | Rejects are displayed; need explicit OK/WARNING/REJECTED/NOT_COMPUTED and default exclusion rules. |
 | I53 | Best guess per (hit, fi) | todo |  | Not implemented (single `fn`/`zeta` per hit today). |
 | J56 | Group peaks across hits; stable mode_id | todo |  | Not implemented. |

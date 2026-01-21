@@ -1,10 +1,14 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
+
 import numpy as np
-from dataclasses import dataclass
 
 from wav_to_freq.domain.config import EPS
 from wav_to_freq.domain.enums import StereoChannel
+
 
 @dataclass
 class AutoDetectInfo:
@@ -18,6 +22,7 @@ class AutoDetectInfo:
         lo = min(self.score_left, self.score_right)
         hi = max(self.score_left, self.score_right)
         return hi / (lo + EPS)
+
 
 @dataclass(frozen=True)
 class StereoWav:
@@ -45,6 +50,7 @@ class HitWindow:
     hammer: np.ndarray  # windowed hammer samples
     accel: np.ndarray  # windowed accel samples
 
+
 @dataclass(frozen=True)
 class HitDetectionReport:
     n_hits_found: int
@@ -53,6 +59,7 @@ class HitDetectionReport:
     min_separation_s: float
     pre_s: float
     post_s: float
+
 
 @dataclass(frozen=True)
 class HitModalResult:
