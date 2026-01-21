@@ -20,6 +20,7 @@ Status values:
 | A4 | Persist channel mapping in outputs | partial | `src/wav_to_freq/reporting/sections/preprocess.py` | Hammer channel shown; need full config echo (L66) and explicit "role" language. |
 | B5 | Hits detected from hammer only | done | `src/wav_to_freq/io/hit_detection.py` | `prepare_hits()` uses hammer channel for detection. |
 | B7 | Min hit separation configurable | done | `src/wav_to_freq/io/hit_detection.py` | `min_separation_s` default 0.30 and configurable. |
+| (check) | Regression: free srl2 1.wav | partial | `tests/test_regression_free_srl2_1.py` | Asserts 10 hits and primary fn=150.732 Hz for a known file. |
 | C13 | Default post-hit duration 1.5s | partial | `src/wav_to_freq/pipeline.py` | Pipeline default is 1.50; TUI preset defaults differ. |
 | C16 | Hybrid full vs established fit | partial | `src/wav_to_freq/analysis/modal.py` | Established-style fit exists; full-window variant not separately reported yet. |
 | D17 | Response DC removal, no global HP | done | `src/wav_to_freq/analysis/modal.py` | Mean removal is applied to response segment. |
