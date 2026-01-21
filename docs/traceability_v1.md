@@ -1,0 +1,59 @@
+# V1 Traceability
+
+Tracks only v1 "must ship" requirements.
+
+- Requirement text lives in `docs/specs.md`.
+- Decisions/rationale live in `docs/specs_clarifications.md`.
+- Evidence should prefer tests once they exist; until then, code references are acceptable.
+
+Status values:
+
+- `todo`: not implemented
+- `partial`: partially implemented / missing tests / missing outputs
+- `done`: implemented with evidence
+
+| req_id | short_name | status | evidence | notes |
+|---|---|---|---|---|
+| A1 | Stereo WAV only | done | `src/wav_to_freq/io/wav_reader.py` | Enforced by channel count check. |
+| A2 | Channel roles set in TUI | partial | `src/wav_to_freq/tui_app.py` | TUI supports selection, but defaults allow "auto" without explicit confirmation. |
+| A3 | Refuse run without roles | partial | `src/wav_to_freq/tui_app.py` | Needs explicit "must choose" gating in UI to satisfy spec intent. |
+| A4 | Persist channel mapping in outputs | partial | `src/wav_to_freq/reporting/sections/preprocess.py` | Hammer channel shown; need full config echo (L66) and explicit "role" language. |
+| B5 | Hits detected from hammer only | done | `src/wav_to_freq/io/hit_detection.py` | `prepare_hits()` uses hammer channel for detection. |
+| B7 | Min hit separation configurable | done | `src/wav_to_freq/io/hit_detection.py` | `min_separation_s` default 0.30 and configurable. |
+| C13 | Default post-hit duration 1.5s | partial | `src/wav_to_freq/pipeline.py` | Pipeline default is 1.50; TUI preset defaults differ. |
+| C16 | Hybrid full vs established fit | partial | `src/wav_to_freq/analysis/modal.py` | Established-style fit exists; full-window variant not separately reported yet. |
+| D17 | Response DC removal, no global HP | done | `src/wav_to_freq/analysis/modal.py` | Mean removal is applied to response segment. |
+| D19 | Butterworth order-4 band-pass + filtfilt | done | `src/wav_to_freq/analysis/modal.py` | `_bandpass()` uses butter(4)+filtfilt. |
+| D20 | 0.6x-1.4x band rule + guardrails | partial | `src/wav_to_freq/analysis/modal.py` | 0.6/1.4 implemented; adjacent-peak guardrails + logging not implemented. |
+| D21 | No taper; use transient_s | partial | `src/wav_to_freq/analysis/modal.py` | `transient_s` exists; missing explicit NOT_COMPUTED on filtfilt padding failure and logging. |
+| E24 | Global + per-hit PSD peak handling | todo |  | Not implemented (currently per-hit argmax only). |
+| E25 | Welch PSD w/ logged configurable params | partial | `src/wav_to_freq/analysis/modal.py` | Welch is used; params are not configurable/logged per new spec. |
+| E26 | PSD noise floor percentile (q=60) | todo |  | Not implemented. |
+| E27 | Peak validity via peak_snr_db + cap 5 | todo |  | Not implemented (single-peak argmax only). |
+| E28 | Peak de-duplication/merging rule | todo |  | Not implemented (no peak list yet). |
+| E29 | Keep close peaks + coupled flags | todo |  | Not implemented (no coupled-region detection yet). |
+| F31 | Diagnostics numeric + flags | partial | `src/wav_to_freq/analysis/modal.py` | Some numeric diagnostics exist (snr_db, env_fit_r2) but no reason-code framework. |
+| F34 | Beating score + BEATING_DETECTED | todo |  | Not implemented. |
+| F35 | Envelope monotonicity metric + flag | todo |  | Not implemented. |
+| F37 | Filter ringing risk q_factor | todo |  | Not implemented. |
+| G39 | TD Hilbert envelope log-fit estimator | done | `src/wav_to_freq/analysis/modal.py` | Hilbert envelope + log-linear fit exists. |
+| G42 | Half-power bandwidth estimator | todo |  | Not implemented. |
+| G44 | Energy decay proxy (envelope_sq) | todo |  | Not implemented. |
+| G46 | EFFECTIVE_DAMPING_ONLY labeling | todo |  | Not implemented (no structured reason codes yet). |
+| H47 | Deterministic status mapping | todo |  | Not implemented (ad-hoc reject_reason only). |
+| H50 | NOT_COMPUTED status exists | todo |  | Not implemented (no status enum yet). |
+| H51 | Show rejected values; exclude from aggregates | partial | `src/wav_to_freq/reporting/writers/modal.py` | Rejects are displayed; need explicit OK/WARNING/REJECTED/NOT_COMPUTED and default exclusion rules. |
+| I53 | Best guess per (hit, fi) | todo |  | Not implemented (single `fn`/`zeta` per hit today). |
+| J56 | Group peaks across hits; stable mode_id | todo |  | Not implemented. |
+| K61 | Preprocess report: md+pdf + field checks | partial | `src/wav_to_freq/reporting/writers/preprocess.py` | Report exists (md/pdf optional); needs hit timestamps + go/no-go diagnostics per spec. |
+| K63 | Per-hit+per-fi plots (cap 5 peaks) | partial | `src/wav_to_freq/reporting/plots.py` | Per-hit plots exist; per-fi plots and cap-5 peak reporting not implemented. |
+| K65 | Stable output directory structure | partial | `src/wav_to_freq/reporting/writers/modal.py` | Some structure exists; needs to align to K65 contract exactly. |
+| L66 | Echo full analysis config in outputs | todo |  | Not implemented. |
+| L67 | Stamp version/git hash in outputs | todo |  | Not implemented. |
+| M71 | Clipping detected + flagged | todo |  | Not implemented. |
+| N74 | Stable analysis_results.json schema | todo |  | Not implemented. |
+
+Notes:
+
+- This list is intentionally small; not all spec IDs are tracked here.
+- Add evidence links as implementations land (tests preferred).

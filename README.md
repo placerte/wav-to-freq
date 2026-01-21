@@ -117,3 +117,16 @@ out_dir/
 
 Tracked in:
 - [`TODO.md`](TODO.md)
+
+---
+
+## Development workflow (v1 rewrite)
+
+This repo is in an incremental rewrite toward the v1 spec.
+
+- Agent/dev notes: `AGENTS.md`
+- Normative spec: `docs/specs.md`
+- Decision log: `docs/specs_clarifications.md`
+- Architecture plan: `docs/implementation.md`
+- V1 must-ship tracking: `docs/traceability_v1.md`
+- Legacy reference during migration: `src/legacy/`

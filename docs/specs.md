@@ -1,281 +1,227 @@
-# specs.md — Dynamic damping & frequency identification from impact tests
+# specs.md (v1) - WAV Impact Modal Analysis Spec
 
-## 1. Purpose
+This document is the normative v1 specification for `wav-to-freq`.
 
-This software analyzes impact-hammer vibration tests (hammer + accelerometer)
-to extract:
+Decision log / rationale lives in `docs/specs_clarifications.md` (referenced throughout by ID).
 
-- Dominant natural frequencies
-- Damping estimates (ζ)
-- Diagnostic information about modal purity, coupling, and reliability
+Conventions:
 
-The goal is **not** to force a single number, but to:
-
-- compute multiple mathematically valid estimates,
-- expose their assumptions,
-- flag when those assumptions are violated,
-- and provide an educated diagnosis suitable for engineering judgment and future databases.
+- Requirement IDs use the same scheme as `docs/specs_clarifications.md` (A1, E26, K65, ...).
+- Normative keywords: MUST, SHOULD, MAY.
 
 ---
 
-## 2. Scope
+## 1) Purpose
 
-### In scope
+Analyze 2-channel WAV impact-hammer tests (hammer + response) to extract:
 
-- 2-channel WAV input (hammer + response)
-- Multi-hit detection
-- Time-domain and frequency-domain analysis
-- Multiple damping estimators
-- Diagnostic plots and flags
-- Per-hit and aggregate reporting
+- candidate natural frequencies `fi` per hit
+- damping estimates `zeta` per (hit, `fi`, method)
+- diagnostics + reason codes that explain applicability/quality
 
-### Out of scope (for now)
-
-- Full multi-modal system identification (ERA/SSI/OMA)
-- Nonlinear / amplitude-dependent damping modeling
-- Mode shape extraction
+The tool MUST "show the thing" (multi-peak / coupled behavior) instead of forcing a single number.
 
 ---
 
-## 3. Core philosophy
+## 2) Inputs and configuration
 
-1. **Compute broadly, interpret explicitly**
-   - All relevant estimators are computed whenever possible.
-   - No estimator is silently preferred or discarded.
+Source: `docs/specs_clarifications.md` A1-A4.
 
-2. **Assumptions are never hidden**
-   - Every damping estimate carries applicability, reliability, and reason codes.
-
-3. **Numbers do not imply truth**
-   - A numeric ζ may be printed even when rejected, but always with status labels.
-
-4. **Diagnostics are first-class outputs**
-   - Beating, coupling, and multi-mode behavior are valuable results.
+- A1 (MUST): Input is stereo WAV only (2 channels required).
+- A2 (MUST): User assigns channel roles (hammer vs response) in the TUI.
+- A3 (MUST): App refuses to run unless channel roles are explicitly assigned.
+- A4 (MUST): Channel mapping is persisted/logged in outputs (channel index + semantic role).
 
 ---
 
-## 4. Terminology
+## 3) Hit detection contract
 
-- **Hit**: one detected hammer impact and associated response window.
-- **Candidate peak (fi)**: a frequency peak detected in the PSD/Welch spectrum.
-- **Single-mode compatible**: signal behavior consistent with one dominant mode.
-- **Beating**: amplitude modulation caused by multiple close frequencies.
-- **Modal damping (ζn)**: damping associated with a single vibration mode.
-- **Effective damping**: energy decay rate when multiple modes contribute.
+Source: `docs/specs_clarifications.md` B5-B10.
 
----
-
-## 5. Per-hit analysis workflow (conceptual)
-
-For each hit:
-
-1. Extract windowed raw response.
-2. Compute PSD/Welch spectrum.
-3. Detect candidate frequency peaks (max N, default N = 5).
-4. For each candidate peak:
-   - Apply band-pass filtering around fi.
-   - Compute diagnostics (beating, stability, etc.).
-   - Compute damping estimates using multiple methods.
-5. Assign quality/status labels to each estimate.
-6. Produce an optional “best guess” based on all computed data.
+- B5 (MUST): Hit detection uses the hammer channel only.
+- B6 (SHOULD): Hits are peaks in a processed hammer signal above a robust threshold, with prominence and distance constraints (formalize from implementation).
+- B7 (MUST): Minimum separation between hits defaults to 0.30 s and is user-configurable.
+- B8 (MUST): Hit detection is automatic in v1.
+- B9 (MUST): Double taps/bounce handling is out-of-scope for v1; the tool focuses on diagnosis (preprocess report).
+- B10 (MUST): No requirement to infer "missed" or "false positive" hits beyond reporting what was found.
 
 ---
 
-## 6. Frequency estimation
+## 4) Per-hit windows
 
-For each hit:
+Source: `docs/specs_clarifications.md` C11-C16.
 
-- PSD/Welch is computed on the response signal.
-- Peaks are detected using prominence and noise-floor criteria.
-- Peaks closer than a minimum spacing may be merged.
-- Each peak fi is treated as a candidate mode.
-
-Frequency repeatability across hits is reported separately from damping quality.
+- C11 (MUST): Hit window is anchored with pre-trigger only.
+- C13/C14 (MUST): Post-hit duration is fixed seconds, default 1.5 s, configurable.
+- C15 (MUST): If decay does not finish inside the window, compute anyway with diagnostics/flags.
+- C16 (MUST): Hybrid approach: compute both full-window analysis and established-decay analysis when possible; log crop start/end.
 
 ---
 
-## 7. Damping estimation methods
+## 5) Preprocessing and filtering
 
-All methods are computed when mathematically possible.
+Source: `docs/specs_clarifications.md` D17-D23.
 
-### 7.1 Time-domain envelope / log decrement
+- D17 (MUST): Response DC offset is removed; no global response high-pass by default; any response filtering is method-specific and logged.
+- D18 (MUST): No resampling; WAV sample rate is treated as final.
 
-- Applied to:
-  - raw response
-  - filtered response around fi
-- Assumes single-mode exponential decay.
+### 5.1) Per-peak band-pass
 
-### 7.2 Frequency-domain half-power bandwidth
+- D19 (MUST): Band-pass for per-peak isolation uses IIR Butterworth order 4 with zero-phase filtering (e.g. `filtfilt`).
+- D20 (MUST): Default cutoff proposal is proportional to `fi`: `lo0 = 0.60*fi`, `hi0 = 1.40*fi` with clamps to `[fmin_hz, fmax_hz]` and digital limits; apply adjacent-peak guardrails when candidate peaks exist.
+- D21 (MUST): No explicit padding/tapering by default; handle transients via a configurable `transient_s` fit skip; log it.
 
-- Computed from PSD around fi.
-- Less sensitive to time-domain beating.
-- Still assumes modal isolation.
+### 5.2) Hammer filtering
 
-### 7.3 Energy decay method
+- D23 (MUST): Hammer channel may be processed for hit detection only; never for modal estimation. Raw hammer must be shown in preprocess reporting.
 
-- Based on decay of vibrational energy proxy:
-  - velocity² (from integrated acceleration)
-- More robust to modal beating.
-- Represents **effective damping**, not pure modal ζ.
+### 5.3) Energy-method integration policy
+
+- D22 (MUST): Avoid fragile velocity integration in v1; if integration is used, it must be time-domain with drift control and fully logged.
 
 ---
 
-## 8. Diagnostics (computed for each hit and each fi)
+## 6) Frequency estimation and peak handling
 
-Diagnostics are computed independently of damping estimation.
+Source: `docs/specs_clarifications.md` E24-E30.
 
-### Examples (non-exhaustive)
+### 6.1) PSD
 
-- Envelope monotonicity
-- Beating / amplitude modulation score
-- Instantaneous frequency stability
-- PSD multi-peak presence
-- SNR estimate
-- Filter dominance / ringing risk
-- Sensitivity of ζ to small parameter changes
+- E24 (MUST): Use both per-hit PSDs and a robust across-hits PSD (mean/median) to form a global candidate peak list.
+- E25 (MUST): Welch PSD is the reference; parameters are configurable but have logged defaults; `psd_df_target_hz` is the primary knob driving `nperseg` deterministically.
+- E26 (MUST): Noise floor is percentile-based within the analysis band: `noise_floor = percentile(Pxx_band, q)` with default `q=60` (configurable; logged).
 
-Diagnostics are numeric internally and summarized as flags in reports.
+### 6.2) Peak validity
 
----
+- E27 (MUST): Peak validity is SNR-based:
+  - `peak_snr_db = 10*log10(peak_power/noise_floor)`
+  - valid iff `peak_snr_db >= min_peak_snr_db` (default 6 dB)
+  - retain up to `max_candidate_peaks` valid peaks per spectrum (default 5)
+  - if none valid: reason `NO_VALID_PEAKS` and/or `SNR_LOW`
 
-## 9. Estimate status classification
+### 6.3) Merging and coupling
 
-Every damping estimate is wrapped in a structured result:
+- E28 (MUST): De-duplicate peaks via hybrid spacing `min_spacing_hz(fi)=max(abs_hz, frac*fi)`; keep strongest peak per group; log grouping.
+- E29 (MUST): Near-degenerate peaks are kept as separate candidates; mark coupled/multi-peak region with flags (`PSD_MULTI_PEAK`, `MULTI_MODE_SUSPECTED`); do not force merging into one.
 
-- `value`: numeric ζ
-- `method`: TD_raw, TD_filt, FD_half_power, Energy, etc.
-- `target_frequency`: fi
-- `status`: OK | WARNING | REJECTED
-- `reason_codes`: list of strings
-- `diagnostics`: supporting metrics
+### 6.4) Sub-bin refinement
 
-### Status meanings
-
-#### OK
-
-- Method assumptions are satisfied.
-- ζ is physically interpretable.
-
-#### WARNING
-
-- Assumptions partially violated.
-- ζ is indicative but uncertain.
-
-#### REJECTED
-
-- Assumptions clearly violated.
-- ζ has no physical meaning and must not be used for decisions.
+- E30 (SHOULD): Sub-bin refinement is allowed and enabled by default when the peak is isolated and quality is acceptable; log bin vs refined frequency and refinement method.
 
 ---
 
-## 10. Reason codes (initial set)
+## 7) Diagnostics
 
-### Signal quality
+Source: `docs/specs_clarifications.md` F31-F38.
 
-- SNR_LOW
-- CLIPPED_SIGNAL
-
-### Modal purity
-
-- BEATING_DETECTED
-- MULTI_MODE_SUSPECTED
-- PSD_MULTI_PEAK
-
-### Fit / decay validity
-
-- ENVELOPE_NON_MONOTONIC
-- INSTANT_FREQ_DRIFT
-- TOO_SHORT_DECAY
-
-### Filter issues
-
-- FILTER_RINGING_RISK
-- FILTER_BAND_TOO_NARROW
-- FILTER_SENSITIVITY_HIGH
-
-### Method limitations
-
-- EFFECTIVE_DAMPING_ONLY
+- F31 (MUST): Diagnostics are reported as numeric metrics plus flags/reason codes; thresholds are configurable and logged.
+- F32 (MUST): Field-first priorities; core diagnostics focus on on-site usability + validity of `fi` and `zeta`.
+- F33 (MUST): Provide both time-domain SNR per hit and frequency-domain SNR per peak.
+- F34 (MUST): Beating detection metric + `BEATING_DETECTED` threshold.
+- F35 (MUST): Envelope monotonicity metric + `ENVELOPE_NON_MONOTONIC` threshold.
+- F36 (MUST): Instantaneous frequency stability metric + `INSTANT_FREQ_DRIFT` threshold.
+- F37 (MUST): Filter ringing risk metric (`q_factor`) + `FILTER_RINGING_RISK` threshold.
+- F38 (MAY): Sensitivity sweeps are nice-to-have; not required for v1.
 
 ---
 
-## 11. Best-guess selection (optional, automated)
+## 8) Damping estimators
 
-A per-hit “best guess” ζ may be selected for convenience:
+Source: `docs/specs_clarifications.md` G39-G46.
 
-1. Prefer estimates with status OK
-2. Else prefer WARNING
-3. Else no best guess is reported
+### 8.1) TD envelope fit (modal)
 
-Selection order and rationale must be documented and reproducible.
-Manual override must be explicitly labeled as such.
+- G39 (MUST): TD damping baseline is Hilbert envelope + log-linear regression on per-peak bandpassed response.
+- G40 (MUST): Compute both full-window fit and established-decay fit when possible; preserve both.
+- G41 (MUST): `TOO_SHORT_DECAY` is frequency-aware (min duration + min cycles) with preset defaults.
 
----
+### 8.2) FD half-power bandwidth (modal)
 
-## 12. Reporting requirements
+- G42 (MAY): Half-power bandwidth estimator is allowed; default is no extra PSD smoothing.
+- G43 (MUST): If half-power points are not found cleanly, output `NOT_COMPUTED` (preferred) with explicit reason codes.
 
-General WAV file analytics (pre-process report):
+### 8.3) Energy decay (effective)
 
-The software MUST generate a pre-process report:
-
-- `report_preprocess.md` and  `report_preprocess.pdf` in the output directory.
-- It MUST be generated before per-hit analysis and MUST be readable standalone.
-
-The pre-process report MUST include:
-
-1) WAV file specs table
-
-- Path
-- Sample rate (Hz)
-- Samples
-- Duration (s)
-- Hammer channel (e.g., StereoChannel.LEFT)
-
-1) Global overview figure
-
-- A single figure that plots both channels aligned in time:
-  - hammer on top
-  - response on bottom
-- Embedded in the report as `figures/overview_two_channels.png`
-
-Per hit, the report MUST show:
-
-1. Raw windowed response (time)
-2. PSD/Welch with detected peaks
-3. Filtered response for primary peak
-4. Table of damping estimates with status labels and reasons
-
-Optional (debug):
-
-- Filtered responses for other peaks
-- Detailed diagnostic plots
-
-Summary statistics MUST:
-
-- Exclude REJECTED estimates
-- Clearly separate OK and WARNING values
-- Never average mixed-quality results silently
-
-Formats:
-
-- reports should be provided in markdown and pdf
+- G44 (MUST): Energy decay estimator uses a small set of proxies:
+  - default: envelope-squared proxy `E(t)=e(t)^2`
+  - optional: `E(t)=y_filt(t)^2`
+  - velocity-squared proxies are out of scope for v1
+- G45 (MUST): Conversion rules to `zeta` depend on proxy; log slopes/decay rates used.
+- G46 (MUST): Energy estimates always carry `EFFECTIVE_DAMPING_ONLY`; they are effective damping, not guaranteed modal damping.
 
 ---
 
-## 13. Interpretation rules (normative)
+## 9) Status and reason codes
 
-- A numeric ζ without an OK status MUST NOT be treated as a reliable material or structural property.
-- Beating after band-pass filtering SHALL be interpreted as evidence of modal coupling, not noise.
-- Energy-based ζ SHALL be labeled as effective damping when multiple modes participate.
+Source: `docs/specs_clarifications.md` H47-H51.
+
+- H47 (MUST): Status mapping is deterministic and transparent.
+- H48 (MUST): Reason codes are partitioned into hard failures vs soft failures.
+- H49 (MUST): Multiple reason codes may coexist; no explicit priority ordering required for v1 beyond hard/soft mapping.
+- H50 (MUST): Distinct `NOT_COMPUTED` status exists.
+- H51 (MUST): REJECTED estimates may still show numeric values for transparency, but are excluded from aggregates by default.
+
+Estimate result contract (minimum fields):
+
+- `hit_id`
+- `fi_bin_hz`, `fi_refined_hz` (refined may be empty)
+- `method` (e.g. `TD_FILT`, `FD_HALF_POWER`, `ENERGY_ENVELOPE_SQ`)
+- `zeta` (may be empty/NaN)
+- `status` (`OK|WARNING|REJECTED|NOT_COMPUTED`)
+- `reason_codes[]`
+- `diagnostics{}` (named numeric metrics)
 
 ---
 
-## 14. Design intent
+## 10) Best-guess policy (optional)
 
-This specification prioritizes:
+Source: `docs/specs_clarifications.md` I52-I55.
 
-- Physical correctness over simplicity
-- Transparency over automation
-- Diagnostic power over forced conclusions
+- I53 (MUST): Best guess is per (hit, peak `fi`).
+- I52/I55 (MUST): Deterministic selection order + tie-break on quality metrics.
+- I54 (MUST): Energy is best-guess only as fallback and must remain labeled `EFFECTIVE_DAMPING_ONLY`.
 
-The software is intended to assist expert judgment, not replace it.
+---
+
+## 11) Aggregation across hits
+
+Source: `docs/specs_clarifications.md` J56-J60.
+
+- J56 (MUST): Group peaks across hits using the global peak list; stable `mode_id` values.
+- J57 (MUST): Mode matching uses a hybrid tolerance `max(abs_hz, frac*fi)`; configurable and logged.
+- J58/J59 (MUST): Provide robust stats and show OK-only and OK+WARNING aggregates.
+- J60 (MUST): Keep separate mode groups; do not force a single global "mode 0".
+
+---
+
+## 12) Reporting and output contracts
+
+Source: `docs/specs_clarifications.md` K61-K65.
+
+- K61 (MUST): Generate preprocess report in both Markdown and PDF, with field go/no-go metrics, hit count, and timestamps.
+- K62 (MUST): Generate a combined modal report in both Markdown and PDF, with per-hit sections.
+- K63 (MUST): Per-hit sections include PSD with annotated peaks + per-(hit,fi) plots (cap at 5 peaks per hit).
+- K64 (MUST): Emit machine-readable CSV outputs (long + best guess); JSON export is allowed/recommended.
+- K65 (MUST): Output directory structure is stable and considered public contract.
+
+---
+
+## 13) Reproducibility
+
+Source: `docs/specs_clarifications.md` L66-L68.
+
+- L66 (MUST): Outputs include full analysis config (everything that can change results), in human-readable and machine-readable forms.
+- L67 (MUST): Outputs include version stamp + git hash (if available) + run timestamp.
+- L68 (MUST): Analysis is deterministic for a given input+config.
+
+---
+
+## 14) Limits and future-proofing
+
+Source: `docs/specs_clarifications.md` M69-M71 and N72-N74.
+
+- M69 (MUST): Presets exist (structures vs xylophone) and drive defaults; user can override.
+- M70 (SHOULD): Warn on long WAVs; streaming/chunking is out-of-scope for v1.
+- M71 (MUST): Clipping is detected and flagged; analysis continues by default with aggressive warnings.
+- N72/N73 (MUST): Manual hit editing and >2 channel inputs are out-of-scope for v1.
+- N74 (MUST): Provide a stable minimal JSON export schema (`analysis_results.json`) for future database integration.
