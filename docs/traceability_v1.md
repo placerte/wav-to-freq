@@ -26,12 +26,12 @@ Status values:
 | D19 | Butterworth order-4 band-pass + filtfilt | done | `src/wav_to_freq/analysis/modal.py` | `_bandpass()` uses butter(4)+filtfilt. |
 | D20 | 0.6x-1.4x band rule + guardrails | partial | `src/wav_to_freq/analysis/modal.py` | 0.6/1.4 implemented; adjacent-peak guardrails + logging not implemented. |
 | D21 | No taper; use transient_s | partial | `src/wav_to_freq/analysis/modal.py` | `transient_s` exists; missing explicit NOT_COMPUTED on filtfilt padding failure and logging. |
-| E24 | Global + per-hit PSD peak handling | todo |  | Not implemented (currently per-hit argmax only). |
-| E25 | Welch PSD w/ logged configurable params | partial | `src/wav_to_freq/analysis/modal.py` | Welch is used; params are not configurable/logged per new spec. |
-| E26 | PSD noise floor percentile (q=60) | todo |  | Not implemented. |
-| E27 | Peak validity via peak_snr_db + cap 5 | todo |  | Not implemented (single-peak argmax only). |
-| E28 | Peak de-duplication/merging rule | todo |  | Not implemented (no peak list yet). |
-| E29 | Keep close peaks + coupled flags | todo |  | Not implemented (no coupled-region detection yet). |
+| E24 | Global + per-hit PSD peak handling | partial | `src/wav_to_freq/analysis/peaks/global_peaks.py` | New peak pipeline exists but not wired into main analysis yet. |
+| E25 | Welch PSD w/ logged configurable params | partial | `src/wav_to_freq/dsp/psd.py` | Configurable Welch wrapper exists; logging/wiring pending. |
+| E26 | PSD noise floor percentile (q=60) | done | `src/wav_to_freq/analysis/peaks/noise_floor.py` | Percentile noise floor implemented + unit tests. |
+| E27 | Peak validity via peak_snr_db + cap 5 | partial | `src/wav_to_freq/analysis/peaks/psd_peaks.py` | SNR gating + cap implemented; not yet integrated into reports. |
+| E28 | Peak de-duplication/merging rule | done | `src/wav_to_freq/analysis/peaks/merge.py` | Merge rule implemented + unit tests. |
+| E29 | Keep close peaks + coupled flags | done | `src/wav_to_freq/analysis/peaks/merge.py` | Coupled-flagging implemented + unit tests (keeps peaks). |
 | F31 | Diagnostics numeric + flags | partial | `src/wav_to_freq/analysis/modal.py` | Some numeric diagnostics exist (snr_db, env_fit_r2) but no reason-code framework. |
 | F34 | Beating score + BEATING_DETECTED | todo |  | Not implemented. |
 | F35 | Envelope monotonicity metric + flag | todo |  | Not implemented. |
