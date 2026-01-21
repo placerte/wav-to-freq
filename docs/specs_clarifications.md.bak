@@ -1,0 +1,18 @@
+# specs_clarifications.md
+
+Clarification checklist for `specs.md` (questions + decisions)
+
+Status key:
+
+- ✅ Answered / decided
+- 🟡 Partially answered (needs follow-up)
+- ⏳ Not discussed yet
+
+---
+
+## A) Inputs and configuration
+
+**A1) Are you keeping the “2-channel WAV only” assumption, or do you want to support mono files later?**  
+**A2) How is channel assignment provided? (CLI flags / TUI / config file)**  
+
+**A3) Do you want the software to refuse to run if the user doesn’t explicitly assign channels?**  

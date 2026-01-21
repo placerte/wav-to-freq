@@ -10,6 +10,7 @@ to extract:
 - Diagnostic information about modal purity, coupling, and reliability
 
 The goal is **not** to force a single number, but to:
+
 - compute multiple mathematically valid estimates,
 - expose their assumptions,
 - flag when those assumptions are violated,
@@ -20,6 +21,7 @@ The goal is **not** to force a single number, but to:
 ## 2. Scope
 
 ### In scope
+
 - 2-channel WAV input (hammer + response)
 - Multi-hit detection
 - Time-domain and frequency-domain analysis
@@ -28,6 +30,7 @@ The goal is **not** to force a single number, but to:
 - Per-hit and aggregate reporting
 
 ### Out of scope (for now)
+
 - Full multi-modal system identification (ERA/SSI/OMA)
 - Nonlinear / amplitude-dependent damping modeling
 - Mode shape extraction
@@ -81,6 +84,7 @@ For each hit:
 ## 6. Frequency estimation
 
 For each hit:
+
 - PSD/Welch is computed on the response signal.
 - Peaks are detected using prominence and noise-floor criteria.
 - Peaks closer than a minimum spacing may be merged.
@@ -95,17 +99,20 @@ Frequency repeatability across hits is reported separately from damping quality.
 All methods are computed when mathematically possible.
 
 ### 7.1 Time-domain envelope / log decrement
+
 - Applied to:
   - raw response
   - filtered response around fi
 - Assumes single-mode exponential decay.
 
 ### 7.2 Frequency-domain half-power bandwidth
+
 - Computed from PSD around fi.
 - Less sensitive to time-domain beating.
 - Still assumes modal isolation.
 
 ### 7.3 Energy decay method
+
 - Based on decay of vibrational energy proxy:
   - velocity² (from integrated acceleration)
 - More robust to modal beating.
@@ -118,6 +125,7 @@ All methods are computed when mathematically possible.
 Diagnostics are computed independently of damping estimation.
 
 ### Examples (non-exhaustive)
+
 - Envelope monotonicity
 - Beating / amplitude modulation score
 - Instantaneous frequency stability
@@ -144,14 +152,17 @@ Every damping estimate is wrapped in a structured result:
 ### Status meanings
 
 #### OK
+
 - Method assumptions are satisfied.
 - ζ is physically interpretable.
 
 #### WARNING
+
 - Assumptions partially violated.
 - ζ is indicative but uncertain.
 
 #### REJECTED
+
 - Assumptions clearly violated.
 - ζ has no physical meaning and must not be used for decisions.
 
@@ -160,25 +171,30 @@ Every damping estimate is wrapped in a structured result:
 ## 10. Reason codes (initial set)
 
 ### Signal quality
+
 - SNR_LOW
 - CLIPPED_SIGNAL
 
 ### Modal purity
+
 - BEATING_DETECTED
 - MULTI_MODE_SUSPECTED
 - PSD_MULTI_PEAK
 
 ### Fit / decay validity
+
 - ENVELOPE_NON_MONOTONIC
 - INSTANT_FREQ_DRIFT
 - TOO_SHORT_DECAY
 
 ### Filter issues
+
 - FILTER_RINGING_RISK
 - FILTER_BAND_TOO_NARROW
 - FILTER_SENSITIVITY_HIGH
 
 ### Method limitations
+
 - EFFECTIVE_DAMPING_ONLY
 
 ---
@@ -198,20 +214,51 @@ Manual override must be explicitly labeled as such.
 
 ## 12. Reporting requirements
 
+General WAV file analytics (pre-process report):
+
+The software MUST generate a pre-process report:
+
+- `report_preprocess.md` and  `report_preprocess.pdf` in the output directory.
+- It MUST be generated before per-hit analysis and MUST be readable standalone.
+
+The pre-process report MUST include:
+
+1) WAV file specs table
+
+- Path
+- Sample rate (Hz)
+- Samples
+- Duration (s)
+- Hammer channel (e.g., StereoChannel.LEFT)
+
+1) Global overview figure
+
+- A single figure that plots both channels aligned in time:
+  - hammer on top
+  - response on bottom
+- Embedded in the report as `figures/overview_two_channels.png`
+
 Per hit, the report MUST show:
+
 1. Raw windowed response (time)
 2. PSD/Welch with detected peaks
 3. Filtered response for primary peak
 4. Table of damping estimates with status labels and reasons
 
 Optional (debug):
+
 - Filtered responses for other peaks
 - Detailed diagnostic plots
 
 Summary statistics MUST:
+
 - Exclude REJECTED estimates
 - Clearly separate OK and WARNING values
 - Never average mixed-quality results silently
+
+Formats:
+
+- reports should be provided in markdown and pdf
 
 ---
 
@@ -226,9 +273,9 @@ Summary statistics MUST:
 ## 14. Design intent
 
 This specification prioritizes:
+
 - Physical correctness over simplicity
 - Transparency over automation
 - Diagnostic power over forced conclusions
 
 The software is intended to assist expert judgment, not replace it.
-
