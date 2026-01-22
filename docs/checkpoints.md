@@ -102,6 +102,15 @@ Conventions:
 - Verification:
   - Documentation-only
 
+- Commit: `eb6affc`
+- Scope: coupling diagnostics, energy decay, reason-code flags in modal outputs
+- Specs covered:
+  - F34-F37 (diagnostic metrics + flags)
+  - G44-G46 (energy decay estimator with effective damping label)
+  - F31 (flags surfaced in modal report)
+- Verification:
+  - `uv run pytest -q tests/test_diagnostics_flags.py tests/test_regression_free_plate_a1h3.py tests/test_regression_free_srl2_1.py`
+
 Notes:
 
 - Prefer uv-first commands for repeatability: `uv run pytest -q`, `uv run black .`.
