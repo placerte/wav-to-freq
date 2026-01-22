@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Mapping
 
 from wav_to_freq.domain.reason_codes import ReasonCode
@@ -30,6 +30,8 @@ class PeakCandidate:
 
     is_global: bool = True
     reason_codes: tuple[ReasonCode, ...] = ()
+    peak_detection_count: int | None = None
+    detection_ratio: float | None = None
 
 
 @dataclass(frozen=True)
@@ -48,4 +50,4 @@ class EstimateResult:
     reason_codes: tuple[ReasonCode, ...] = ()
 
     # A flat map of numeric diagnostics (report shows numbers + flags).
-    diagnostics: Mapping[str, float | None] = ()
+    diagnostics: Mapping[str, float | None] = field(default_factory=dict)

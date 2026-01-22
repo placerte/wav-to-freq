@@ -28,6 +28,21 @@ class PeakConfig:
     min_peak_snr_db: float = 6.0
     max_candidate_peaks: int = 5
 
+    # Optional low-frequency global pass (E24 addendum).
+    low_band_enabled: bool = True
+    low_band_min_hz: float = 1.0
+    low_band_max_hz: float = 100.0
+    low_band_noise_floor_percentile: float | None = None
+    low_band_min_peak_snr_db: float | None = 3.0
+    low_band_max_candidate_peaks: int | None = None
+
+    # Optional hit-local union pass (E24 addendum).
+    hit_local_enabled: bool = True
+    hit_local_min_hits: int = 2
+    hit_local_noise_floor_percentile: float | None = None
+    hit_local_min_peak_snr_db: float | None = 3.0
+    hit_local_max_candidate_peaks: int | None = 10
+
     # Peak de-duplication (E28): merge near-duplicate peaks.
     merge_min_spacing_hz: float = 0.5
     merge_min_spacing_frac: float = 0.03

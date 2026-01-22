@@ -153,6 +153,8 @@ We should represent the v1 spec outputs directly.
   - `fi_refined_hz` (optional)
   - `peak_power`, `noise_floor`, `peak_snr_db` (E27)
   - `is_global` (E24)
+  - `peak_detection_count` (optional; number of hits contributing when hit-local aggregation is enabled)
+  - `detection_ratio` (optional; derived `peak_detection_count / total_hits`)
   - `flags[]` (e.g. coupled region)
 
 ### 3.3 Diagnostics and estimates
@@ -212,6 +214,8 @@ Avoid plugin frameworks. Use small, explicit call patterns.
 
 - `analysis/peaks/global_peaks.py:compute_global_peak_list(hit_windows, config) -> list[PeakCandidate]`
 - `analysis/peaks/per_hit_peaks.py:compute_hit_peaks(hit_window, global_peaks, config) -> list[PeakCandidate]`
+
+Global peak selection should run a full-band pass plus a low-frequency pass (default 1–100 Hz with a 3 dB SNR gate) and merge them before de-duplication, so low-frequency structural modes are not suppressed by higher-energy peaks. Optionally add a hit-local union pass that keeps peaks appearing in at least `min_hits` hits (default 2), using a 3 dB SNR gate.
 
 ### 5.2 Diagnostics
 

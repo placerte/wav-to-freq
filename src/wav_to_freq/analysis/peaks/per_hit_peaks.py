@@ -87,6 +87,8 @@ def compute_hit_peaks(
                 peak_snr_db=gp.peak_snr_db,
                 is_global=True,
                 reason_codes=gp.reason_codes,
+                peak_detection_count=gp.peak_detection_count,
+                detection_ratio=gp.detection_ratio,
             )
         )
 
@@ -136,6 +138,8 @@ def compute_hit_peaks(
                 peak_snr_db=p.peak_snr_db,
                 is_global=p.is_global,
                 reason_codes=p.reason_codes,
+                peak_detection_count=p.peak_detection_count,
+                detection_ratio=p.detection_ratio,
             )
         )
 

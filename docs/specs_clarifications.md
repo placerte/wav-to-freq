@@ -324,6 +324,9 @@ Notes:
 - Peak detection SHALL use **both** approaches:
   - A robust global spectrum across hits (e.g. median/mean of per-hit PSDs) is used to form a stable list of candidate peak frequencies.
   - Per-hit PSDs are still computed and used to refine/validate peaks on each hit.
+  - Add a low-frequency global pass (default 1–100 Hz, 3 dB min peak SNR) merged into the main list before de-duplication, to preserve low-frequency structural modes that may be weaker in the full-band ranking.
+  - Optionally add a hit-local union pass: retain peaks that appear in at least `min_hits` hits (default 2) even if they are weak in the median PSD; default hit-local SNR gate is 3 dB with separate SNR/cap settings.
+  - When hit-local aggregation is enabled, include a peak detection count and optional detection ratio per global peak for traceability.
 - Contract:
   - The analysis MUST produce a per-hit PSD for diagnostics and per-hit peak context.
   - The analysis MUST produce a global candidate-peak list (frequency + basic peak metrics) that is consistent across hits.

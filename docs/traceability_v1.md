@@ -27,7 +27,7 @@ Status values:
 | D19 | Butterworth order-4 band-pass + filtfilt | done | `src/wav_to_freq/analysis/modal.py` | `_bandpass()` uses butter(4)+filtfilt. |
 | D20 | 0.6x-1.4x band rule + guardrails | partial | `src/wav_to_freq/analysis/modal.py` | 0.6/1.4 implemented; adjacent-peak guardrails + logging not implemented. |
 | D21 | No taper; use transient_s | partial | `src/wav_to_freq/analysis/modal.py` | `transient_s` exists; missing explicit NOT_COMPUTED on filtfilt padding failure and logging. |
-| E24 | Global + per-hit PSD peak handling | partial | `src/wav_to_freq/analysis/peaks/global_peaks.py` | New peak pipeline exists but not wired into main analysis yet. |
+| E24 | Global + per-hit PSD peak handling | partial | `src/wav_to_freq/analysis/peaks/global_peaks.py` | Global peaks include low-band merge and optional hit-local union; pipeline wiring still pending. |
 | E25 | Welch PSD w/ logged configurable params | partial | `src/wav_to_freq/dsp/psd.py` | Configurable Welch wrapper exists; logging/wiring pending. |
 | E26 | PSD noise floor percentile (q=60) | done | `src/wav_to_freq/analysis/peaks/noise_floor.py` | Percentile noise floor implemented + unit tests. |
 | E27 | Peak validity via peak_snr_db + cap 5 | partial | `src/wav_to_freq/analysis/peaks/psd_peaks.py` | SNR gating + cap implemented; not yet integrated into reports. |

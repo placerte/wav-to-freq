@@ -72,6 +72,8 @@ def find_candidate_peaks_from_psd(
                 peak_snr_db=snr_db,
                 is_global=bool(is_global),
                 reason_codes=(),
+                peak_detection_count=None,
+                detection_ratio=None,
             )
         )
 
@@ -90,6 +92,8 @@ def find_candidate_peaks_from_psd(
             peak_snr_db=c.peak_snr_db,
             is_global=c.is_global,
             reason_codes=c.reason_codes,
+            peak_detection_count=c.peak_detection_count,
+            detection_ratio=c.detection_ratio,
         )
 
     if not candidates:
@@ -111,4 +115,6 @@ def attach_no_valid_peaks_reason(hit_id: int) -> PeakCandidate:
         peak_snr_db=None,
         is_global=False,
         reason_codes=(ReasonCode.NO_VALID_PEAKS, ReasonCode.SNR_LOW),
+        peak_detection_count=None,
+        detection_ratio=None,
     )

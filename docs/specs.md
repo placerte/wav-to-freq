@@ -88,6 +88,9 @@ Source: `docs/specs_clarifications.md` E24-E30.
 ### 6.1) PSD
 
 - E24 (MUST): Use both per-hit PSDs and a robust across-hits PSD (mean/median) to form a global candidate peak list.
+- E24a (SHOULD): Global peak selection SHOULD include a low-frequency pass that is merged into the main list before de-duplication, to avoid suppressing low-frequency structural modes. Default low band: 1–100 Hz with a lower SNR gate (3 dB); settings are configurable and logged.
+- E24b (SHOULD): Global peak selection SHOULD optionally include a hit-local union pass, retaining peaks that appear in at least `min_hits` hits (default 2) even if they are weak in the median PSD. Default hit-local SNR gate is 3 dB; thresholds and caps are configurable and logged.
+- E24c (SHOULD): Global peak outputs SHOULD include a `peak_detection_count` for each peak when hit-local aggregation is enabled, indicating how many hits contributed to that peak group. A derived `detection_ratio` (count / total hits) MAY be included for reporting.
 - E25 (MUST): Welch PSD is the reference; parameters are configurable but have logged defaults; `psd_df_target_hz` is the primary knob driving `nperseg` deterministically.
 - E26 (MUST): Noise floor is percentile-based within the analysis band: `noise_floor = percentile(Pxx_band, q)` with default `q=60` (configurable; logged).
 
