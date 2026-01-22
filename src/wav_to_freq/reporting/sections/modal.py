@@ -3,10 +3,18 @@ from typing import Sequence
 from wav_to_freq.domain.types import HitModalResult, HitWindow
 from wav_to_freq.reporting.markdown import MarkdownDoc
 from wav_to_freq.reporting.plots import plot_hit_response_report
-from wav_to_freq.utils.formating import custom_format, custom_max, custom_mean, custom_min, is_finite
+from wav_to_freq.utils.formating import (
+    custom_format,
+    custom_max,
+    custom_mean,
+    custom_min,
+    is_finite,
+)
 
-def add_section_modal_summary(mdd: MarkdownDoc, *, results: Sequence[HitModalResult], title: str):
 
+def add_section_modal_summary(
+    mdd: MarkdownDoc, *, results: Sequence[HitModalResult], title: str
+):
     accepted = [r for r in results if not r.reject_reason]
     rejected = [r for r in results if r.reject_reason]
 
@@ -23,6 +31,13 @@ def add_section_modal_summary(mdd: MarkdownDoc, *, results: Sequence[HitModalRes
             f"Accepted: **{len(accepted)}**",
             f"Rejected: **{len(rejected)}**",
         ]
+    )
+
+    mdd.p(
+        "Note: FD half-power damping estimates (when enabled) are flagged with "
+        "`MULTI_MODE_SUSPECTED` when peaks are coupled or appear in only a few hits. "
+        "Use the time-domain envelope estimate as the primary reference for lightly "
+        "damped structures."
     )
 
     if accepted:
@@ -59,8 +74,16 @@ def add_section_modal_summary(mdd: MarkdownDoc, *, results: Sequence[HitModalRes
             ]
         )
 
-def add_section_per_hit_results(mdd: MarkdownDoc, windows: Sequence[HitWindow], results: Sequence[HitModalResult], transient_s: float, fs: float, hits_dir:Path, out_dir:Path):
 
+def add_section_per_hit_results(
+    mdd: MarkdownDoc,
+    windows: Sequence[HitWindow],
+    results: Sequence[HitModalResult],
+    transient_s: float,
+    fs: float,
+    hits_dir: Path,
+    out_dir: Path,
+):
     mdd.h2("Hit-by-hit")
 
     n = min(len(windows), len(results))
