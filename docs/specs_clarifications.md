@@ -733,6 +733,11 @@ Current implementation note:
 
 - Present code uses an envelope-fit approach: compute analytic envelope (Hilbert) on a band-passed response and fit a line to `log(envelope)` via linear regression.
 
+Rewrite plan note:
+
+- Implement TD envelope fit as a dedicated estimator module with both full-window and established-decay variants.
+- Enforce frequency-aware fit guards (`decay_min_duration_s`, `decay_min_cycles`) and attach reason codes on failure.
+
 TD damping estimator (v1 baseline): envelope fit with linear regression on log-envelope.
 
 - For each candidate peak frequency `fi`, compute a band-limited response `y_filt(t)` (per D19/D20).

@@ -239,6 +239,42 @@ Estimators must:
 - return `NOT_COMPUTED` rather than raising, when prerequisites are missing
 - attach diagnostics and reason codes
 
+#### Zeta pipeline plan (rewrite)
+
+Goal: implement the full zeta (damping) workflow defined in specs G39-G46.
+
+1) TD envelope fit (modal) (`analysis/estimators/td_envelope.py`)
+
+- Inputs: hit window, target peak, config, and per-peak band-pass settings (D19/D20).
+- Compute analytic envelope (Hilbert) on band-passed response.
+- Produce two fits per peak when possible:
+  - full-window fit
+  - established-decay fit
+- Enforce frequency-aware guards (G41): `decay_min_duration_s` + `decay_min_cycles`.
+- Report fit diagnostics (slope, intercept, `env_fit_r2`) and reason codes on failure.
+
+2) FD half-power bandwidth (optional) (`analysis/estimators/fd_half_power.py`)
+
+- Use per-hit PSD (E25) and per-peak isolation to compute 3 dB bandwidth.
+- If crossings are not found or coupled regions are present, return NOT_COMPUTED with reason codes (G43).
+
+3) Energy decay (effective) (`analysis/estimators/energy_decay.py`)
+
+- Implement envelope-squared proxy by default; optionally signal-squared.
+- Convert decay rate to zeta with proxy-specific formulae (G45).
+- Always attach `EFFECTIVE_DAMPING_ONLY` reason code.
+
+4) Status mapping (`analysis/status/mapping.py`)
+
+- Map hard/soft reason codes to `OK|WARNING|REJECTED|NOT_COMPUTED` (H47-H51).
+- Apply mapping consistently across estimators and report outputs.
+
+5) Wiring + reporting
+
+- Per hit, per peak: compute estimator set, attach diagnostics + reason codes.
+- Preserve both full-window and established-decay results.
+- Expose `best_guess_by_peak` selection rules (I52-I55) after status mapping.
+
 ### 5.4 Status mapping
 
 - `analysis/status/mapping.py:assess_estimate(estimate) -> estimate`

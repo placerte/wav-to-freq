@@ -21,13 +21,16 @@ Status values:
 | B5 | Hits detected from hammer only | done | `src/wav_to_freq/io/hit_detection.py` | `prepare_hits()` uses hammer channel for detection. |
 | B7 | Min hit separation configurable | done | `src/wav_to_freq/io/hit_detection.py` | `min_separation_s` default 0.30 and configurable. |
 | (check) | Regression: free srl2 1.wav | partial | `tests/test_regression_free_srl2_1.py` | Asserts 10 hits and primary fn=150.732 Hz for a known file. |
+| (check) | Regression: free srl2 2-4 | partial | `tests/test_regression_free_srl2_2.py` | Adds global peaks and hit counts for SRL2 variants. |
+| (check) | Regression: free srp 1-4 | partial | `tests/test_regression_free_srp_1.py` | Baseline checks for SRP rail samples. |
+| (check) | Regression: free plate A1H3/A2H4/A3H1 | partial | `tests/test_regression_free_plate_a1h3.py` | Validates peak detection counts for plate samples. |
 | C13 | Default post-hit duration 1.5s | partial | `src/wav_to_freq/pipeline.py` | Pipeline default is 1.50; TUI preset defaults differ. |
 | C16 | Hybrid full vs established fit | partial | `src/wav_to_freq/analysis/modal.py` | Established-style fit exists; full-window variant not separately reported yet. |
 | D17 | Response DC removal, no global HP | done | `src/wav_to_freq/analysis/modal.py` | Mean removal is applied to response segment. |
 | D19 | Butterworth order-4 band-pass + filtfilt | done | `src/wav_to_freq/analysis/modal.py` | `_bandpass()` uses butter(4)+filtfilt. |
 | D20 | 0.6x-1.4x band rule + guardrails | partial | `src/wav_to_freq/analysis/modal.py` | 0.6/1.4 implemented; adjacent-peak guardrails + logging not implemented. |
 | D21 | No taper; use transient_s | partial | `src/wav_to_freq/analysis/modal.py` | `transient_s` exists; missing explicit NOT_COMPUTED on filtfilt padding failure and logging. |
-| E24 | Global + per-hit PSD peak handling | partial | `src/wav_to_freq/analysis/peaks/global_peaks.py` | Global peaks include low-band merge and optional hit-local union; pipeline wiring still pending. |
+| E24 | Global + per-hit PSD peak handling | partial | `src/wav_to_freq/analysis/peaks/global_peaks.py` | Global peaks include low-band merge, hit-local union, and peak detection counts; pipeline wiring still pending. |
 | E25 | Welch PSD w/ logged configurable params | partial | `src/wav_to_freq/dsp/psd.py` | Configurable Welch wrapper exists; logging/wiring pending. |
 | E26 | PSD noise floor percentile (q=60) | done | `src/wav_to_freq/analysis/peaks/noise_floor.py` | Percentile noise floor implemented + unit tests. |
 | E27 | Peak validity via peak_snr_db + cap 5 | partial | `src/wav_to_freq/analysis/peaks/psd_peaks.py` | SNR gating + cap implemented; not yet integrated into reports. |
@@ -37,7 +40,7 @@ Status values:
 | F34 | Beating score + BEATING_DETECTED | todo |  | Not implemented. |
 | F35 | Envelope monotonicity metric + flag | todo |  | Not implemented. |
 | F37 | Filter ringing risk q_factor | todo |  | Not implemented. |
-| G39 | TD Hilbert envelope log-fit estimator | done | `src/wav_to_freq/analysis/modal.py` | Hilbert envelope + log-linear fit exists. |
+| G39 | TD Hilbert envelope log-fit estimator | partial | `src/wav_to_freq/analysis/modal.py` | Current fit exists; rewrite plan adds full/established variants and frequency-aware guards. |
 | G42 | Half-power bandwidth estimator | todo |  | Not implemented. |
 | G44 | Energy decay proxy (envelope_sq) | todo |  | Not implemented. |
 | G46 | EFFECTIVE_DAMPING_ONLY labeling | todo |  | Not implemented (no structured reason codes yet). |
