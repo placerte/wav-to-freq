@@ -5,9 +5,12 @@ from pathlib import Path
 
 import numpy as np
 
+from wav_to_freq.analysis import modal
+from wav_to_freq.analysis.estimators.energy_decay import estimate_energy_decay
 from wav_to_freq.analysis.peaks.config import PeakConfig, PsdConfig
 from wav_to_freq.analysis.peaks.global_peaks import compute_global_peaks
 from wav_to_freq.domain.enums import StereoChannel
+from wav_to_freq.domain.reason_codes import ReasonCode
 from wav_to_freq.domain.types import HitWindow
 from wav_to_freq.io.hit_detection import prepare_hits
 
@@ -88,3 +91,46 @@ def test_free_srl2_1_hits_and_primary_frequency() -> None:
     expected_primary_hz = 150.732421875
     primary_hz = float(peaks[0].fi_bin_hz)
     assert abs(primary_hz - expected_primary_hz) < 0.01
+
+    results = modal.analyze_all_hits(
+        windows=windows,
+        fs=stereo.fs,
+        settle_s=0.010,
+        ring_s=1.0,
+        fmin_hz=1.0,
+        fmax_hz=2000.0,
+        transient_s=0.20,
+        established_min_s=0.40,
+        established_r2_min=0.95,
+        fit_max_s=0.80,
+        noise_tail_s=0.20,
+        noise_mult=3.0,
+    )
+
+    assert any(ReasonCode.BEATING_DETECTED in r.reason_codes for r in results)
+    assert any(ReasonCode.ENVELOPE_NON_MONOTONIC in r.reason_codes for r in results)
+    assert any(ReasonCode.INSTANT_FREQ_DRIFT in r.reason_codes for r in results)
+
+    energy_zetas: list[float] = []
+    for window, result in zip(windows, results):
+        y = modal._bandpass(
+            np.asarray(window.accel, dtype=float),
+            stereo.fs,
+            float(result.fn_hz),
+        )
+        energy = estimate_energy_decay(
+            y,
+            stereo.fs,
+            fn_hz=float(result.fn_hz),
+            transient_s=0.20,
+            fit_max_s=0.80,
+            noise_tail_s=0.20,
+            noise_mult=3.0,
+            decay_min_duration_s=0.10,
+            decay_min_cycles=20.0,
+        )
+        if np.isfinite(energy.zeta):
+            energy_zetas.append(float(energy.zeta))
+
+    assert energy_zetas
+    assert all(z > 0 for z in energy_zetas)

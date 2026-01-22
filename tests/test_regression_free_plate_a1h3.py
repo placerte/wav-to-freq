@@ -11,6 +11,7 @@ from wav_to_freq.analysis.peaks.config import PeakConfig, PsdConfig
 from wav_to_freq.dsp.psd import compute_welch_psd
 from wav_to_freq.analysis.peaks.global_peaks import compute_global_peaks
 from wav_to_freq.domain.enums import StereoChannel
+from wav_to_freq.domain.reason_codes import ReasonCode
 from wav_to_freq.domain.types import HitWindow
 from wav_to_freq.io.hit_detection import prepare_hits
 
@@ -104,6 +105,10 @@ def test_free_plate_a1h3_peak_counts() -> None:
     assert abs(zeta_mean - 0.000515) < 1.0e-6
     assert abs(zeta_min - 0.000443) < 1.0e-6
     assert abs(zeta_max - 0.000560) < 1.0e-6
+
+    assert all(ReasonCode.BEATING_DETECTED not in r.reason_codes for r in results)
+    assert all(ReasonCode.ENVELOPE_NON_MONOTONIC not in r.reason_codes for r in results)
+    assert all(ReasonCode.INSTANT_FREQ_DRIFT not in r.reason_codes for r in results)
 
     hp_zetas: list[float] = []
     for window, result in zip(windows, results):

@@ -753,6 +753,17 @@ Reporting / reproducibility:
 - Report the fitted slope/intercept (`m`, `c`) and fit quality (e.g. `env_fit_r2`).
 - Peaks-to-peaks log decrement is out of scope for v1 and may be added later as an additional estimator.
 
+Energy decay as-built notes:
+
+- Negative or non-finite energy-decay zeta values are treated as NOT_COMPUTED and flagged `BAD_ZETA_ENERGY` + `EFFECTIVE_DAMPING_ONLY`.
+
+Diagnostics default thresholds (v1):
+
+- `beating_score_max = 0.20`
+- `envelope_increase_frac_max = 0.10`
+- `inst_freq_rel_jitter_max = 0.05`
+- `q_factor_max = 5.0`
+
 ### G40) Do you use the full window or only the established decay segment?
 
 ✅ Decision:

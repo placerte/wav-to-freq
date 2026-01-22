@@ -8,6 +8,7 @@ import numpy as np
 
 from wav_to_freq.domain.config import EPS
 from wav_to_freq.domain.enums import StereoChannel
+from wav_to_freq.domain.reason_codes import ReasonCode
 
 
 @dataclass
@@ -74,5 +75,6 @@ class HitModalResult:
     env_log_c: float
     env_log_m: float
     reject_reason: Optional[str] = None
+    reason_codes: tuple[ReasonCode, ...] = ()
     fit_t0_s: float | None = None
     fit_t1_s: float | None = None

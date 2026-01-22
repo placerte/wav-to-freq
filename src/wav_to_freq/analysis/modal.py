@@ -7,6 +7,10 @@ import numpy as np
 from numpy.typing import NDArray
 from scipy.signal import welch, butter, filtfilt
 
+from wav_to_freq.analysis.diagnostics.beating import compute_beating_score
+from wav_to_freq.analysis.diagnostics.filter_risk import compute_filter_risk
+from wav_to_freq.analysis.diagnostics.inst_freq import compute_inst_freq_jitter
+from wav_to_freq.analysis.diagnostics.monotonicity import compute_envelope_increase_frac
 from wav_to_freq.analysis.estimators.td_envelope import estimate_td_envelope
 from wav_to_freq.domain.reason_codes import ReasonCode
 from wav_to_freq.domain.types import HitModalResult, HitWindow
@@ -29,6 +33,10 @@ def analyze_all_hits(
     noise_mult: float = 3.0,
     decay_min_duration_s: float = 1.0,
     decay_min_cycles: float = 8.0,
+    beating_score_max: float = 0.20,
+    envelope_increase_frac_max: float = 0.10,
+    inst_freq_rel_jitter_max: float = 0.05,
+    filter_q_factor_max: float = 5.0,
 ) -> list[HitModalResult]:
     return [
         analyze_hit(
@@ -46,6 +54,10 @@ def analyze_all_hits(
             noise_mult=noise_mult,
             decay_min_duration_s=decay_min_duration_s,
             decay_min_cycles=decay_min_cycles,
+            beating_score_max=beating_score_max,
+            envelope_increase_frac_max=envelope_increase_frac_max,
+            inst_freq_rel_jitter_max=inst_freq_rel_jitter_max,
+            filter_q_factor_max=filter_q_factor_max,
         )
         for w in windows
     ]
@@ -67,6 +79,10 @@ def analyze_hit(
     noise_mult: float,
     decay_min_duration_s: float,
     decay_min_cycles: float,
+    beating_score_max: float,
+    envelope_increase_frac_max: float,
+    inst_freq_rel_jitter_max: float,
+    filter_q_factor_max: float,
 ) -> HitModalResult:
     fs = float(fs)
     accel: NDArray[np.float64] = np.asarray(w.accel, dtype=np.float64)
@@ -120,6 +136,48 @@ def analyze_hit(
 
     y = _bandpass(x, fs, float(fn_hz))
 
+    reason_codes: list[ReasonCode] = []
+
+    beating_score, beating_flag = compute_beating_score(
+        y,
+        fs,
+        fi_hz=float(fn_hz),
+        transient_s=transient_s,
+        beating_score_max=beating_score_max,
+    )
+    if beating_flag:
+        reason_codes.append(beating_flag)
+
+    increase_frac, monotonic_flag = compute_envelope_increase_frac(
+        y,
+        fs,
+        fi_hz=float(fn_hz),
+        transient_s=transient_s,
+        envelope_increase_frac_max=envelope_increase_frac_max,
+    )
+    if monotonic_flag:
+        reason_codes.append(monotonic_flag)
+
+    _, _, inst_jitter, inst_flag = compute_inst_freq_jitter(
+        y,
+        fs,
+        transient_s=transient_s,
+        inst_freq_rel_jitter_max=inst_freq_rel_jitter_max,
+    )
+    if inst_flag:
+        reason_codes.append(inst_flag)
+
+    lo = max(0.5, 0.6 * float(fn_hz))
+    hi = min(0.49 * fs, 1.4 * float(fn_hz))
+    _, filter_flag = compute_filter_risk(
+        fi_hz=float(fn_hz),
+        lo_hz=lo,
+        hi_hz=hi,
+        q_factor_max=filter_q_factor_max,
+    )
+    if filter_flag:
+        reason_codes.append(filter_flag)
+
     full_fit, established_fit = estimate_td_envelope(
         y,
         fs,
@@ -142,6 +200,8 @@ def analyze_hit(
         or chosen.r2 < established_r2_min
     ):
         chosen = full_fit
+
+    reason_codes.extend(chosen.reason_codes)
 
     fit_t0_s = w.t_start + (start + chosen.i0) / fs
     fit_t1_s = w.t_start + (start + chosen.i1) / fs
@@ -166,6 +226,7 @@ def analyze_hit(
         env_log_c=float(chosen.log_c),
         env_log_m=float(chosen.log_m),
         reject_reason=reject_reason,
+        reason_codes=tuple(reason_codes),
         fit_t0_s=float(fit_t0_s) if np.isfinite(fit_t0_s) else None,
         fit_t1_s=float(fit_t1_s) if np.isfinite(fit_t1_s) else None,
     )

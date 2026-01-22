@@ -57,6 +57,51 @@ Conventions:
   - `uv run black .`
   - `uv run pytest -q` (passed)
 
+## 2026-01-22
+
+- Commit: `a86021c`
+- Scope: global peak list low-band + hit-local union + detection counts
+- Specs covered:
+  - E24 (low-band + hit-local aggregation + detection count fields)
+- Verification:
+  - `uv run pytest -q tests/test_regression_free_srl2_1.py`
+
+- Commit: `36751cb`
+- Scope: SRP rail regression tests
+- Specs covered:
+  - Regression coverage for SRP samples
+- Verification:
+  - `uv run pytest -q tests/test_regression_free_srp_1.py tests/test_regression_free_srp_2.py tests/test_regression_free_srp_3.py tests/test_regression_free_srp_4.py`
+
+- Commit: `66d53d7`
+- Scope: plate regression tests (A1H3/A2H4/A3H1)
+- Specs covered:
+  - Regression coverage for plate samples
+- Verification:
+  - `uv run pytest -q tests/test_regression_free_plate_a2h4.py tests/test_regression_free_plate_a1h3.py tests/test_regression_free_plate_a3h1.py`
+
+- Commit: `2a1f930`
+- Scope: FD half-power estimator flags + reporting note
+- Specs covered:
+  - G42/G43 (half-power estimator)
+  - F31 (flags in reports)
+- Verification:
+  - `uv run pytest -q tests/test_estimators_fd_half_power.py tests/test_regression_free_plate_a1h3.py`
+
+- Commit: `128ed89`
+- Scope: TD envelope estimator module
+- Specs covered:
+  - G39/G40/G41 (TD envelope estimator scaffold)
+- Verification:
+  - `uv run pytest -q tests/test_regression_free_plate_a1h3.py`
+
+- Commit: `4c45339`
+- Scope: zeta rewrite plan documentation
+- Specs covered:
+  - G39-G46 (plan documented)
+- Verification:
+  - Documentation-only
+
 Notes:
 
 - Prefer uv-first commands for repeatability: `uv run pytest -q`, `uv run black .`.

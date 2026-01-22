@@ -111,5 +111,10 @@ def add_section_per_hit_results(
                 f"R²={custom_format(float(r.env_fit_r2), '.3f')}",
             ]
             + ([f"reject_reason: `{r.reject_reason}`"] if r.reject_reason else [])
+            + (
+                ["flags: " + ", ".join(f"`{c.value}`" for c in r.reason_codes)]
+                if r.reason_codes
+                else []
+            )
         )
         mdd.image(out_png.relative_to(out_dir).as_posix(), alt=f"{label} response")

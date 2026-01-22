@@ -36,15 +36,16 @@ Status values:
 | E27 | Peak validity via peak_snr_db + cap 5 | partial | `src/wav_to_freq/analysis/peaks/psd_peaks.py` | SNR gating + cap implemented; not yet integrated into reports. |
 | E28 | Peak de-duplication/merging rule | done | `src/wav_to_freq/analysis/peaks/merge.py` | Merge rule implemented + unit tests. |
 | E29 | Keep close peaks + coupled flags | done | `src/wav_to_freq/analysis/peaks/merge.py` | Coupled-flagging implemented + unit tests (keeps peaks). |
-| F31 | Diagnostics numeric + flags | partial | `src/wav_to_freq/analysis/modal.py` | Some numeric diagnostics exist (snr_db, env_fit_r2) but no reason-code framework. |
-| F34 | Beating score + BEATING_DETECTED | todo |  | Not implemented. |
-| F35 | Envelope monotonicity metric + flag | todo |  | Not implemented. |
-| F37 | Filter ringing risk q_factor | todo |  | Not implemented. |
-| G39 | TD Hilbert envelope log-fit estimator | partial | `src/wav_to_freq/analysis/modal.py` | Current fit exists; rewrite plan adds full/established variants and frequency-aware guards. |
-| G42 | Half-power bandwidth estimator | todo |  | Not implemented. |
-| G44 | Energy decay proxy (envelope_sq) | todo |  | Not implemented. |
-| G46 | EFFECTIVE_DAMPING_ONLY labeling | todo |  | Not implemented (no structured reason codes yet). |
-| H47 | Deterministic status mapping | todo |  | Not implemented (ad-hoc reject_reason only). |
+| F31 | Diagnostics numeric + flags | partial | `src/wav_to_freq/analysis/modal.py` | Adds diagnostic flags to per-hit modal results; full estimator wiring pending. |
+| F34 | Beating score + BEATING_DETECTED | done | `src/wav_to_freq/analysis/diagnostics/beating.py` | Implemented + `tests/test_diagnostics_flags.py`. |
+| F35 | Envelope monotonicity metric + flag | done | `src/wav_to_freq/analysis/diagnostics/monotonicity.py` | Implemented + `tests/test_diagnostics_flags.py`. |
+| F36 | Instantaneous frequency drift | done | `src/wav_to_freq/analysis/diagnostics/inst_freq.py` | Implemented + `tests/test_diagnostics_flags.py`. |
+| F37 | Filter ringing risk q_factor | done | `src/wav_to_freq/analysis/diagnostics/filter_risk.py` | Implemented + unit test coverage. |
+| G39 | TD Hilbert envelope log-fit estimator | partial | `src/wav_to_freq/analysis/modal.py` | Full/established fits + frequency guards implemented; multi-peak estimator outputs pending. |
+| G42 | Half-power bandwidth estimator | partial | `src/wav_to_freq/analysis/estimators/fd_half_power.py` | Estimator exists but not wired into modal outputs. |
+| G44 | Energy decay proxy (envelope_sq) | partial | `src/wav_to_freq/analysis/estimators/energy_decay.py` | Estimator exists but not wired into modal outputs. |
+| G46 | EFFECTIVE_DAMPING_ONLY labeling | partial | `src/wav_to_freq/analysis/estimators/energy_decay.py` | Reason code attached; not yet surfaced in reports. |
+| H47 | Deterministic status mapping | partial | `src/wav_to_freq/analysis/status/mapping.py` | Mapping exists but not wired into estimator outputs. |
 | H50 | NOT_COMPUTED status exists | done | `src/wav_to_freq/domain/status.py` | `EstimateStatus.NOT_COMPUTED` introduced as v1 status. |
 | H51 | Show rejected values; exclude from aggregates | partial | `src/wav_to_freq/reporting/writers/modal.py` | Rejects are displayed; need explicit OK/WARNING/REJECTED/NOT_COMPUTED and default exclusion rules. |
 | I53 | Best guess per (hit, fi) | todo |  | Not implemented (single `fn`/`zeta` per hit today). |

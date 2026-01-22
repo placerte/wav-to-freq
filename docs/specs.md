@@ -126,6 +126,13 @@ Source: `docs/specs_clarifications.md` F31-F38.
 - F37 (MUST): Filter ringing risk metric (`q_factor`) + `FILTER_RINGING_RISK` threshold.
 - F38 (MAY): Sensitivity sweeps are nice-to-have; not required for v1.
 
+Default diagnostic thresholds (v1):
+
+- `beating_score_max = 0.20`
+- `envelope_increase_frac_max = 0.10`
+- `inst_freq_rel_jitter_max = 0.05`
+- `q_factor_max = 5.0`
+
 ---
 
 ## 8) Damping estimators
