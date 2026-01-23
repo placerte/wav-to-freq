@@ -63,6 +63,7 @@ def run_full_report(
     title_modal: str = "Modal report",
     max_plot_seconds: float | None = None,
     export_pdf: bool = True,
+    max_summary_peaks: int = 5,
 ) -> PipelineArtifacts:
     """
     One-call end-to-end report generator.
@@ -130,6 +131,7 @@ def run_full_report(
         windows=windows,
         fs=stereo.fs,
         title=title_modal,
+        max_summary_peaks=max_summary_peaks,
         export_pdf=export_pdf,
     )
 

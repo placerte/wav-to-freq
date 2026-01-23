@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Sequence
+from wav_to_freq.domain.results import EstimateResult
 from wav_to_freq.domain.types import HitModalResult, HitWindow
 from wav_to_freq.reporting.markdown import MarkdownDoc
 from wav_to_freq.reporting.plots import plot_hit_response_report
@@ -12,8 +13,82 @@ from wav_to_freq.utils.formating import (
 )
 
 
+def _pick_fi(estimates: Sequence[EstimateResult]) -> float | None:
+    for estimate in estimates:
+        if estimate.fi_bin_hz is not None:
+            return float(estimate.fi_bin_hz)
+    return None
+
+
+def _pick_zeta(
+    estimates: Sequence[EstimateResult], methods: tuple[str, ...]
+) -> float | None:
+    for method in methods:
+        for estimate in estimates:
+            if estimate.method == method and estimate.zeta is not None:
+                return float(estimate.zeta)
+    return None
+
+
+def _add_hit_summary_table(
+    mdd: MarkdownDoc,
+    *,
+    estimates: Sequence[EstimateResult],
+    results: Sequence[HitModalResult],
+    max_summary_peaks: int,
+) -> None:
+    hit_ids = sorted({int(r.hit_id) for r in results})
+    if not hit_ids or max_summary_peaks <= 0:
+        return
+
+    headers = ["mode"]
+    for hit_id in hit_ids:
+        label = f"H{hit_id:03d}"
+        headers.extend(
+            [
+                f"{label} fi",
+                f"{label} zeta_td",
+                f"{label} zeta_fd",
+                f"{label} zeta_energy",
+            ]
+        )
+
+    rows: list[list[str]] = []
+    for rank in range(1, max_summary_peaks + 1):
+        row = [str(rank)]
+        for hit_id in hit_ids:
+            hit_estimates = [
+                e
+                for e in estimates
+                if int(e.hit_id) == hit_id and int(e.peak_rank) == rank
+            ]
+            fi = _pick_fi(hit_estimates)
+            zeta_td = _pick_zeta(hit_estimates, ("TD_ENVELOPE_EST", "TD_ENVELOPE_FULL"))
+            zeta_fd = _pick_zeta(hit_estimates, ("FD_HALF_POWER",))
+            zeta_energy = _pick_zeta(hit_estimates, ("ENERGY_ENVELOPE_SQ",))
+            row.extend(
+                [
+                    custom_format(fi, ".3f") if fi is not None else "",
+                    custom_format(zeta_td, ".6f") if zeta_td is not None else "",
+                    custom_format(zeta_fd, ".6f") if zeta_fd is not None else "",
+                    custom_format(zeta_energy, ".6f")
+                    if zeta_energy is not None
+                    else "",
+                ]
+            )
+        rows.append(row)
+
+    mdd.h2("Hit Summary (fi, zeta)")
+    mdd.table(headers, rows)
+
+
 def add_section_modal_summary(
-    mdd: MarkdownDoc, *, results: Sequence[HitModalResult], title: str
+    mdd: MarkdownDoc,
+    *,
+    results: Sequence[HitModalResult],
+    estimates: Sequence[EstimateResult] | None = None,
+    title: str,
+    max_summary_peaks: int = 5,
 ):
     accepted = [r for r in results if not r.reject_reason]
     rejected = [r for r in results if r.reject_reason]
@@ -39,6 +114,14 @@ def add_section_modal_summary(
         "Use the time-domain envelope estimate as the primary reference for lightly "
         "damped structures."
     )
+
+    if estimates:
+        _add_hit_summary_table(
+            mdd,
+            estimates=estimates,
+            results=results,
+            max_summary_peaks=max_summary_peaks,
+        )
 
     if accepted:
         mdd.h2("Accepted summary")

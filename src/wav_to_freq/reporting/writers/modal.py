@@ -34,6 +34,7 @@ def write_modal_report(
     windows: Sequence[HitWindow],
     title: str = "Modal report",
     transient_s: float = 0.20,
+    max_summary_peaks: int = 5,
     export_pdf: bool = True,
 ) -> ModalReportArtifacts:
     """
@@ -81,7 +82,13 @@ def write_modal_report(
     # Markdown
     # -----------------------
     mdd = MarkdownDoc()
-    add_section_modal_summary(mdd=mdd, results=results, title=title)
+    add_section_modal_summary(
+        mdd=mdd,
+        results=results,
+        estimates=estimates,
+        title=title,
+        max_summary_peaks=max_summary_peaks,
+    )
     add_section_per_hit_results(
         mdd=mdd,
         windows=windows,

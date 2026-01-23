@@ -58,3 +58,6 @@ def test_modal_report_writes_estimates_csv(tmp_path: Path) -> None:
 
     assert artifacts.report_estimates_csv is not None
     assert artifacts.report_estimates_csv.exists()
+    assert artifacts.report_md.exists()
+    report_text = artifacts.report_md.read_text(encoding="utf-8")
+    assert "Hit Summary" in report_text
