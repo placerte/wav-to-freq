@@ -99,6 +99,8 @@ def write_modal_report(
         fs=fs,
         hits_dir=hits_dir,
         out_dir=out_dir,
+        settle_s=0.010,
+        ring_s=1.0,
     )
 
     md_path = out_dir / "modal_report.md"

@@ -1,9 +1,21 @@
 from pathlib import Path
 from typing import Sequence
+
+import numpy as np
+
+from wav_to_freq.analysis import modal
+from wav_to_freq.analysis.peaks.config import PsdConfig
 from wav_to_freq.domain.results import EstimateResult
 from wav_to_freq.domain.types import HitModalResult, HitWindow
+from wav_to_freq.dsp.psd import compute_welch_psd
 from wav_to_freq.reporting.doc import ReportDoc
 from wav_to_freq.reporting.plots import plot_hit_response_report
+from wav_to_freq.reporting.plots_diagnostic import (
+    plot_energy_decay_diagnostic,
+    plot_fd_half_power_diagnostic,
+    plot_filtered_response,
+    plot_td_envelope_diagnostic,
+)
 from wav_to_freq.utils.formating import (
     custom_format,
     custom_max,
@@ -172,6 +184,8 @@ def add_section_per_hit_results(
     fs: float,
     hits_dir: Path,
     out_dir: Path,
+    settle_s: float = 0.010,
+    ring_s: float = 1.0,
 ):
     mdd.h1("Hits")
 
@@ -214,8 +228,22 @@ def add_section_per_hit_results(
 
             mdd.h3(f"Peak {peak_rank} - f_{peak_rank} = {_format_fi(fi_hz)} Hz")
 
-            # Plot filtered response for this peak (placeholder for now)
-            # TODO: add filtered response plot
+            # Plot filtered response for this peak
+            if hit_window:
+                start = int(round(settle_s * float(fs)))
+                end = min(hit_window.accel.size, start + int(round(ring_s * float(fs))))
+                segment = np.asarray(hit_window.accel[start:end], dtype=np.float64)
+                segment = segment - float(np.mean(segment))
+                y_filt = modal._bandpass(segment, float(fs), float(fi_hz))
+
+                filt_png = hits_dir / f"{label}_peak{peak_rank}_filtered.png"
+                plot_filtered_response(y_filt, fs=fs, fi_hz=fi_hz, out_png=filt_png)
+                mdd.image(
+                    filt_png.relative_to(out_dir).as_posix(),
+                    alt=f"{label} peak {peak_rank} filtered",
+                )
+            else:
+                y_filt = None
 
             # Add per-method subsections
             _add_method_section(
@@ -224,6 +252,10 @@ def add_section_per_hit_results(
                 "TD_ENVELOPE_EST",
                 "zeta_TD",
                 peak_rank,
+                label,
+                y_filt,
+                fs,
+                transient_s,
                 hits_dir,
                 out_dir,
             )
@@ -233,6 +265,10 @@ def add_section_per_hit_results(
                 "FD_HALF_POWER",
                 "zeta_FD",
                 peak_rank,
+                label,
+                y_filt,
+                fs,
+                transient_s,
                 hits_dir,
                 out_dir,
             )
@@ -242,6 +278,10 @@ def add_section_per_hit_results(
                 "ENERGY_ENVELOPE_SQ",
                 "zeta_E",
                 peak_rank,
+                label,
+                y_filt,
+                fs,
+                transient_s,
                 hits_dir,
                 out_dir,
             )
@@ -253,6 +293,10 @@ def _add_method_section(
     method: str,
     label: str,
     peak_rank: int,
+    hit_label: str,
+    y_filt: np.ndarray | None,
+    fs: float,
+    transient_s: float,
     hits_dir: Path,
     out_dir: Path,
 ) -> None:
@@ -283,11 +327,62 @@ def _add_method_section(
             "env_fit_r2",
             "energy_fit_r2",
         ]:
-            if key in estimate.diagnostics and estimate.diagnostics[key] is not None:
-                diag_items.append(
-                    f"{key}: {custom_format(float(estimate.diagnostics[key]), '.3f')}"
-                )
+            val = estimate.diagnostics.get(key)
+            if val is not None:
+                try:
+                    fval = float(val)
+                    if np.isfinite(fval):
+                        diag_items.append(f"{key}: {custom_format(fval, '.3f')}")
+                except (TypeError, ValueError):
+                    pass
         if diag_items:
             mdd.bullet(diag_items)
 
-    # TODO: Add diagnostic plots per method
+    # Add diagnostic plots
+    if y_filt is None or y_filt.size == 0:
+        return
+
+    y = np.asarray(y_filt, dtype=np.float64)
+
+    if method.startswith("TD_ENVELOPE"):
+        plot_png = hits_dir / f"{hit_label}_peak{peak_rank}_{method.lower()}_diag.png"
+        plot_td_envelope_diagnostic(
+            y,
+            fs=fs,
+            estimate=estimate,
+            out_png=plot_png,
+            transient_s=transient_s,
+        )
+        mdd.image(
+            plot_png.relative_to(out_dir).as_posix(),
+            alt=f"TD diagnostic peak {peak_rank}",
+        )
+
+    elif method == "FD_HALF_POWER":
+        psd_cfg = PsdConfig(df_target_hz=0.25)
+        f, pxx = compute_welch_psd(y, fs=fs, cfg=psd_cfg)
+        plot_png = hits_dir / f"{hit_label}_peak{peak_rank}_fd_diag.png"
+        plot_fd_half_power_diagnostic(
+            f,
+            pxx,
+            estimate=estimate,
+            out_png=plot_png,
+        )
+        mdd.image(
+            plot_png.relative_to(out_dir).as_posix(),
+            alt=f"FD diagnostic peak {peak_rank}",
+        )
+
+    elif method == "ENERGY_ENVELOPE_SQ":
+        plot_png = hits_dir / f"{hit_label}_peak{peak_rank}_energy_diag.png"
+        plot_energy_decay_diagnostic(
+            y,
+            fs=fs,
+            estimate=estimate,
+            out_png=plot_png,
+            transient_s=transient_s,
+        )
+        mdd.image(
+            plot_png.relative_to(out_dir).as_posix(),
+            alt=f"Energy diagnostic peak {peak_rank}",
+        )
