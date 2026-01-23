@@ -10,6 +10,19 @@ Status legend (for your own tracking later):
 
 ---
 
+## Implementation notes (2026-01-23)
+
+These are non-normative notes capturing the current state of the rewrite.
+
+- Multi-estimator damping outputs are now produced per (hit, peak): TD envelope (full + established), FD half-power, and energy-decay (effective) with flags/reason codes.
+- Modal report layout now follows `docs/report_layout.md` (hit -> peak -> method), and includes method-specific diagnostic plots intended to make `zeta` values auditable.
+- PDF export prefers a LaTeX renderer (`pdflatex`) and falls back to HTML/WeasyPrint.
+
+Known gaps / follow-ups:
+
+- Hit-level PSD plot peak annotations should be sourced from the same peak list used for estimation (avoid plot-only peak picking).
+- TD/Energy diagnostic plots should use the exact fit window indices used by the estimator (currently inferred from fit durations).
+
 ## A) Inputs and configuration
 
 ### A1) Are you keeping the “2-channel WAV only” assumption, or do you want to support mono files (hammer-only or response-only) later?

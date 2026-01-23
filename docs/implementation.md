@@ -239,6 +239,12 @@ Estimators must:
 - return `NOT_COMPUTED` rather than raising, when prerequisites are missing
 - attach diagnostics and reason codes
 
+As-built status (2026-01-23):
+
+- Implemented estimator modules: `src/wav_to_freq/analysis/estimators/td_envelope.py`, `src/wav_to_freq/analysis/estimators/fd_half_power.py`, `src/wav_to_freq/analysis/estimators/energy_decay.py`.
+- Implemented common diagnostics and deterministic status mapping in the estimator pipeline: `src/wav_to_freq/analysis/estimators/pipeline.py`, `src/wav_to_freq/analysis/status/mapping.py`.
+- Reporting was refactored to a format-agnostic doc model and LaTeX-first PDF export: `src/wav_to_freq/reporting/doc.py`, `src/wav_to_freq/reporting/renderers/*`, `src/wav_to_freq/reporting/writers/pdf.py`.
+
 #### Zeta pipeline plan (rewrite)
 
 Goal: implement the full zeta (damping) workflow defined in specs G39-G46.

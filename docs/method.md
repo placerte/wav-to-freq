@@ -17,10 +17,9 @@ lightly damped dynamic system** during the free‑decay portion of the response.
 
 For most intended use cases (ground‑mounted PV structures):
 
-- a single dominant mode is present in the measured bandwidth,
-- modal coupling is weak,
-- nonlinearities (slip, friction, amplitude‑dependent damping) are neglected
-  in this first implementation.
+- multiple modes may be present in the measured bandwidth,
+- modal coupling may occur (beating / close peaks),
+- nonlinearities (slip, friction, amplitude‑dependent damping) are neglected in this first implementation.
 
 ---
 
@@ -49,13 +48,12 @@ Both are sampled synchronously and stored in a two‑channel WAV file.
 
 ### 2.1 Channel identification
 
-If not explicitly specified, the hammer channel is auto‑identified using:
+Channel roles are selected explicitly (hammer vs response) in the UI.
 
-- peak amplitude,
-- impulsiveness (high kurtosis / short duration energy),
-- temporal sparsity relative to the response.
+Notes:
 
-This avoids hard‑coding channel ordering in the workflow.
+- This avoids hard-coding a channel ordering convention.
+- Auto-identification may be added later, but v1 prioritizes explicit traceability.
 
 ---
 
@@ -116,12 +114,10 @@ This step is critical for robust damping estimation.
 
 ### 4.1 Frequency estimation
 
-Natural frequency is estimated using a combination of:
+Candidate peak frequencies are estimated from Welch PSD peaks.
 
-- FFT / PSD peak detection,
-- time‑domain zero‑crossing or phase‑based refinement (where applicable).
-
-The frequency estimate is used to guide damping extraction.
+- Multiple candidate peaks may be retained per hit (default cap is small, e.g. 5), rather than forcing a single dominant frequency.
+- Peaks that appear close together are kept and flagged as potentially coupled.
 
 ---
 
@@ -153,16 +149,13 @@ The envelope is fitted in the **logarithmic domain** to estimate decay rate.
 
 ### 4.4 Damping estimation
 
-The damping ratio is obtained from the slope of the fitted envelope:
+The tool computes multiple damping estimates per (hit, peak):
 
-ζ = −(slope) / ωₙ
+- Time domain (modal): Hilbert envelope log-fit on the band-passed response.
+- Frequency domain (modal): half-power bandwidth from the PSD when the peak is isolated.
+- Energy decay (effective): energy proxy decay (e.g. envelope-squared), always labeled effective damping.
 
-Quality metrics include:
-- R² of the envelope fit,
-- signal‑to‑noise ratio,
-- consistency across hits.
-
-Hits failing quality thresholds are rejected.
+Each estimate includes quality diagnostics and flags (reason codes) to indicate when assumptions are likely violated.
 
 ---
 
@@ -183,9 +176,9 @@ This is essential for field data where individual hits may be imperfect.
 Current limitations (by design):
 
 - linear behavior assumed,
-- dominant mode only,
+- no automatic forced single-number "best guess" in v1 (the report shows multiple candidates and methods),
 - amplitude‑dependent damping not modeled,
-- strong modal overlap not supported.
+- strong modal overlap is detected/flagged but not fully resolved in v1.
 
 These choices favor **robust field deployment** over theoretical generality.
 

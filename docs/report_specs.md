@@ -64,8 +64,13 @@ The maximum number of peak ranks shown is configurable via `max_summary_peaks`
 For each hit:
 
 - Header: `H###`
-- Per-hit response plot (existing)
-- Table of per-peak estimates (all methods)
+- Per-hit response plots:
+  - time-domain response (raw + context)
+  - frequency-domain response (PSD) with annotated peaks
+- Per-peak sections (cap 5 peaks by default), each with:
+  - filtered response for that peak
+  - per-method subsections (TD envelope, FD half-power, energy decay)
+    including status, flags/reason codes, and a method-specific diagnostic plot.
 
 Recommended columns:
 
@@ -88,6 +93,11 @@ Default diagnostics to show inline:
 - `env_fit_r2`
 
 All other diagnostics must still be present in `modal_results_long.csv`.
+
+Notes (as-built):
+
+- Method subsections are rendered even for `NOT_COMPUTED` estimates; the report should still show the status + reasons and (when possible) a plot to explain the failure.
+- PDF export prefers LaTeX (`pdflatex`) for table layout and math; it falls back to HTML/WeasyPrint when LaTeX tooling is unavailable.
 
 ---
 

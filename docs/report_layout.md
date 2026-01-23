@@ -85,3 +85,18 @@ With the summary and table -> *OK for now. keep it as is and move on*
 #### ζ_E_2 = x.xxx
 
 *And do this for all hits in the report until H00n_hits. To simplify the desired hiearchy is HIT > contains > peaks (f_i) > contains > zetas (\zeta_foo) or methods to obtain zetas
+
+---
+
+# Implementation status (2026-01-23)
+
+This layout is now implemented in the generated modal report:
+
+- Hierarchy: `Hits` -> `H###` -> `Peak i - f_i = ...` -> `zeta_TD_i / zeta_FD_i / zeta_E_i`.
+- Each peak includes a filtered TD response plot for `f_i`.
+- Each method subsection includes status + flags/reasons + a diagnostic plot intended to make the computed value auditable.
+
+Known gaps / follow-ups:
+
+- The per-hit frequency-domain response plot should annotate the exact peak list used by the estimator pipeline (avoid any separate peak-picking logic inside the plotting helper).
+- TD/Energy diagnostic plots should ideally use the exact fit-window indices used during estimation (currently inferred from durations in diagnostics).
