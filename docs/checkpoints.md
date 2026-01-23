@@ -114,3 +114,15 @@ Conventions:
 Notes:
 
 - Prefer uv-first commands for repeatability: `uv run pytest -q`, `uv run black .`.
+
+## 2026-01-23
+
+- Commit: `f07ce06`
+- Scope: end-of-week docs trace updates for reporting + estimator wiring
+- Specs covered:
+  - K62/K63 (modal report layout + per-peak/method diagnostics documented)
+  - G39-G46 (multi-estimator damping outputs documented as-built)
+  - H47 (deterministic status mapping documented as wired)
+  - v1 tracking updated: `docs/traceability_v1.md`
+- Verification:
+  - Documentation-only change
