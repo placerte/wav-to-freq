@@ -54,38 +54,37 @@ def _add_hit_summary_table(
     if not hit_ids or max_summary_peaks <= 0:
         return
 
-    headers = ["mode"]
-    header_groups: list[tuple[str, int]] = [("", 1)]
-    for hit_id in hit_ids:
-        label = f"H{hit_id:03d}"
-        header_groups.append((label, 4))
-        headers.extend(["f_i", "zeta_TD", "zeta_FD", "zeta_E"])
+    # Table: hits/methods as rows, modes as columns
+    headers = ["hit", ""]
+    for rank in range(1, max_summary_peaks + 1):
+        headers.append(str(rank))
 
     rows: list[list[str]] = []
-    for rank in range(1, max_summary_peaks + 1):
-        row = [str(rank)]
-        for hit_id in hit_ids:
-            hit_estimates = [
-                e
-                for e in estimates
-                if int(e.hit_id) == hit_id and int(e.peak_rank) == rank
-            ]
-            fi = _pick_fi(hit_estimates)
-            zeta_td = _pick_zeta(hit_estimates, ("TD_ENVELOPE_EST", "TD_ENVELOPE_FULL"))
-            zeta_fd = _pick_zeta(hit_estimates, ("FD_HALF_POWER",))
-            zeta_energy = _pick_zeta(hit_estimates, ("ENERGY_ENVELOPE_SQ",))
-            row.extend(
-                [
-                    _format_fi(fi),
-                    _format_zeta_percent(zeta_td),
-                    _format_zeta_percent(zeta_fd),
-                    _format_zeta_percent(zeta_energy),
+    for hit_id in hit_ids:
+        label = f"H{hit_id:03d}"
+        for method_label, method_names in [
+            ("f_i", None),
+            ("zeta_TD", ("TD_ENVELOPE_EST", "TD_ENVELOPE_FULL")),
+            ("zeta_FD", ("FD_HALF_POWER",)),
+            ("zeta_E", ("ENERGY_ENVELOPE_SQ",)),
+        ]:
+            row = [label if method_label == "f_i" else "", method_label]
+            for rank in range(1, max_summary_peaks + 1):
+                hit_estimates = [
+                    e
+                    for e in estimates
+                    if int(e.hit_id) == hit_id and int(e.peak_rank) == rank
                 ]
-            )
-        rows.append(row)
+                if method_names is None:
+                    fi = _pick_fi(hit_estimates)
+                    row.append(_format_fi(fi))
+                else:
+                    zeta = _pick_zeta(hit_estimates, method_names)
+                    row.append(_format_zeta_percent(zeta))
+            rows.append(row)
 
     mdd.h2("Hit Summary (fi, zeta)")
-    mdd.table(headers, rows, header_groups=header_groups)
+    mdd.table(headers, rows)
 
 
 def add_section_modal_summary(
@@ -168,42 +167,127 @@ def add_section_per_hit_results(
     mdd: ReportDoc,
     windows: Sequence[HitWindow],
     results: Sequence[HitModalResult],
+    estimates: Sequence[EstimateResult] | None,
     transient_s: float,
     fs: float,
     hits_dir: Path,
     out_dir: Path,
 ):
-    mdd.h2("Hit-by-hit")
+    mdd.h1("Hits")
 
-    n = min(len(windows), len(results))
-    for i in range(n):
-        w = windows[i]
-        r = results[i]
+    if estimates is None:
+        estimates = []
 
-        label = f"H{int(r.hit_id):03d}"
+    hit_ids = sorted({int(r.hit_id) for r in results})
+    for hit_id in hit_ids:
+        label = f"H{hit_id:03d}"
+
+        mdd.h2(label)
+
+        # TD and FD plots for the hit (existing logic placeholder)
         out_png = hits_dir / f"{label}_response.png"
+        hit_window = next((w for w in windows if int(w.hit_id) == hit_id), None)
+        hit_result = next((r for r in results if int(r.hit_id) == hit_id), None)
 
-        plot_hit_response_report(
-            fs=fs,
-            window=w,
-            result=r,
-            out_png=out_png,
-            transient_s=transient_s,
-        )
-
-        mdd.h3(label)
-        mdd.bullet(
-            [
-                f"fn={custom_format(float(r.fn_hz), '.3f')} Hz",
-                f"zeta={custom_format(float(r.zeta), '.6f')}",
-                f"SNR={custom_format(float(r.snr_db), '.2f')} dB",
-                f"R²={custom_format(float(r.env_fit_r2), '.3f')}",
-            ]
-            + ([f"reject_reason: `{r.reject_reason}`"] if r.reject_reason else [])
-            + (
-                ["flags: " + ", ".join(f"`{c.value}`" for c in r.reason_codes)]
-                if r.reason_codes
-                else []
+        if hit_window and hit_result:
+            plot_hit_response_report(
+                fs=fs,
+                window=hit_window,
+                result=hit_result,
+                out_png=out_png,
+                transient_s=transient_s,
             )
-        )
-        mdd.image(out_png.relative_to(out_dir).as_posix(), alt=f"{label} response")
+            mdd.image(out_png.relative_to(out_dir).as_posix(), alt=f"{label} response")
+
+        # Get all peaks for this hit
+        hit_estimates = [e for e in estimates if int(e.hit_id) == hit_id]
+        peak_ranks = sorted({int(e.peak_rank) for e in hit_estimates})
+
+        for peak_rank in peak_ranks:
+            peak_estimates = [e for e in hit_estimates if int(e.peak_rank) == peak_rank]
+            if not peak_estimates:
+                continue
+
+            fi_hz = _pick_fi(peak_estimates)
+            if fi_hz is None:
+                continue
+
+            mdd.h3(f"Peak {peak_rank} - f_{peak_rank} = {_format_fi(fi_hz)} Hz")
+
+            # Plot filtered response for this peak (placeholder for now)
+            # TODO: add filtered response plot
+
+            # Add per-method subsections
+            _add_method_section(
+                mdd,
+                peak_estimates,
+                "TD_ENVELOPE_EST",
+                "zeta_TD",
+                peak_rank,
+                hits_dir,
+                out_dir,
+            )
+            _add_method_section(
+                mdd,
+                peak_estimates,
+                "FD_HALF_POWER",
+                "zeta_FD",
+                peak_rank,
+                hits_dir,
+                out_dir,
+            )
+            _add_method_section(
+                mdd,
+                peak_estimates,
+                "ENERGY_ENVELOPE_SQ",
+                "zeta_E",
+                peak_rank,
+                hits_dir,
+                out_dir,
+            )
+
+
+def _add_method_section(
+    mdd: ReportDoc,
+    peak_estimates: Sequence[EstimateResult],
+    method: str,
+    label: str,
+    peak_rank: int,
+    hits_dir: Path,
+    out_dir: Path,
+) -> None:
+    estimate = next((e for e in peak_estimates if e.method == method), None)
+    if estimate is None or estimate.zeta is None:
+        mdd.h4(f"{label}_{peak_rank} = NOT_COMPUTED")
+        if estimate and estimate.reason_codes:
+            mdd.bullet([f"Reason: {', '.join(c.value for c in estimate.reason_codes)}"])
+        return
+
+    zeta_percent = estimate.zeta * 100.0
+    mdd.h4(f"{label}_{peak_rank} = {custom_format(zeta_percent, '.1f')}%")
+
+    # Show status and reason codes
+    info = [f"Status: {estimate.status.value}"]
+    if estimate.reason_codes:
+        info.append(f"Flags: {', '.join(c.value for c in estimate.reason_codes)}")
+    mdd.bullet(info)
+
+    # Show key diagnostics
+    if estimate.diagnostics:
+        diag_items = []
+        for key in [
+            "beating_score",
+            "envelope_increase_frac",
+            "inst_freq_rel_jitter",
+            "filter_q_factor",
+            "env_fit_r2",
+            "energy_fit_r2",
+        ]:
+            if key in estimate.diagnostics and estimate.diagnostics[key] is not None:
+                diag_items.append(
+                    f"{key}: {custom_format(float(estimate.diagnostics[key]), '.3f')}"
+                )
+        if diag_items:
+            mdd.bullet(diag_items)
+
+    # TODO: Add diagnostic plots per method

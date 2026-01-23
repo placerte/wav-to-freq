@@ -63,7 +63,9 @@ def _render_heading(node: Heading) -> str:
         return f"\\section*{{{text}}}"
     if node.level == 2:
         return f"\\subsection*{{{text}}}"
-    return f"\\subsubsection*{{{text}}}"
+    if node.level == 3:
+        return f"\\subsubsection*{{{text}}}"
+    return f"\\paragraph{{{text}}}"
 
 
 def _render_table(table: Table) -> list[str]:

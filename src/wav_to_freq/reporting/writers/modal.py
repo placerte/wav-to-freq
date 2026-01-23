@@ -94,6 +94,7 @@ def write_modal_report(
         mdd=mdd,
         windows=windows,
         results=results,
+        estimates=estimates,
         transient_s=transient_s,
         fs=fs,
         hits_dir=hits_dir,

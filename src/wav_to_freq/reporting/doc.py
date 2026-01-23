@@ -62,6 +62,9 @@ class ReportDoc:
     def h3(self, text: str) -> None:
         self._nodes.append(Heading(level=3, text=text))
 
+    def h4(self, text: str) -> None:
+        self._nodes.append(Heading(level=4, text=text))
+
     def p(self, text: str) -> None:
         self._nodes.append(Paragraph(text=text))
 
