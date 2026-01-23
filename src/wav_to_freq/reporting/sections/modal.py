@@ -30,6 +30,19 @@ def _pick_zeta(
     return None
 
 
+def _format_fi(value: float | None) -> str:
+    if value is None:
+        return ""
+    return custom_format(float(value), ".1f")
+
+
+def _format_zeta_percent(value: float | None) -> str:
+    if value is None:
+        return ""
+    percent = float(value) * 100.0
+    return f"{custom_format(percent, '.1f')}%"
+
+
 def _add_hit_summary_table(
     mdd: ReportDoc,
     *,
@@ -63,12 +76,10 @@ def _add_hit_summary_table(
             zeta_energy = _pick_zeta(hit_estimates, ("ENERGY_ENVELOPE_SQ",))
             row.extend(
                 [
-                    custom_format(fi, ".3f") if fi is not None else "",
-                    custom_format(zeta_td, ".6f") if zeta_td is not None else "",
-                    custom_format(zeta_fd, ".6f") if zeta_fd is not None else "",
-                    custom_format(zeta_energy, ".6f")
-                    if zeta_energy is not None
-                    else "",
+                    _format_fi(fi),
+                    _format_zeta_percent(zeta_td),
+                    _format_zeta_percent(zeta_fd),
+                    _format_zeta_percent(zeta_energy),
                 ]
             )
         rows.append(row)
