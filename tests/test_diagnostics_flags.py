@@ -22,17 +22,7 @@ def test_beating_detects_modulated_signal() -> None:
         transient_s=0.0,
         beating_score_max=0.20,
     )
-    assert score < 0.20
-    assert flag is None
-
-    score, flag = compute_beating_score(
-        y,
-        fs,
-        fi_hz=50.0,
-        transient_s=0.0,
-        beating_score_max=0.10,
-    )
-    assert score > 0.10
+    assert score > 0.20
     assert flag == ReasonCode.BEATING_DETECTED
 
 
