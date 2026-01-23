@@ -4,7 +4,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from wav_to_freq.analysis.estimators.run import compute_hit_estimates
 from wav_to_freq.analysis.modal import analyze_all_hits
+from wav_to_freq.analysis.peaks.config import PeakConfig, PsdConfig
 from wav_to_freq.domain.enums import StereoChannel
 from wav_to_freq.io.hit_detection import prepare_hits
 from wav_to_freq.reporting.writers.modal import ModalReportArtifacts, write_modal_report
@@ -60,6 +62,7 @@ def run_full_report(
     title_preprocess: str = "WAV preprocessing report",
     title_modal: str = "Modal report",
     max_plot_seconds: float | None = None,
+    export_pdf: bool = True,
 ) -> PipelineArtifacts:
     """
     One-call end-to-end report generator.
@@ -103,13 +106,31 @@ def run_full_report(
         noise_mult=noise_mult,
     )
 
+    estimates = compute_hit_estimates(
+        windows,
+        fs=stereo.fs,
+        fmin_hz=fmin_hz,
+        fmax_hz=fmax_hz,
+        psd_cfg=PsdConfig(df_target_hz=0.25),
+        peak_cfg=PeakConfig(),
+        settle_s=settle_s,
+        ring_s=ring_s,
+        transient_s=transient_s,
+        established_min_s=established_min_s,
+        established_r2_min=established_r2_min,
+        fit_max_s=fit_max_s,
+        noise_tail_s=noise_tail_s,
+        noise_mult=noise_mult,
+    )
+
     modal = write_modal_report(
         results=results,
+        estimates=estimates,
         out_dir=out_dir,
         windows=windows,
         fs=stereo.fs,
         title=title_modal,
+        export_pdf=export_pdf,
     )
 
     return PipelineArtifacts(out_dir=out_dir, preprocess=preprocess, modal=modal)
-

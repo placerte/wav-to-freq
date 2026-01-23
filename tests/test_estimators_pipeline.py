@@ -33,6 +33,8 @@ def test_estimator_pipeline_srl2_1() -> None:
 
     estimates = estimate_peak_methods(
         y,
+        hit_id=1,
+        peak_rank=1,
         fs=fs,
         peak_hz=peak_hz,
         psd_cfg=PsdConfig(df_target_hz=0.25),

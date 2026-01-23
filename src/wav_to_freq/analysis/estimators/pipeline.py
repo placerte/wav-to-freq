@@ -22,6 +22,8 @@ from wav_to_freq.domain.status import EstimateStatus
 def estimate_peak_methods(
     y: np.ndarray,
     *,
+    hit_id: int,
+    peak_rank: int,
     fs: float,
     peak_hz: float,
     psd_cfg: PsdConfig,
@@ -116,6 +118,8 @@ def estimate_peak_methods(
             established_fit,
             reason_flags,
             diagnostics_common,
+            hit_id,
+            peak_rank,
             peak_hz,
         )
     )
@@ -139,8 +143,8 @@ def estimate_peak_methods(
     estimates.append(
         assess_estimate(
             EstimateResult(
-                hit_id=0,
-                peak_rank=0,
+                hit_id=hit_id,
+                peak_rank=peak_rank,
                 method="FD_HALF_POWER",
                 fi_bin_hz=peak_hz,
                 fi_refined_hz=None,
@@ -172,8 +176,8 @@ def estimate_peak_methods(
     estimates.append(
         assess_estimate(
             EstimateResult(
-                hit_id=0,
-                peak_rank=0,
+                hit_id=hit_id,
+                peak_rank=peak_rank,
                 method="ENERGY_ENVELOPE_SQ",
                 fi_bin_hz=peak_hz,
                 fi_refined_hz=None,
@@ -193,6 +197,8 @@ def _build_td_estimates(
     established_fit,
     reason_flags: Sequence[ReasonCode],
     diagnostics_common: dict[str, float | None],
+    hit_id: int,
+    peak_rank: int,
     peak_hz: float,
 ) -> list[EstimateResult]:
     out: list[EstimateResult] = []
@@ -207,8 +213,8 @@ def _build_td_estimates(
         out.append(
             assess_estimate(
                 EstimateResult(
-                    hit_id=0,
-                    peak_rank=0,
+                    hit_id=hit_id,
+                    peak_rank=peak_rank,
                     method=method,
                     fi_bin_hz=peak_hz,
                     fi_refined_hz=None,
