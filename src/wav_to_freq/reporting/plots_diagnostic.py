@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy.typing import NDArray
 from scipy.signal import hilbert
+from typing import cast
 
 from wav_to_freq.domain.results import EstimateResult
 
@@ -24,7 +25,8 @@ def plot_td_envelope_diagnostic(
 
     fs = float(fs)
     y = np.asarray(y_filt, dtype=np.float64)
-    env = np.abs(hilbert(y)).astype(np.float64)
+    analytic = hilbert(y)
+    env = np.abs(cast(NDArray[np.complex128], analytic)).astype(np.float64)
     t = np.arange(y.size, dtype=np.float64) / fs
 
     # Extract fit window from diagnostics if available
@@ -95,42 +97,128 @@ def plot_fd_half_power_diagnostic(
     estimate: EstimateResult,
     out_png: Path,
 ) -> Path:
-    """Plot FD half-power diagnostic: PSD with bandwidth markers."""
+    """Plot FD half-power diagnostic: PSD with bandwidth markers and damping calculation."""
 
     f = np.asarray(f, dtype=np.float64)
     pxx = np.asarray(pxx, dtype=np.float64)
     db = 10.0 * np.log10(pxx + np.finfo(float).eps)
 
-    fig, ax = plt.subplots(figsize=(10, 5))
-    ax.plot(f, db, linewidth=1.5)
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 7))
 
-    # Mark peak and half-power points
+    # Top: full PSD with bandwidth markers
+    ax1.plot(f, db, linewidth=1.5, label="PSD")
+
     fi_hz = estimate.fi_bin_hz
     f1_hz = estimate.diagnostics.get("f1_hz")
     f2_hz = estimate.diagnostics.get("f2_hz")
 
     if fi_hz and np.isfinite(fi_hz):
         idx = np.argmin(np.abs(f - fi_hz))
-        ax.axvline(fi_hz, color="r", linestyle="--", label=f"Peak: {fi_hz:.1f} Hz")
-        ax.plot(f[idx], db[idx], "ro", markersize=8)
+        ax1.axvline(
+            fi_hz, color="r", linestyle="--", label=f"Peak: {fi_hz:.1f} Hz", linewidth=2
+        )
+        ax1.plot(f[idx], db[idx], "ro", markersize=8)
 
     if f1_hz and f2_hz and np.isfinite(f1_hz) and np.isfinite(f2_hz):
-        ax.axvline(f1_hz, color="g", linestyle=":", label=f"f₁: {float(f1_hz):.1f} Hz")
-        ax.axvline(f2_hz, color="g", linestyle=":", label=f"f₂: {float(f2_hz):.1f} Hz")
+        ax1.axvline(
+            float(f1_hz),
+            color="g",
+            linestyle=":",
+            label=f"f₁: {float(f1_hz):.1f} Hz",
+            linewidth=2,
+        )
+        ax1.axvline(
+            float(f2_hz),
+            color="g",
+            linestyle=":",
+            label=f"f₂: {float(f2_hz):.1f} Hz",
+            linewidth=2,
+        )
 
         # Half-power line
         if fi_hz:
             idx_peak = np.argmin(np.abs(f - fi_hz))
             half_power_db = db[idx_peak] - 3.0
-            ax.axhline(
-                half_power_db, color="orange", linestyle=":", alpha=0.5, label="-3 dB"
+            ax1.axhline(
+                half_power_db,
+                color="orange",
+                linestyle=":",
+                alpha=0.7,
+                label="-3 dB line",
+                linewidth=2,
             )
 
-    ax.set_xlabel("Frequency (Hz)")
-    ax.set_ylabel("Power (dB)")
-    ax.legend()
-    ax.grid(True, alpha=0.3)
-    ax.set_title("FD Half-Power Bandwidth")
+    ax1.set_xlabel("Frequency (Hz)")
+    ax1.set_ylabel("Power (dB)")
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+    ax1.set_title("FD Half-Power Bandwidth")
+
+    # Bottom: zoomed view around peak showing damping calculation
+    if (
+        fi_hz
+        and f1_hz
+        and f2_hz
+        and np.isfinite(fi_hz)
+        and np.isfinite(f1_hz)
+        and np.isfinite(f2_hz)
+    ):
+        # Zoom to ±50% around peak
+        f_window = 0.5 * fi_hz
+        mask = (f >= fi_hz - f_window) & (f <= fi_hz + f_window)
+        if np.any(mask):
+            f_zoom = f[mask]
+            db_zoom = db[mask]
+
+            ax2.plot(f_zoom, db_zoom, linewidth=2, label="PSD")
+            ax2.axvline(
+                fi_hz,
+                color="r",
+                linestyle="--",
+                label=f"f_n = {fi_hz:.1f} Hz",
+                linewidth=2,
+            )
+
+            idx_peak = np.argmin(np.abs(f - fi_hz))
+            peak_db = db[idx_peak]
+            half_power_db = peak_db - 3.0
+
+            ax2.axhline(
+                half_power_db, color="orange", linestyle=":", linewidth=2, label="-3 dB"
+            )
+            ax2.plot(
+                [float(f1_hz), float(f2_hz)],
+                [half_power_db, half_power_db],
+                "go",
+                markersize=10,
+                label="Half-power points",
+            )
+
+            # Annotate bandwidth and damping
+            bw_hz = float(f2_hz) - float(f1_hz)
+            zeta_pct = estimate.zeta * 100.0 if estimate.zeta else 0.0
+
+            ax2.annotate(
+                "",
+                xy=(float(f2_hz), half_power_db - 2),
+                xytext=(float(f1_hz), half_power_db - 2),
+                arrowprops=dict(arrowstyle="<->", color="purple", lw=2),
+            )
+            ax2.text(
+                (float(f1_hz) + float(f2_hz)) / 2,
+                half_power_db - 3.5,
+                f"Δf = {bw_hz:.1f} Hz\nζ = Δf/(2f_n) = {zeta_pct:.1f}%",
+                ha="center",
+                va="top",
+                fontsize=10,
+                bbox=dict(boxstyle="round", facecolor="yellow", alpha=0.7),
+            )
+
+            ax2.set_xlabel("Frequency (Hz)")
+            ax2.set_ylabel("Power (dB)")
+            ax2.legend(loc="upper right")
+            ax2.grid(True, alpha=0.3)
+            ax2.set_title("Damping from Half-Power Bandwidth")
 
     plt.tight_layout()
     plt.savefig(out_png, dpi=150, bbox_inches="tight")
@@ -150,7 +238,8 @@ def plot_energy_decay_diagnostic(
 
     fs = float(fs)
     y = np.asarray(y_filt, dtype=np.float64)
-    env = np.abs(hilbert(y)).astype(np.float64)
+    analytic = hilbert(y)
+    env = np.abs(cast(NDArray[np.complex128], analytic)).astype(np.float64)
     energy = env**2
     t = np.arange(energy.size, dtype=np.float64) / fs
 
