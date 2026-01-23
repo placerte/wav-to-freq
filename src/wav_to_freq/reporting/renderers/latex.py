@@ -12,6 +12,7 @@ from wav_to_freq.reporting.doc import (
     ReportDoc,
     Table,
 )
+from wav_to_freq.reporting.renderers.inline import render_inline_latex
 
 
 def render_latex(
@@ -32,10 +33,10 @@ def _render_node(node: DocNode) -> list[str]:
     if isinstance(node, Heading):
         return [_render_heading(node)]
     if isinstance(node, Paragraph):
-        return [_latex_escape(node.text), ""]
+        return [render_inline_latex(node.text), ""]
     if isinstance(node, BulletList):
         lines = ["\\begin{itemize}"]
-        lines.extend([f"  \\item {_latex_escape(item)}" for item in node.items])
+        lines.extend([f"  \\item {render_inline_latex(item)}" for item in node.items])
         lines.append("\\end{itemize}")
         lines.append("")
         return lines
@@ -47,7 +48,7 @@ def _render_node(node: DocNode) -> list[str]:
             "\\begin{figure}[H]",
             "  \\centering",
             f"  \\includegraphics[width=\\linewidth]{{{path}}}",
-            f"  \\caption*{{{_latex_escape(node.alt)}}}" if node.alt else "",
+            f"  \\caption*{{{render_inline_latex(node.alt)}}}" if node.alt else "",
             "\\end{figure}",
             "",
         ]
@@ -57,7 +58,7 @@ def _render_node(node: DocNode) -> list[str]:
 
 
 def _render_heading(node: Heading) -> str:
-    text = _latex_escape(node.text)
+    text = render_inline_latex(node.text)
     if node.level == 1:
         return f"\\section*{{{text}}}"
     if node.level == 2:
@@ -95,7 +96,7 @@ def _render_group_header(groups: list[tuple[str, int]], total_cols: int) -> str:
         span = max(1, int(span))
         cols_used += span
         parts.append(
-            "\\multicolumn{" + str(span) + "}{c|}{" + _latex_escape(label) + "}"
+            "\\multicolumn{" + str(span) + "}{c|}{" + render_inline_latex(label) + "}"
         )
     if cols_used < total_cols:
         parts.append("\\multicolumn{" + str(total_cols - cols_used) + "}{c|}{}")
@@ -103,7 +104,7 @@ def _render_group_header(groups: list[tuple[str, int]], total_cols: int) -> str:
 
 
 def _render_row(cells: list[str]) -> str:
-    return " & ".join(_latex_escape(c) for c in cells) + " \\\\"
+    return " & ".join(render_inline_latex(c) for c in cells) + " \\\\"
 
 
 def _latex_escape(text: str) -> str:
@@ -112,11 +113,8 @@ def _latex_escape(text: str) -> str:
     s = s.replace("%", "\\%").replace("$", "\\$")
     s = s.replace("#", "\\#").replace("_", "\\_")
     s = s.replace("{", "\\{").replace("}", "\\}")
-    s = (
-        s.replace("~", "\\textasciitilde{}")
-        .replace("^", "\\textasciicircum{}")
-        .replace("ζ", "\\zeta")
-    )
+    s = s.replace("~", "\\textasciitilde{}")
+    s = s.replace("^", "\\textasciicircum{}")
     return s
 
 

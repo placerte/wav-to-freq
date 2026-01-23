@@ -42,11 +42,11 @@ def _add_hit_summary_table(
         return
 
     headers = ["mode"]
-    header_groups: list[tuple[str, int]] = [("mode", 1)]
+    header_groups: list[tuple[str, int]] = [("", 1)]
     for hit_id in hit_ids:
         label = f"H{hit_id:03d}"
         header_groups.append((label, 4))
-        headers.extend(["fi", "ζ td", "ζ fd", "ζ e"])
+        headers.extend(["f_i", "zeta_TD", "zeta_FD", "zeta_E"])
 
     rows: list[list[str]] = []
     for rank in range(1, max_summary_peaks + 1):

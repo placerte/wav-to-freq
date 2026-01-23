@@ -10,6 +10,7 @@ from wav_to_freq.reporting.doc import (
     ReportDoc,
     Table,
 )
+from wav_to_freq.reporting.renderers.inline import render_inline_markdown
 
 
 def render_markdown(doc: ReportDoc) -> str:
@@ -24,17 +25,19 @@ def render_markdown(doc: ReportDoc) -> str:
 def _render_node(node: DocNode) -> list[str]:
     if isinstance(node, Heading):
         prefix = "#" * max(1, min(6, int(node.level)))
-        return [f"{prefix} {node.text}", ""]
+        return [f"{prefix} {render_inline_markdown(node.text)}", ""]
     if isinstance(node, Paragraph):
-        return [node.text, ""]
+        return [render_inline_markdown(node.text), ""]
     if isinstance(node, BulletList):
-        return [f"- {item}" for item in node.items] + [""]
+        return [f"- {render_inline_markdown(item)}" for item in node.items] + [""]
     if isinstance(node, CodeBlock):
         return [f"```{node.lang}".rstrip(), node.code.rstrip(), "```", ""]
     if isinstance(node, Image):
+        alt = render_inline_markdown(node.alt)
         if node.title:
-            return [f'![{node.alt}]({node.path} "{node.title}")', ""]
-        return [f"![{node.alt}]({node.path})", ""]
+            title = render_inline_markdown(node.title)
+            return [f'![{alt}]({node.path} "{title}")', ""]
+        return [f"![{alt}]({node.path})", ""]
     if isinstance(node, Table):
         return _render_table(node)
     return []
@@ -73,7 +76,7 @@ def _flatten_headers(
 
 
 def _esc(cell: str) -> str:
-    s = str(cell)
+    s = render_inline_markdown(str(cell))
     s = s.replace("\n", "<br>")
     s = s.replace("|", "\\|")
     return s
