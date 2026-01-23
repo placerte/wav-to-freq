@@ -8,13 +8,14 @@ from typing import Sequence
 
 from wav_to_freq.domain.results import EstimateResult
 from wav_to_freq.domain.types import HitModalResult, HitWindow
-from wav_to_freq.reporting.markdown import MarkdownDoc
+from wav_to_freq.reporting.doc import ReportDoc
+from wav_to_freq.reporting.renderers.markdown import render_markdown
 from wav_to_freq.reporting.sections.modal import (
     add_section_modal_summary,
     add_section_per_hit_results,
 )
 from wav_to_freq.utils.paths import ensure_dir
-from wav_to_freq.reporting.writers.pdf import md_to_pdf
+from wav_to_freq.reporting.writers.pdf import report_to_pdf
 
 
 @dataclass(frozen=True)
@@ -81,7 +82,7 @@ def write_modal_report(
     # -----------------------
     # Markdown
     # -----------------------
-    mdd = MarkdownDoc()
+    mdd = ReportDoc()
     add_section_modal_summary(
         mdd=mdd,
         results=results,
@@ -100,12 +101,13 @@ def write_modal_report(
     )
 
     md_path = out_dir / "modal_report.md"
-    md_path.write_text(mdd.to_markdown(), encoding="utf-8")
+    md_path.write_text(render_markdown(mdd), encoding="utf-8")
 
     pdf_path: Path | None = None
     if export_pdf:
-        pdf_path = md_to_pdf(
-            md_path,
+        pdf_path = report_to_pdf(
+            mdd,
+            pdf_path=md_path.with_suffix(".pdf"),
             root_dir=out_dir,
             title=title,
         ).pdf_path

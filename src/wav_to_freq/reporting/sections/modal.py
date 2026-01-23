@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Sequence
 from wav_to_freq.domain.results import EstimateResult
 from wav_to_freq.domain.types import HitModalResult, HitWindow
-from wav_to_freq.reporting.markdown import MarkdownDoc
+from wav_to_freq.reporting.doc import ReportDoc
 from wav_to_freq.reporting.plots import plot_hit_response_report
 from wav_to_freq.utils.formating import (
     custom_format,
@@ -31,7 +31,7 @@ def _pick_zeta(
 
 
 def _add_hit_summary_table(
-    mdd: MarkdownDoc,
+    mdd: ReportDoc,
     *,
     estimates: Sequence[EstimateResult],
     results: Sequence[HitModalResult],
@@ -42,16 +42,11 @@ def _add_hit_summary_table(
         return
 
     headers = ["mode"]
+    header_groups: list[tuple[str, int]] = [("mode", 1)]
     for hit_id in hit_ids:
         label = f"H{hit_id:03d}"
-        headers.extend(
-            [
-                f"{label} fi",
-                f"{label} zeta_td",
-                f"{label} zeta_fd",
-                f"{label} zeta_energy",
-            ]
-        )
+        header_groups.append((label, 4))
+        headers.extend(["fi", "ζ td", "ζ fd", "ζ e"])
 
     rows: list[list[str]] = []
     for rank in range(1, max_summary_peaks + 1):
@@ -79,11 +74,11 @@ def _add_hit_summary_table(
         rows.append(row)
 
     mdd.h2("Hit Summary (fi, zeta)")
-    mdd.table(headers, rows)
+    mdd.table(headers, rows, header_groups=header_groups)
 
 
 def add_section_modal_summary(
-    mdd: MarkdownDoc,
+    mdd: ReportDoc,
     *,
     results: Sequence[HitModalResult],
     estimates: Sequence[EstimateResult] | None = None,
@@ -159,7 +154,7 @@ def add_section_modal_summary(
 
 
 def add_section_per_hit_results(
-    mdd: MarkdownDoc,
+    mdd: ReportDoc,
     windows: Sequence[HitWindow],
     results: Sequence[HitModalResult],
     transient_s: float,

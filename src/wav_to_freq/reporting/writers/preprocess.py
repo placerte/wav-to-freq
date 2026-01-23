@@ -9,10 +9,11 @@ from typing import Sequence
 from wav_to_freq.domain.types import HitDetectionReport, HitWindow, StereoWav
 from wav_to_freq.utils.paths import ensure_dir
 from wav_to_freq.reporting.context import PreprocessContext
-from wav_to_freq.reporting.markdown import MarkdownDoc
+from wav_to_freq.reporting.doc import ReportDoc
+from wav_to_freq.reporting.renderers.markdown import render_markdown
 from wav_to_freq.reporting.plots import plot_overview_two_channels
 from wav_to_freq.reporting.sections.preprocess import add_section_wav_specs
-from wav_to_freq.reporting.writers.pdf  import md_to_pdf
+from wav_to_freq.reporting.writers.pdf import report_to_pdf
 
 
 @dataclass(frozen=True)
@@ -30,7 +31,7 @@ def write_preprocess_report(
     report: HitDetectionReport,
     title: str = "WAV preprocessing report",
     max_plot_seconds: float | None = None,
-    export_pdf: bool = True
+    export_pdf: bool = True,
 ) -> PreprocessReportArtifacts:
     """
     Create a markdown report + figures for the preprocessing stage.
@@ -51,7 +52,7 @@ def write_preprocess_report(
         max_seconds=max_plot_seconds,
     )
 
-    mdd = MarkdownDoc()
+    mdd = ReportDoc()
     mdd.h1(title)
 
     context = PreprocessContext(
@@ -71,10 +72,14 @@ def write_preprocess_report(
     mdd.image(fig_overview.relative_to(out_dir).as_posix(), alt="overview two channels")
 
     report_md = out_dir / "report_preprocess.md"
-    report_md.write_text(mdd.to_markdown(), encoding="utf-8")
+    report_md.write_text(render_markdown(mdd), encoding="utf-8")
     report_pdf: Path | None = None
     if export_pdf:
         # root_dir=out_dir so relative image links like figures/... resolve
-        report_pdf = md_to_pdf(report_md, root_dir=out_dir, title=title).pdf_path
+        report_pdf = report_to_pdf(
+            mdd, pdf_path=report_md.with_suffix(".pdf"), root_dir=out_dir, title=title
+        ).pdf_path
 
-    return PreprocessReportArtifacts(report_md=report_md, fig_overview=fig_overview, report_pdf=report_pdf)
+    return PreprocessReportArtifacts(
+        report_md=report_md, fig_overview=fig_overview, report_pdf=report_pdf
+    )

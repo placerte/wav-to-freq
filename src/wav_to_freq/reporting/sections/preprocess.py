@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from wav_to_freq.reporting.markdown import MarkdownDoc
+from wav_to_freq.reporting.doc import ReportDoc
 from wav_to_freq.reporting.context import PreprocessContext
 
 
-def add_section_wav_specs(mdd: MarkdownDoc, context: PreprocessContext) -> None:
+def add_section_wav_specs(mdd: ReportDoc, context: PreprocessContext) -> None:
     stereo = context.stereo
 
     mdd.h2("WAV file specs")
